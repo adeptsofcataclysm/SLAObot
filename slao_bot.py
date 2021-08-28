@@ -1,7 +1,7 @@
 import os
 import aiohttp
 import discord
-import asyncio
+import tenacity
 
 from dotenv import load_dotenv
 from datetime import datetime, timezone
@@ -66,10 +66,10 @@ async def on_message(message):
         return
 
     if message.author.display_name == "WCL" and message.embeds:
-        resp = message.embeds[0].url.split("/")[-2]
-        if resp:
+        report_id = message.embeds[0].url.split("/")[-2]
+        if report_id:
             ctx = await bot.get_context(message)
-            await get_data(ctx, resp)
+            await process_report(ctx, report_id)
 
 
 @bot.command(name="msg", help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
@@ -81,13 +81,57 @@ async def msg_command(ctx, msg_id):
 
 @bot.command(name='wcl', help='Get data from report. Format: slao.wcl SOME_REPORT_ID')
 async def wcl_command(ctx, report_id):
-    await get_data(ctx, report_id)
+    await process_report(ctx, report_id)
 
 
-async def get_data(ctx, report_id):
+async def process_report(ctx, report_id):
+    """
+    Process a single report and sends embed to context channel
+
+    :param ctx: Invocation context. Should be a channel
+    :param report_id: :class:`str` WarcraftLogs report ID
+    :return:
+    """
     async with ctx.typing():
-        await asyncio.sleep(5)
+        wait_embed = discord \
+            .Embed(description="Получаю данные с WarcraftLogs", colour=discord.Colour.orange()) \
+            .set_footer(text="Иногда WCL тормозит, пичалька.")
+        waiting_embed = await ctx.send(embed=wait_embed)
 
+        result = await get_data(report_id)
+        report_title = result['reportData']['report']['zone']['name']
+        report_owner = result['reportData']['report']['owner']['name']
+        report_start = make_time(result['reportData']['report']['startTime'])
+        report_end = make_time(result['reportData']['report']['endTime'])
+        report_zone_id = result['reportData']['report']['zone']['id']
+
+        embed = discord.Embed(title=report_title, description=f"Лог от {report_owner}", color=0x6b6b6b)
+        embed.add_field(name="Начало", value=report_start, inline=True)
+        embed.add_field(name="Окончание", value=report_end, inline=True)
+        # blank 3rd column
+        embed.add_field(name="\u200b", value="\u200b", inline=True)
+
+        # Gruul + Magtheridon
+        if report_zone_id == 1008:
+            make_1008(embed, result)
+        # Full Karazhan
+        elif report_zone_id == 1007:
+            # TO-DO Add check for full Kara
+            make_1502(embed, result['reportData']['report']['rankings']['data'][-1])
+
+    await waiting_embed.edit(embed=embed)
+
+
+@tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+async def get_data(report_id):
+    """
+    Gets data from WarcraftLog.
+    Authentication token requested as a first call. With logs posted on daily or semi-daily basis
+    and not every minute it is fine to request it each time we make a call to WCL
+
+    :param report_id: :class:`str` WarcraftLogs report ID.
+    :return: GraphQL request result. Should be a JSON based dictionary object.
+    """
     async with aiohttp.ClientSession() as cs:
         data = {'grant_type': 'client_credentials'}
         auth_header = aiohttp.BasicAuth(os.getenv('WCL_CLIENT_ID'), os.getenv('WCL_CLIENT_SECRET'))
@@ -116,31 +160,15 @@ async def get_data(ctx, report_id):
 
                 query = dsl_gql(DSLQuery(query_report))
                 result = await cl.execute(query)
-
-    report_title = result['reportData']['report']['zone']['name']
-    report_owner = result['reportData']['report']['owner']['name']
-    report_start = make_time(result['reportData']['report']['startTime'])
-    report_end = make_time(result['reportData']['report']['endTime'])
-    report_zone_id = result['reportData']['report']['zone']['id']
-
-    embed = discord.Embed(title=report_title, description=f"Лог от {report_owner}", color=0x6b6b6b)
-    embed.add_field(name="Начало", value=report_start, inline=True)
-    embed.add_field(name="Окончание", value=report_end, inline=True)
-    # blank 3rd column
-    embed.add_field(name="\u200b", value="\u200b", inline=True)
-
-    # Gruul + Magtheridon
-    if report_zone_id == 1008:
-        make_1008(embed, result)
-    # Full Karazhan
-    elif report_zone_id == 1007:
-        make_1502(embed, result['reportData']['report']['rankings']['data'][-1])
-
-    await ctx.send(embed=embed)
+                if result['reportData']['report']['zone']['name'] is None:
+                    raise
+                if len(result['reportData']['report']['rankings']['data']) == 0:
+                    raise
+                return result
 
 
-# Add data for Karazhan
-def make_1502(embed: discord.Embed, rs: list):
+# Add data for full Karazhan
+def make_1502(embed: discord.Embed, rs: dict):
     embed.set_image(url=zone_images.get(1007))
     embed.add_field(name="Полная зачистка", value=make_fight_info(rs), inline=False)
     embed.add_field(name="Tank", value=make_specs(rs['roles']['tanks']['characters']), inline=False)
@@ -158,18 +186,11 @@ def make_1008(embed: discord.Embed, rs: dict):
         embed.add_field(name="Лекари", value=make_specs(fight['roles']['healers']['characters']), inline=False)
 
 
-def make_fight_info(fight: list):
-    val = "Длительность: **"
-    val += datetime.fromtimestamp(fight['duration']/1000.0, timezone.utc).strftime('%Hч:%Mм:%Sс')
-    val += "** \n"
-
-    val += "Исполнение: **"
-    val += make_execution(fight['execution']['rankPercent'])
-    val += "** \n"
-
-    val += "Скорость: **"
-    val += str(fight['speed']['rankPercent']) + "%"
-    val += "**"
+def make_fight_info(fight: dict):
+    val = "Длительность: **{}**\n" \
+        .format(datetime.fromtimestamp(fight['duration'] / 1000.0, timezone.utc).strftime('%Hч %Mм %Sс'))
+    val += "Исполнение: **{}**\n".format(make_execution(fight['execution']['rankPercent']))
+    val += "Скорость: **{}%**".format(fight['speed']['rankPercent'])
     return val
 
 
@@ -183,7 +204,7 @@ def make_specs(rs: dict):
 
 
 def make_time(timestamp: int):
-    utc_time = datetime.fromtimestamp(float(timestamp)/1000, timezone.utc)
+    utc_time = datetime.fromtimestamp(float(timestamp) / 1000, timezone.utc)
     local_time = utc_time.astimezone()
     return local_time.strftime("%Y-%m-%d %H:%M (%Z)")
 
