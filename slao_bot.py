@@ -65,10 +65,11 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    resp = message.embeds[0].url.split("/")[-2]
-    if resp:
-        ctx = await bot.get_context(message)
-        await get_data(ctx, resp)
+    if message.author.display_name == "WCL" and message.embeds:
+        resp = message.embeds[0].url.split("/")[-2]
+        if resp:
+            ctx = await bot.get_context(message)
+            await get_data(ctx, resp)
 
 
 @bot.command(name="msg", help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
@@ -122,7 +123,7 @@ async def get_data(ctx, report_id):
     report_end = make_time(result['reportData']['report']['endTime'])
     report_zone_id = result['reportData']['report']['zone']['id']
 
-    embed = discord.Embed(title=report_title, description=f"Reported by {report_owner}", color=0x6b6b6b)
+    embed = discord.Embed(title=report_title, description=f"Лог от {report_owner}", color=0x6b6b6b)
     embed.add_field(name="Начало", value=report_start, inline=True)
     embed.add_field(name="Окончание", value=report_end, inline=True)
     # blank 3rd column
@@ -139,40 +140,37 @@ async def get_data(ctx, report_id):
 
 
 # Add data for Karazhan
-def make_1502(embed: discord.Embed, rs: dict):
+def make_1502(embed: discord.Embed, rs: list):
     embed.set_image(url=zone_images.get(1007))
-    embed.add_field(
-        name="Duration",
-        value=datetime.fromtimestamp(rs['duration']/1000.0, timezone.utc).strftime('%H:%M:%S'),
-        inline=True
-    )
-    embed.add_field(name="Execution", value=str(rs['execution']['rankPercent']) + "%", inline=True)
-    embed.add_field(name="Speed", value=str(rs['speed']['rankPercent']) + "%", inline=True)
-    embed.add_field(name="Tank", value=make_specs(rs['roles']['tanks']['characters']), inline=True)
-    embed.add_field(name="DPS", value=make_specs(rs['roles']['dps']['characters']), inline=True)
-    embed.add_field(name="Heal", value=make_specs(rs['roles']['healers']['characters']), inline=True)
+    embed.add_field(name="Полная зачистка", value=make_fight_info(rs), inline=False)
+    embed.add_field(name="Tank", value=make_specs(rs['roles']['tanks']['characters']), inline=False)
+    embed.add_field(name="DPS", value=make_specs(rs['roles']['dps']['characters']), inline=False)
+    embed.add_field(name="Heal", value=make_specs(rs['roles']['healers']['characters']), inline=False)
 
 
 # Add data for Gruul + Magtheridon
 def make_1008(embed: discord.Embed, rs: dict):
     embed.set_image(url=zone_images.get(1008))
     for fight in rs['reportData']['report']['rankings']['data']:
-        val = "Длительность: **"
-        val += datetime.fromtimestamp(fight['duration']/1000.0, timezone.utc).strftime('%M:%S')
-        val += "** \n"
-
-        val += "Исполнение: **"
-        val += make_execution(fight['execution']['rankPercent'])
-        val += "** \n"
-
-        val += "Скорость: **"
-        val += str(fight['speed']['rankPercent']) + "%"
-        val += "**"
-
-        embed.add_field(name=fight['encounter']['name'], value=val, inline=False)
+        embed.add_field(name=fight['encounter']['name'], value=make_fight_info(fight), inline=False)
         embed.add_field(name="Танк", value=make_specs(fight['roles']['tanks']['characters']), inline=False)
         embed.add_field(name="Дамагеры", value=make_specs(fight['roles']['dps']['characters']), inline=False)
         embed.add_field(name="Лекари", value=make_specs(fight['roles']['healers']['characters']), inline=False)
+
+
+def make_fight_info(fight: list):
+    val = "Длительность: **"
+    val += datetime.fromtimestamp(fight['duration']/1000.0, timezone.utc).strftime('%Hч:%Mм:%Sс')
+    val += "** \n"
+
+    val += "Исполнение: **"
+    val += make_execution(fight['execution']['rankPercent'])
+    val += "** \n"
+
+    val += "Скорость: **"
+    val += str(fight['speed']['rankPercent']) + "%"
+    val += "**"
+    return val
 
 
 def make_specs(rs: dict):
