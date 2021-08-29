@@ -19,8 +19,10 @@ specs = {
     "Druid_Restoration": "<:Druid_Restoration:880089474753785897>",
     "Druid_Warden": "<:Druid_Warden:880081285501046854>",
     "Hunter_BeastMastery": "<:Hunter_BeastMastery:880083922120233030>",
+    "Hunter_Marksmanship": "<:Hunter_Marksmanship:881622924564516934>",
     "Mage_Arcane": "<:Mage_Arcane:880098759936196669>",
     "Mage_Fire": "<:Mage_Fire:880083302306947113>",
+    "Mage_Frost": "<:Mage_Frost:881623228177596437>",
     "Paladin_Holy": "<:Paladin_Holy:880089741847060550>",
     "Paladin_Protection": "<:Paladin_Protection:880076303615787009>",
     "Paladin_Retribution": "<:Paladin_Retribution:880099271645470750>",
@@ -28,6 +30,7 @@ specs = {
     "Priest_Holy": "<:Priest_Holy:880089805990535169>",
     "Priest_Shadow": "<:Priest_Shadow:880099152548208731>",
     "Priest_Smiter": "<:Priest_Smiter:880085315149258848>",
+    "Rogue_Assassination": "<:Rogue_Assassination:881623680025780245>",
     "Rogue_Combat": "<:Rogue_Combat:880082256373370891>",
     "Shaman_Elemental": "<:Shaman_Elemental:880084253700923412>",
     "Shaman_Enhancement": "<:Shaman_Enhancement:880082514683756615>",
@@ -41,6 +44,7 @@ specs = {
 }
 
 zone_images = {
+    1000: "https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg",
     1007: "https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png",
     1008: "https://cdn.discordapp.com/attachments/762790105026920468/876774093943349258/RH-TBC-GruulMaggie_1200x300.png",
     0: "https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png"
@@ -93,32 +97,25 @@ async def process_report(ctx, report_id):
     :return:
     """
     async with ctx.typing():
-        wait_embed = discord \
-            .Embed(description="Получаю данные с WarcraftLogs", colour=discord.Colour.orange()) \
+        wait_embed = discord.Embed(description="Получаю данные с WarcraftLogs", colour=discord.Colour.orange()) \
             .set_footer(text="Иногда WCL тормозит, пичалька.")
         waiting_embed = await ctx.send(embed=wait_embed)
 
         result = await get_data(report_id)
         report_title = result['reportData']['report']['zone']['name']
         report_owner = result['reportData']['report']['owner']['name']
-        report_start = make_time(result['reportData']['report']['startTime'])
-        report_end = make_time(result['reportData']['report']['endTime'])
-        report_zone_id = result['reportData']['report']['zone']['id']
-
         embed = discord.Embed(title=report_title, description=f"Лог от {report_owner}", color=0x6b6b6b)
-        embed.add_field(name="Начало", value=report_start, inline=True)
-        embed.add_field(name="Окончание", value=report_end, inline=True)
+        embed.add_field(name="Начало", value=make_time(result['reportData']['report']['startTime']), inline=True)
+        embed.add_field(name="Окончание", value=make_time(result['reportData']['report']['endTime']), inline=True)
         # blank 3rd column
         embed.add_field(name="\u200b", value="\u200b", inline=True)
+        embed.set_image(url=zone_images.get(result['reportData']['report']['zone']['id'], 0))
 
-        # Gruul + Magtheridon
-        if report_zone_id == 1008:
-            make_1008(embed, result)
-        # Full Karazhan
-        elif report_zone_id == 1007:
-            # TO-DO Add check for full Kara
-            make_1502(embed, result['reportData']['report']['rankings']['data'][-1])
-
+        last_fight = result['reportData']['report']['rankings']['data'][-1]
+        if last_fight['fightID'] == 10000:
+            make_total(embed, last_fight)
+        else:
+            make_all_fights(embed, result)
     await waiting_embed.edit(embed=embed)
 
 
@@ -167,18 +164,28 @@ async def get_data(report_id):
                 return result
 
 
-# Add data for full Karazhan
-def make_1502(embed: discord.Embed, rs: dict):
-    embed.set_image(url=zone_images.get(1007))
+def make_total(embed: discord.Embed, rs: dict):
+    """
+    Process total instance info only, not a per-boss info
+
+    :param embed: :class:`discord.Embed` Embed to add fields to
+    :param rs: :class:`dict' Dictionary with characters
+    :return:
+    """
     embed.add_field(name="Полная зачистка", value=make_fight_info(rs), inline=False)
     embed.add_field(name="Tank", value=make_specs(rs['roles']['tanks']['characters']), inline=False)
     embed.add_field(name="DPS", value=make_specs(rs['roles']['dps']['characters']), inline=False)
     embed.add_field(name="Heal", value=make_specs(rs['roles']['healers']['characters']), inline=False)
 
 
-# Add data for Gruul + Magtheridon
-def make_1008(embed: discord.Embed, rs: dict):
-    embed.set_image(url=zone_images.get(1008))
+def make_all_fights(embed: discord.Embed, rs: dict):
+    """
+    Process all fights from report
+
+    :param embed: :class:`discord.Embed` Embed to add fields to
+    :param rs: :class:`dict' Dictionary with characters
+    :return:
+    """
     for fight in rs['reportData']['report']['rankings']['data']:
         embed.add_field(name=fight['encounter']['name'], value=make_fight_info(fight), inline=False)
         embed.add_field(name="Танк", value=make_specs(fight['roles']['tanks']['characters']), inline=False)
@@ -197,9 +204,12 @@ def make_fight_info(fight: dict):
 def make_specs(rs: dict):
     result = ""
     for char in rs:
+        if len(result) > 980:
+            return result
         key = char['class'] + "_" + char['spec']
         result += specs.get(key, "\u200b")
         result += "**" + char['name'] + "**  "
+    print(len(result))
     return result
 
 
