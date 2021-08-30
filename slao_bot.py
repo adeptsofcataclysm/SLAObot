@@ -46,8 +46,19 @@ specs = {
 zone_images = {
     1000: "https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg",
     1007: "https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png",
-    1008: "https://cdn.discordapp.com/attachments/762790105026920468/876774093943349258/RH-TBC-GruulMaggie_1200x300.png",
+    1008: "https://cdn.discordapp.com/attachments/762790105026920468/"
+          "876774093943349258/RH-TBC-GruulMaggie_1200x300.png",
     0: "https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png"
+}
+
+zone_names = {
+    0: ":regional_indicator_r: :regional_indicator_a: :id:",
+    1000: "MC",
+    1007: ":regional_indicator_k: :regional_indicator_a: :regional_indicator_r: :regional_indicator_a: "
+          ":regional_indicator_z: :regional_indicator_h: :regional_indicator_a: :regional_indicator_n:",
+    1008: ":regional_indicator_g: :regional_indicator_r: :regional_indicator_u: :regional_indicator_u: "
+          ":regional_indicator_l: :left_right_arrow: :regional_indicator_m: :regional_indicator_a: "
+          ":regional_indicator_g: :regional_indicator_a:"
 }
 
 exec_values = {
@@ -71,9 +82,10 @@ async def on_message(message):
 
     if message.author.display_name == "WCL" and message.embeds:
         report_id = message.embeds[0].url.split("/")[-2]
+        author_icon = message.embeds[0].thumbnail.url
         if report_id:
             ctx = await bot.get_context(message)
-            await process_report(ctx, report_id)
+            await process_report(ctx, report_id, author_icon)
 
 
 @bot.command(name="msg", help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
@@ -85,13 +97,15 @@ async def msg_command(ctx, msg_id):
 
 @bot.command(name='wcl', help='Get data from report. Format: slao.wcl SOME_REPORT_ID')
 async def wcl_command(ctx, report_id):
-    await process_report(ctx, report_id)
+    author_icon = "https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png"
+    await process_report(ctx, report_id, author_icon)
 
 
-async def process_report(ctx, report_id):
+async def process_report(ctx, report_id, author_icon):
     """
     Process a single report and sends embed to context channel
 
+    :param author_icon:
     :param ctx: Invocation context. Should be a channel
     :param report_id: :class:`str` WarcraftLogs report ID
     :return:
@@ -102,21 +116,27 @@ async def process_report(ctx, report_id):
         waiting_embed = await ctx.send(embed=wait_embed)
 
         result = await get_data(report_id)
-        report_title = result['reportData']['report']['zone']['name']
-        report_owner = result['reportData']['report']['owner']['name']
-        embed = discord.Embed(title=report_title, color=0xb51cd4)
-        embed.set_author(name=f"Лог от {report_owner}")
-        embed.add_field(name="Начало", value=make_time(result['reportData']['report']['startTime']), inline=True)
-        embed.add_field(name="Окончание", value=make_time(result['reportData']['report']['endTime']), inline=True)
-        # blank 3rd column
-        embed.add_field(name="\u200b", value="\u200b", inline=True)
-        embed.set_image(url=zone_images.get(result['reportData']['report']['zone']['id'], 0))
+        report_zone_id = result['reportData']['report']['zone']['id']
 
-        last_fight = result['reportData']['report']['rankings']['data'][-1]
-        if last_fight['fightID'] == 10000:
-            make_total(embed, last_fight)
+        report_title = zone_names.get(report_zone_id, zone_names.get(0))
+        report_start = make_time(result['reportData']['report']['startTime'])
+        report_end = make_time(result['reportData']['report']['endTime'])
+        report_description = f"**Начало:** {report_start} \n **Окончание:** {report_end}"
+        embed = discord.Embed(title=report_title, description=report_description, color=0xb51cd4)
+
+        report_owner = result['reportData']['report']['owner']['name']
+        report_url = f"https://classic.warcraftlogs.com/reports/{report_id}"
+        embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
+
+        embed.set_image(url=zone_images.get(report_zone_id, zone_images.get(0)))
+
+        fights = result['reportData']['report']['rankings']['data']
+        if fights[-1]['fightID'] == 10000:
+            make_total(embed, fights[-1])
+        elif len(fights) <= 4:
+            make_all_fights(embed, fights)
         else:
-            make_all_fights(embed, result)
+            make_avg(embed, fights)
     await waiting_embed.edit(embed=embed)
 
 
@@ -173,10 +193,10 @@ def make_total(embed: discord.Embed, rs: dict):
     :param rs: :class:`dict' Dictionary with characters
     :return:
     """
-    embed.add_field(name="Полная зачистка", value=make_fight_info(rs), inline=False)
-    embed.add_field(name="Tank", value=make_specs(rs['roles']['tanks']['characters']), inline=False)
-    embed.add_field(name="DPS", value=make_specs(rs['roles']['dps']['characters']), inline=False)
-    embed.add_field(name="Heal", value=make_specs(rs['roles']['healers']['characters']), inline=False)
+    embed.add_field(name="⚔️Полная зачистка", value=make_fight_info(rs), inline=False)
+    embed.add_field(name="Танки", value=make_specs(rs['roles']['tanks']['characters']), inline=False)
+    embed.add_field(name="Дамагеры", value=make_trophy_specs(rs['roles']['dps']['characters']), inline=False)
+    embed.add_field(name="Лекари", value=make_specs(rs['roles']['healers']['characters']), inline=False)
 
 
 def make_all_fights(embed: discord.Embed, rs: dict):
@@ -187,11 +207,29 @@ def make_all_fights(embed: discord.Embed, rs: dict):
     :param rs: :class:`dict' Dictionary with characters
     :return:
     """
-    for fight in rs['reportData']['report']['rankings']['data']:
-        embed.add_field(name=fight['encounter']['name'], value=make_fight_info(fight), inline=False)
-        embed.add_field(name="Танк", value=make_specs(fight['roles']['tanks']['characters']), inline=False)
-        embed.add_field(name="Дамагеры", value=make_specs(fight['roles']['dps']['characters']), inline=False)
+    for fight in rs:
+        embed.add_field(name="⚔️" + fight['encounter']['name'], value=make_fight_info(fight), inline=False)
+        embed.add_field(name="Танки", value=make_specs(fight['roles']['tanks']['characters']), inline=False)
+        embed.add_field(name="Дамагеры", value=make_trophy_specs(fight['roles']['dps']['characters']), inline=False)
         embed.add_field(name="Лекари", value=make_specs(fight['roles']['healers']['characters']), inline=False)
+
+
+def make_avg(embed: discord.Embed, rs: list):
+    bosses = ""
+    execution = 0
+    speed = 0
+    for fight in rs:
+        bosses += "⚔️**" + fight['encounter']['name'] + "** "
+        execution += fight['execution']['rankPercent']
+        speed += fight['speed']['rankPercent']
+
+    embed.add_field(name="Убиты: ", value=bosses)
+    execution = int(execution/len(rs))
+    speed = int(speed/len(rs))
+
+    val = "Исполнение: **{}**\n".format(make_execution(execution))
+    val += "Скорость: **{}%**".format(speed)
+    embed.add_field(name="Рейтинг", value=val, inline=False)
 
 
 def make_fight_info(fight: dict):
@@ -202,7 +240,7 @@ def make_fight_info(fight: dict):
     return val
 
 
-def make_specs(rs: dict):
+def make_specs(rs: list):
     result = ""
     for char in rs:
         if len(result) > 980:
@@ -210,6 +248,22 @@ def make_specs(rs: dict):
         key = char['class'] + "_" + char['spec']
         result += specs.get(key, "\u200b")
         result += "**" + char['name'] + "**  "
+    return result
+
+
+def make_trophy_specs(rs: list):
+    result = ""
+    rs.sort(key=lambda x: x.get('rankPercent'), reverse=True)
+    place = 0
+    for char in rs:
+        if len(result) > 980:
+            return result
+        key = char['class'] + "_" + char['spec']
+        if place < 3:
+            result += "🏆 " + specs.get(key, "\u200b") + "**" + char['name'] + "**  "
+        else:
+            result += specs.get(key, "\u200b") + char['name'] + "  "
+        place += 1
     return result
 
 
