@@ -104,7 +104,8 @@ async def process_report(ctx, report_id):
         result = await get_data(report_id)
         report_title = result['reportData']['report']['zone']['name']
         report_owner = result['reportData']['report']['owner']['name']
-        embed = discord.Embed(title=report_title, description=f"Лог от {report_owner}", color=0x6b6b6b)
+        embed = discord.Embed(title=report_title, color=0xb51cd4)
+        embed.set_author(name=f"Лог от {report_owner}")
         embed.add_field(name="Начало", value=make_time(result['reportData']['report']['startTime']), inline=True)
         embed.add_field(name="Окончание", value=make_time(result['reportData']['report']['endTime']), inline=True)
         # blank 3rd column
@@ -209,7 +210,6 @@ def make_specs(rs: dict):
         key = char['class'] + "_" + char['spec']
         result += specs.get(key, "\u200b")
         result += "**" + char['name'] + "**  "
-    print(len(result))
     return result
 
 
