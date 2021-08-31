@@ -1,13 +1,11 @@
 name: deploy to VPS
 
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [published]
   workflow_dispatch:
 
-
 jobs:
-
   build:
     name: Deploy
     runs-on: ubuntu-latest
