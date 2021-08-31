@@ -19,5 +19,6 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
+        passphrase : ${{ secrets.SSH_KEY_PASSPHRASE }}
         source: "slao_bot.py"
         target: "bot"
