@@ -134,9 +134,9 @@ async def process_report(ctx, report_id, author_icon):
 
         fights = result['reportData']['report']['rankings']['data']
         if fights[-1]['fightID'] == 10000:
-            make_total(embed, fights[-1])
+            make_total(embed, result)
         elif len(fights) <= 4:
-            make_all_fights(embed, fights)
+            make_all_fights(embed, result)
         else:
             make_avg(embed, fights)
     await waiting_embed.edit(embed=embed)
@@ -177,6 +177,7 @@ async def get_data(report_id):
                         ds.Report.zone.select(ds.Zone.id),
                         ds.Report.zone.select(ds.Zone.name),
                         ds.Report.rankings(compare='Rankings'),
+                        ds.Report.rankings(compare='Rankings', playerMetric='hps').alias('hps')
                     ))
 
                 query = dsl_gql(DSLQuery(query_report))
@@ -185,6 +186,7 @@ async def get_data(report_id):
                     raise
                 if len(result['reportData']['report']['rankings']['data']) == 0:
                     raise
+
                 return result
 
 
@@ -193,13 +195,17 @@ def make_total(embed: discord.Embed, rs: dict):
     Process total instance info only, not a per-boss info
 
     :param embed: :class:`discord.Embed` Embed to add fields to
-    :param rs: :class:`dict' Dictionary with characters
+    :param rs: :class:`dict' GraphQL request result
     :return:
     """
-    embed.add_field(name='⚔️Полная зачистка', value=make_fight_info(rs), inline=False)
-    embed.add_field(name='Танки', value=make_specs(rs['roles']['tanks']['characters']), inline=False)
-    embed.add_field(name='Дамагеры', value=make_trophy_specs(rs['roles']['dps']['characters']), inline=False)
-    embed.add_field(name='Лекари', value=make_specs(rs['roles']['healers']['characters']), inline=False)
+
+    rank = rs['reportData']['report']['rankings']['data'][-1]
+    hps_rank = rs['reportData']['report']['hps']['data'][-1]
+
+    embed.add_field(name='⚔️Полная зачистка', value=make_fight_info(rank), inline=False)
+    embed.add_field(name='Танки', value=make_specs(rank['roles']['tanks']['characters']), inline=False)
+    embed.add_field(name='Дамагеры', value=make_trophy_specs(rank['roles']['dps']['characters']), inline=False)
+    embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank['roles']['healers']['characters']), inline=False)
 
 
 def make_all_fights(embed: discord.Embed, rs: dict):
@@ -207,14 +213,15 @@ def make_all_fights(embed: discord.Embed, rs: dict):
     Process all fights from report
 
     :param embed: :class:`discord.Embed` Embed to add fields to
-    :param rs: :class:`dict' Dictionary with characters
+    :param rs: :class:`dict' GraphQL request result
     :return:
     """
-    for fight in rs:
+    for fight_num, fight in enumerate(rs['reportData']['report']['rankings']['data']):
         embed.add_field(name='⚔️' + fight['encounter']['name'], value=make_fight_info(fight), inline=False)
         embed.add_field(name='Танки', value=make_specs(fight['roles']['tanks']['characters']), inline=False)
         embed.add_field(name='Дамагеры', value=make_trophy_specs(fight['roles']['dps']['characters']), inline=False)
-        embed.add_field(name='Лекари', value=make_specs(fight['roles']['healers']['characters']), inline=False)
+        hps_rank = rs['reportData']['report']['hps']['data'][fight_num]['roles']['healers']['characters']
+        embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank), inline=False)
 
 
 def make_avg(embed: discord.Embed, rs: list):
