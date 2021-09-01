@@ -177,7 +177,7 @@ async def get_data(report_id):
                         ds.Report.zone.select(ds.Zone.id),
                         ds.Report.zone.select(ds.Zone.name),
                         ds.Report.rankings(compare='Rankings'),
-                        ds.Report.rankings(compare='Rankings', playerMetric='hps').alias('hps')
+                        ds.Report.rankings(compare='Rankings', playerMetric='hps').alias('hps'),
                     ))
 
                 query = dsl_gql(DSLQuery(query_report))
