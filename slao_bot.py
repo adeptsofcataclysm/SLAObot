@@ -1,10 +1,13 @@
 import os
 from datetime import datetime, timezone
+from typing import Any, Dict, List
 
 import aiohttp
 import discord
 import tenacity
+from discord import Colour, Embed, Message
 from discord.ext import commands
+from discord.ext.commands import Context
 from dotenv import load_dotenv
 from gql import Client
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
@@ -75,7 +78,7 @@ async def on_ready() -> None:
 
 
 @bot.event
-async def on_message(message) -> None:
+async def on_message(message: Message) -> None:
     await bot.process_commands(message)
     if message.author == bot.user:
         return
@@ -89,31 +92,30 @@ async def on_message(message) -> None:
 
 
 @bot.command(name='msg', help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
-async def msg_command(ctx, msg_id):
+async def msg_command(ctx: Context, msg_id: int) -> None:
     msg = await ctx.fetch_message(msg_id)
     resp = msg.embeds[0].url.split('/')[-2]
     await ctx.send(resp)
 
 
 @bot.command(name='wcl', help='Get data from report. Format: slao.wcl SOME_REPORT_ID')
-async def wcl_command(ctx, report_id):
+async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
     await process_report(ctx, report_id, author_icon)
 
 
-async def process_report(ctx, report_id, author_icon):
+async def process_report(ctx: Context, report_id: str, author_icon: str) -> None:
     """
     Process a single report and sends embed to context channel
 
-    :param author_icon:
     :param ctx: Invocation context. Should be a channel
-    :param report_id: :class:`str` WarcraftLogs report ID
-    :return:
+    :param report_id: WarcraftLogs report ID
+    :param author_icon:
     """
     async with ctx.typing():
-        wait_embed = discord.Embed(
+        wait_embed = Embed(
             description='Получаю данные с WarcraftLogs',
-            colour=discord.Colour.orange(),
+            colour=Colour.orange(),
         ).set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
 
@@ -124,7 +126,7 @@ async def process_report(ctx, report_id, author_icon):
         report_start = make_time(result['reportData']['report']['startTime'])
         report_end = make_time(result['reportData']['report']['endTime'])
         report_description = f'**Начало:** {report_start} \n **Окончание:** {report_end}'
-        embed = discord.Embed(title=report_title, description=report_description, color=0xb51cd4)
+        embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
 
         report_owner = result['reportData']['report']['owner']['name']
         report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
@@ -143,7 +145,7 @@ async def process_report(ctx, report_id, author_icon):
 
 
 @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
-async def get_data(report_id):
+async def get_data(report_id: str) -> Dict[str, Any]:
     """
     Gets data from WarcraftLog.
     Authentication token requested as a first call. With logs posted on daily or semi-daily basis
@@ -190,7 +192,7 @@ async def get_data(report_id):
                 return result
 
 
-def make_total(embed: discord.Embed, rs: dict):
+def make_total(embed: Embed, rs: Dict[str, Any]) -> None:
     """
     Process total instance info only, not a per-boss info
 
@@ -208,7 +210,7 @@ def make_total(embed: discord.Embed, rs: dict):
     embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank['roles']['healers']['characters']), inline=False)
 
 
-def make_all_fights(embed: discord.Embed, rs: dict):
+def make_all_fights(embed: discord.Embed, rs: Dict[str, Any]):
     """
     Process all fights from report
 
@@ -224,25 +226,25 @@ def make_all_fights(embed: discord.Embed, rs: dict):
         embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank), inline=False)
 
 
-def make_avg(embed: discord.Embed, rs: list):
+def make_avg(embed: Embed, fights: List[Dict[str, Any]]) -> None:
     bosses = ''
     execution = 0
     speed = 0
-    for fight in rs:
+    for fight in fights:
         bosses += '⚔️**' + fight['encounter']['name'] + '** '
         execution += fight['execution']['rankPercent']
         speed += fight['speed']['rankPercent']
 
     embed.add_field(name='Убиты: ', value=bosses)
-    execution = int(execution / len(rs))
-    speed = int(speed / len(rs))
+    execution = int(execution / len(fights))
+    speed = int(speed / len(fights))
 
     value = f'Исполнение: **{make_execution(execution)}**\n'
     value += f'Скорость: **{speed}%**'
     embed.add_field(name='Рейтинг', value=value, inline=False)
 
 
-def make_fight_info(fight: dict):
+def make_fight_info(fight: Dict[str, Any]) -> str:
     duration = datetime.fromtimestamp(fight['duration'] / 1000.0, timezone.utc).strftime('%Hч %Mм %Sс')
     value = f'Длительность: **{duration}**\n'
     value += f"Исполнение: **{make_execution(fight['execution']['rankPercent'])}**\n"
@@ -250,9 +252,9 @@ def make_fight_info(fight: dict):
     return value
 
 
-def make_specs(rs: list):
+def make_specs(characters: List[Dict[str, Any]]) -> str:
     result = ''
-    for char in rs:
+    for char in characters:
         if len(result) > 980:
             return result
         key = char['class'] + '_' + char['spec']
@@ -261,10 +263,10 @@ def make_specs(rs: list):
     return result
 
 
-def make_trophy_specs(rs: list):
+def make_trophy_specs(characters: List[Dict[str, Any]]) -> str:
     result = ''
-    rs.sort(key=lambda x: x.get('rankPercent'), reverse=True)
-    for place, char in enumerate(rs):
+    characters.sort(key=lambda x: x.get('rankPercent'), reverse=True)
+    for place, char in enumerate(characters):
         if len(result) > 980:
             return result
         key = char['class'] + '_' + char['spec']
