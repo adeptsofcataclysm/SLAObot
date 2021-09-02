@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: copy file via ssh password
+    - name: copy sources via ssh password
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase : ${{ secrets.SSH_KEY_PASSPHRASE }}
-        source: "slao_bot.py"
+        source: "slao_bot/*.py"
         target: "bot"
