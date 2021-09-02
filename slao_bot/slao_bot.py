@@ -1,15 +1,13 @@
-import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import discord
+from config import settings
+from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
 from discord import Colour, Embed, Message
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
-
-from config import settings
-from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
 from wcl_client import WCLClient
 
 load_dotenv()
