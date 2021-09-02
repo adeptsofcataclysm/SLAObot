@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase : ${{ secrets.SSH_KEY_PASSPHRASE }}
-        source: "slao_bot/*.py"
+        source: "slao_bot/*.py, requirements.txt"
         target: "bot"
         strip_components: 1
     - name: setup dependencies
@@ -31,5 +31,6 @@ jobs:
         script: |
           cd bot
           python3 -m venv env
+          source env/bin/activate
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r ../requirements.txt
