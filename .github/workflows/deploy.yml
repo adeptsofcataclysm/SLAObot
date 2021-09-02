@@ -20,7 +20,6 @@ jobs:
         passphrase : ${{ secrets.SSH_KEY_PASSPHRASE }}
         source: "slao_bot/*.py, requirements.txt"
         target: "bot"
-        strip_components: 1
     - name: setup dependencies
       uses: appleboy/ssh-action@master
       with:
