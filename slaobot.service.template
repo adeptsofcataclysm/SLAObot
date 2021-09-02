@@ -1,0 +1,20 @@
+# Bot should run under user's systemd
+# Execute sudo loginctl enable-linger $USER once to keep user's systemd running
+# Service file should go into ~/.config/systemd/user folder
+# bot_folder is a root folder for bot with venv and slao_bot folders inside it
+
+
+[Unit]
+Description=SLAObot service
+After=default.target
+
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory={{ bot_folder }}
+ExecStart={{ bot_folder }}/env/bin/python {{ bot_folder }}/slao_bot/slao_bot.py
+
+
+[Install]
+WantedBy=default.target
