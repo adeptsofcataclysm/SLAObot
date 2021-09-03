@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from wcl_client import WCLClient
 
 load_dotenv()
-bot = commands.Bot(command_prefix='slao.')
+bot = commands.Bot(command_prefix='slao-local.')
 
 
 @bot.event
@@ -60,6 +60,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
             colour=Colour.orange(),
         ).set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
+        await waiting_embed.add_reaction('🔄')
 
         async with WCLClient() as client:
             result = await client.get_data(report_id)
@@ -80,6 +81,8 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         fights = result['reportData']['report']['rankings']['data']
         if fights[-1]['fightID'] == 10000:
             make_total(embed, result)
+            # remove refresh reaction for a fully cleared instance
+            await waiting_embed.clear_reaction('🔄')
         elif len(fights) <= 4:
             make_all_fights(embed, result)
         else:
