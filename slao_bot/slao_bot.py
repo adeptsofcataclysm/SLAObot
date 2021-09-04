@@ -3,7 +3,6 @@ from typing import Any, Dict, List
 
 import discord
 import tenacity
-
 from config import settings
 from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
 from discord import Colour, Embed, Message, Reaction
@@ -39,10 +38,15 @@ async def on_message(message: Message) -> None:
 async def on_reaction_add(reaction: Reaction, user) -> None:
     if user == bot.user:
         return
-    if not reaction.message.embeds[0].url:
-        return
-    report_id = reaction.message.embeds[0].url.split('/')[-2]
-    author_icon = reaction.message.embeds[0].thumbnail.url
+    if reaction.message.embeds[0].url:
+        # WCL Embed
+        report_id = reaction.message.embeds[0].url.split('/')[-2]
+        author_icon = reaction.message.embeds[0].thumbnail.url
+    else:
+        # SLAObot embed
+        report_id = reaction.message.embeds[0].author.url.split('/')[-1]
+        author_icon = reaction.message.embeds[0].author.icon_url
+
     ctx = await bot.get_context(reaction.message)
     await reaction.message.delete()
     await process_report(ctx, report_id, author_icon)
