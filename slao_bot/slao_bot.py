@@ -2,9 +2,11 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import discord
+import tenacity
+
 from config import settings
 from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
-from discord import Colour, Embed, Message
+from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
@@ -33,6 +35,19 @@ async def on_message(message: Message) -> None:
             await process_report(ctx, report_id, author_icon)
 
 
+@bot.event
+async def on_reaction_add(reaction: Reaction, user) -> None:
+    if user == bot.user:
+        return
+    if not reaction.message.embeds[0].url:
+        return
+    report_id = reaction.message.embeds[0].url.split('/')[-2]
+    author_icon = reaction.message.embeds[0].thumbnail.url
+    ctx = await bot.get_context(reaction.message)
+    await reaction.message.delete()
+    await process_report(ctx, report_id, author_icon)
+
+
 @bot.command(name='msg', help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
 async def msg_command(ctx: Context, msg_id: int) -> None:
     msg = await ctx.fetch_message(msg_id)
@@ -55,15 +70,19 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     :param author_icon:
     """
     async with ctx.typing():
-        wait_embed = Embed(
-            description='Получаю данные с WarcraftLogs',
-            colour=Colour.orange(),
-        ).set_footer(text='Иногда WCL тормозит, пичалька.')
+        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        wait_embed = Embed(description='Получаю данные с WarcraftLogs', colour=Colour.orange(), url=report_url)
+        wait_embed.set_thumbnail(url=author_icon)
+        wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
-        await waiting_embed.add_reaction('🔄')
 
         async with WCLClient() as client:
-            result = await client.get_data(report_id)
+            try:
+                result = await client.get_data(report_id)
+            except tenacity.RetryError:
+                await waiting_embed.add_reaction('🔄')
+                return
+
         report_zone_id = result['reportData']['report']['zone']['id']
 
         report_title = ZONE_NAMES.get(report_zone_id, ZONE_NAMES.get(0))
@@ -73,7 +92,6 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
 
         report_owner = result['reportData']['report']['owner']['name']
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
         embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
 
         embed.set_image(url=ZONE_IMAGES.get(report_zone_id, ZONE_IMAGES.get(0)))
@@ -81,10 +99,9 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         fights = result['reportData']['report']['rankings']['data']
         if fights[-1]['fightID'] == 10000:
             make_total(embed, result)
-            # remove refresh reaction for a fully cleared instance
-            await waiting_embed.clear_reaction('🔄')
         elif len(fights) <= 4:
             make_all_fights(embed, result)
+            await waiting_embed.add_reaction('🔄')
         else:
             make_avg(embed, fights)
     await waiting_embed.edit(embed=embed)
