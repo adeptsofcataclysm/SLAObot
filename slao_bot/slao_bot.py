@@ -39,11 +39,11 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
     if user == bot.user:
         return
     if reaction.message.embeds[0].url:
-        # WCL Embed
-        report_id = reaction.message.embeds[0].url.split('/')[-2]
+        # Waiting Embed
+        report_id = reaction.message.embeds[0].url.split('/')[-1]
         author_icon = reaction.message.embeds[0].thumbnail.url
     else:
-        # SLAObot embed
+        # Rankings embed
         report_id = reaction.message.embeds[0].author.url.split('/')[-1]
         author_icon = reaction.message.embeds[0].author.icon_url
 
@@ -108,6 +108,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
             await waiting_embed.add_reaction('🔄')
         else:
             make_avg(embed, fights)
+            await waiting_embed.add_reaction('🔄')
     await waiting_embed.edit(embed=embed)
 
 
