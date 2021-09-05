@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from wcl_client import WCLClient
 
 load_dotenv()
-bot = commands.Bot(command_prefix='slao-local.')
+bot = commands.Bot(command_prefix='slao.')
 
 
 @bot.event
@@ -107,7 +107,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
             make_all_fights(embed, result)
             await waiting_embed.add_reaction('🔄')
         else:
-            make_avg(embed, fights)
+            make_avg(embed, result)
             await waiting_embed.add_reaction('🔄')
     await waiting_embed.edit(embed=embed)
 
@@ -146,22 +146,60 @@ def make_all_fights(embed: discord.Embed, rs: Dict[str, Any]):
         embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank), inline=False)
 
 
-def make_avg(embed: Embed, fights: List[Dict[str, Any]]) -> None:
+def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
     bosses = ''
     execution = 0
     speed = 0
+    tank = []
+    damage = []
+    heal = []
+    fights = result['reportData']['report']['rankings']['data']
     for fight in fights:
         bosses += '⚔️**' + fight['encounter']['name'] + '** '
         execution += fight['execution']['rankPercent']
         speed += fight['speed']['rankPercent']
+        sum_rank(tank, fight['roles']['tanks']['characters'])
+        sum_rank(damage, fight['roles']['dps']['characters'])
+
+    for char in tank:
+        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
+
+    for char in damage:
+        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
+
+    fights = result['reportData']['report']['hps']['data']
+    for fight in fights:
+        sum_rank(heal, fight['roles']['healers']['characters'])
+
+    for char in heal:
+        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
 
     embed.add_field(name='Убиты: ', value=bosses)
+
     execution = int(execution / len(fights))
     speed = int(speed / len(fights))
-
     value = f'Исполнение: **{make_execution(execution)}**\n'
     value += f'Скорость: **{speed}%**'
     embed.add_field(name='Рейтинг', value=value, inline=False)
+    embed.add_field(name='Танки', value=make_specs(tank), inline=False)
+    embed.add_field(name='Дамагеры', value=make_trophy_specs(damage), inline=False)
+    embed.add_field(name='Лекари', value=make_trophy_specs(heal), inline=False)
+
+
+def sum_rank(raiders: List[Dict[str, Any]], chars: List[Dict[str, Any]]) -> None:
+    for char in chars:
+        if not any(raider.get('name') == char['name'] for raider in raiders):
+            raiders.append(
+                {'name': char['name'],
+                 'class': char['class'],
+                 'spec': char['spec'],
+                 'rankPercent': char['rankPercent'],
+                 'fightsAmount': 1})
+        else:
+            for raider in raiders:
+                if raider['name'] == char['name']:
+                    raider['rankPercent'] += char['rankPercent']
+                    raider['fightsAmount'] += 1
 
 
 def make_fight_info(fight: Dict[str, Any]) -> str:
