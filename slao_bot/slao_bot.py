@@ -190,11 +190,13 @@ def sum_rank(raiders: List[Dict[str, Any]], chars: List[Dict[str, Any]]) -> None
     for char in chars:
         if not any(raider.get('name') == char['name'] for raider in raiders):
             raiders.append(
-                {'name': char['name'],
-                 'class': char['class'],
-                 'spec': char['spec'],
-                 'rankPercent': char['rankPercent'],
-                 'fightsAmount': 1})
+                {
+                    'name': char['name'],
+                    'class': char['class'],
+                    'spec': char['spec'],
+                    'rankPercent': char['rankPercent'],
+                    'fightsAmount': 1,
+                })
         else:
             for raider in raiders:
                 if raider['name'] == char['name']:
