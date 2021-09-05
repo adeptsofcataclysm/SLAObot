@@ -1,13 +1,14 @@
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import discord
 import tenacity
 from config import settings
-from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
+from constants import ZONE_IMAGES
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
+from report import Report
+from utils import bold, make_execution
 from wcl_client import WCLClient
 
 bot = commands.Bot(command_prefix=f'{settings.command_prefix}.')
@@ -80,32 +81,29 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
 
         async with WCLClient() as client:
             try:
-                result = await client.get_data(report_id)
+                rs = await client.get_data(report_id)
             except tenacity.RetryError:
                 await waiting_embed.add_reaction('🔄')
                 return
 
-        report_zone_id = result['reportData']['report']['zone']['id']
+        report_title = Report.make_report_title(rs)
 
-        report_title = ZONE_NAMES.get(report_zone_id, ZONE_NAMES.get(0))
-        report_start = make_time(result['reportData']['report']['startTime'])
-        report_end = make_time(result['reportData']['report']['endTime'])
-        report_description = f'**Начало:** {report_start} \n **Окончание:** {report_end}'
+        report_description = Report.make_report_description(rs)
         embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
 
-        report_owner = result['reportData']['report']['owner']['name']
+        report_owner = rs['reportData']['report']['owner']['name']
         embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
 
-        embed.set_image(url=ZONE_IMAGES.get(report_zone_id, ZONE_IMAGES.get(0)))
+        embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
-        fights = result['reportData']['report']['rankings']['data']
+        fights = rs['reportData']['report']['rankings']['data']
         if fights[-1]['fightID'] == 10000:
-            make_total(embed, result)
+            make_total(embed, rs)
         elif len(fights) <= 4:
-            make_all_fights(embed, result)
+            make_all_fights(embed, rs)
             await waiting_embed.add_reaction('🔄')
         else:
-            make_avg(embed, result)
+            make_avg(embed, rs)
             await waiting_embed.add_reaction('🔄')
     await waiting_embed.edit(embed=embed)
 
@@ -120,12 +118,9 @@ def make_total(embed: Embed, rs: Dict[str, Any]) -> None:
     """
 
     rank = rs['reportData']['report']['rankings']['data'][-1]
-    hps_rank = rs['reportData']['report']['hps']['data'][-1]
 
-    embed.add_field(name='⚔️Полная зачистка', value=make_fight_info(rank), inline=False)
-    embed.add_field(name='Танки', value=make_specs(rank['roles']['tanks']['characters']), inline=False)
-    embed.add_field(name='Дамагеры', value=make_trophy_specs(rank['roles']['dps']['characters']), inline=False)
-    embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank['roles']['healers']['characters']), inline=False)
+    embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(rank), inline=False)
+    _add_specs(embed, rs, fight_num=-1)
 
 
 def make_all_fights(embed: discord.Embed, rs: Dict[str, Any]):
@@ -137,11 +132,26 @@ def make_all_fights(embed: discord.Embed, rs: Dict[str, Any]):
     :return:
     """
     for fight_num, fight in enumerate(rs['reportData']['report']['rankings']['data']):
-        embed.add_field(name='⚔️' + fight['encounter']['name'], value=make_fight_info(fight), inline=False)
-        embed.add_field(name='Танки', value=make_specs(fight['roles']['tanks']['characters']), inline=False)
-        embed.add_field(name='Дамагеры', value=make_trophy_specs(fight['roles']['dps']['characters']), inline=False)
-        hps_rank = rs['reportData']['report']['hps']['data'][fight_num]['roles']['healers']['characters']
-        embed.add_field(name='Лекари', value=make_trophy_specs(hps_rank), inline=False)
+        embed.add_field(name='⚔️' + fight['encounter']['name'], value=Report.make_fight_info(fight), inline=False)
+        _add_specs(embed, rs, fight_num)
+
+
+def _add_specs(embed: discord.Embed, rs: Dict[str, Any], fight_num: int) -> None:
+    fight = rs['reportData']['report']['rankings']['data'][fight_num]
+
+    embed.add_field(name='Танки', value=Report.make_spec(fight['roles']['tanks']['characters']), inline=False)
+    embed.add_field(
+        name='Дамагеры',
+        value=Report.make_spec(fight['roles']['dps']['characters'], show_trophy=True),
+        inline=False,
+    )
+
+    hps_rank = rs['reportData']['report']['hps']['data'][fight_num]['roles']['healers']['characters']
+    embed.add_field(
+        name='Лекари',
+        value=Report.make_spec(hps_rank, show_trophy=True),
+        inline=False,
+    )
 
 
 def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
@@ -153,11 +163,11 @@ def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
     heal = []
     fights = result['reportData']['report']['rankings']['data']
     for fight in fights:
-        bosses += '⚔️**' + fight['encounter']['name'] + '** '
+        bosses += f"⚔{bold(fight['encounter']['name'])} "
         execution += fight['execution']['rankPercent']
         speed += fight['speed']['rankPercent']
-        sum_rank(tank, fight['roles']['tanks']['characters'])
-        sum_rank(damage, fight['roles']['dps']['characters'])
+        Report.sum_rank(tank, fight['roles']['tanks']['characters'])
+        Report.sum_rank(damage, fight['roles']['dps']['characters'])
 
     for char in tank:
         char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
@@ -167,7 +177,7 @@ def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
 
     fights = result['reportData']['report']['hps']['data']
     for fight in fights:
-        sum_rank(heal, fight['roles']['healers']['characters'])
+        Report.sum_rank(heal, fight['roles']['healers']['characters'])
 
     for char in heal:
         char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
@@ -176,76 +186,12 @@ def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
 
     execution = int(execution / len(fights))
     speed = int(speed / len(fights))
-    value = f'Исполнение: **{make_execution(execution)}**\n'
-    value += f'Скорость: **{speed}%**'
+    value = f'Исполнение: {bold(make_execution(execution))}\n'
+    value += f'Скорость: {bold(speed)}%'
     embed.add_field(name='Рейтинг', value=value, inline=False)
-    embed.add_field(name='Танки', value=make_specs(tank), inline=False)
-    embed.add_field(name='Дамагеры', value=make_trophy_specs(damage), inline=False)
-    embed.add_field(name='Лекари', value=make_trophy_specs(heal), inline=False)
-
-
-def sum_rank(raiders: List[Dict[str, Any]], chars: List[Dict[str, Any]]) -> None:
-    for char in chars:
-        if not any(raider.get('name') == char['name'] for raider in raiders):
-            raiders.append(
-                {
-                    'name': char['name'],
-                    'class': char['class'],
-                    'spec': char['spec'],
-                    'rankPercent': char['rankPercent'],
-                    'fightsAmount': 1,
-                },
-            )
-        else:
-            for raider in raiders:
-                if raider['name'] == char['name']:
-                    raider['rankPercent'] += char['rankPercent']
-                    raider['fightsAmount'] += 1
-
-
-def make_fight_info(fight: Dict[str, Any]) -> str:
-    duration = datetime.fromtimestamp(fight['duration'] / 1000.0, timezone.utc).strftime('%Hч %Mм %Sс')
-    value = f'Длительность: **{duration}**\n'
-    value += f"Исполнение: **{make_execution(fight['execution']['rankPercent'])}**\n"
-    value += f"Скорость: **{fight['speed']['rankPercent']}%**"
-    return value
-
-
-def make_specs(characters: List[Dict[str, Any]]) -> str:
-    result = ''
-    for char in characters:
-        if len(result) > 980:
-            return result
-        key = char['class'] + '_' + char['spec']
-        result += SPECS.get(key, '\u200b')
-        result += '**' + char['name'] + '**  '
-    return result
-
-
-def make_trophy_specs(characters: List[Dict[str, Any]]) -> str:
-    result = ''
-    characters.sort(key=lambda x: x.get('rankPercent'), reverse=True)
-    for place, char in enumerate(characters):
-        if len(result) > 980:
-            return result
-        key = char['class'] + '_' + char['spec']
-        if place < 3:
-            result += '🏆 ' + SPECS.get(key, '\u200b') + '**' + char['name'] + '**  '
-        else:
-            result += SPECS.get(key, '\u200b') + char['name'] + '  '
-
-    return result
-
-
-def make_time(timestamp: int) -> str:
-    utc_time = datetime.fromtimestamp(float(timestamp) / 1000, timezone.utc)
-    local_time = utc_time.astimezone()
-    return local_time.strftime('%Y-%m-%d %H:%M (%Z)')
-
-
-def make_execution(percent: int) -> str:
-    index = int((percent - 1) / 25)
-    return EXEC_VALUES[index]
+    embed.add_field(name='Танки', value=Report.make_spec(tank), inline=False)
+    embed.add_field(name='Дамагеры', value=Report.make_spec(damage, show_trophy=True), inline=False)
+    embed.add_field(name='Лекари', value=Report.make_spec(heal, show_trophy=True), inline=False)
 
 
 if __name__ == '__main__':
