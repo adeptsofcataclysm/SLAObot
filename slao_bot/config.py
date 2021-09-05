@@ -11,5 +11,7 @@ class Settings(BaseSettings):
 
     discord_token: str
 
+    command_prefix: str = 'slao'
+
 
 settings = Settings()
