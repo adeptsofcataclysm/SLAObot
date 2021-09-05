@@ -8,11 +8,9 @@ from constants import EXEC_VALUES, SPECS, ZONE_IMAGES, ZONE_NAMES
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
-from dotenv import load_dotenv
 from wcl_client import WCLClient
 
-load_dotenv()
-bot = commands.Bot(command_prefix='slao-local.')
+bot = commands.Bot(command_prefix=f'{settings.command_prefix}.')
 
 
 @bot.event
