@@ -26,6 +26,7 @@ SPECS = {
     'Warlock_Destruction': '<:Warlock_Destruction:880085124606210109>',
     'Warrior_Arms': '<:Warrior_Arms:880084581901025340>',
     'Warrior_Fury': '<:Warrior_Fury:880084813376286762>',
+    'Warrior_Gladiator': '<:Warrior_Gladiator:884439137493610616>',
     'Warrior_Protection': '<:Warrior_Protection:880080701930733638>',
 }
 
