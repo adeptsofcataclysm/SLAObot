@@ -37,6 +37,8 @@ async def on_message(message: Message) -> None:
 async def on_reaction_add(reaction: Reaction, user) -> None:
     if user == bot.user:
         return
+    if reaction.message.author != bot.user:
+        return
     if reaction.message.embeds[0].url:
         # Waiting Embed
         report_id = reaction.message.embeds[0].url.split('/')[-1]
