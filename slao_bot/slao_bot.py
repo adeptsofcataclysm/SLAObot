@@ -11,7 +11,7 @@ from report import Report
 from utils import bold, make_execution
 from wcl_client import WCLClient
 
-bot = commands.Bot(command_prefix=f'{settings.command_prefix}.')
+bot = commands.Bot(command_prefix=f'{settings.command_prefix}')
 
 
 @bot.event
@@ -56,14 +56,14 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
     await process_report(ctx, report_id, author_icon)
 
 
-@bot.command(name='msg', help='Get message by ID. Format: slao.msg SOME_MESSAGE_ID')
+@bot.command(name='msg', help='Get message by ID. Format: <prefix>msg SOME_MESSAGE_ID')
 async def msg_command(ctx: Context, msg_id: int) -> None:
     msg = await ctx.fetch_message(msg_id)
     resp = msg.embeds[0].url.split('/')[-2]
     await ctx.send(resp)
 
 
-@bot.command(name='wcl', help='Get data from report. Format: slao.wcl SOME_REPORT_ID')
+@bot.command(name='🍦', help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
 async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
     await process_report(ctx, report_id, author_icon)
