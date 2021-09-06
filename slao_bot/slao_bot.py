@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix=f'{settings.command_prefix}.')
 @bot.event
 async def on_ready() -> None:
     print(f'We have logged in as {bot.user}')
+    print(f'Command prefix is: {bot.command_prefix}')
 
 
 @bot.event
@@ -38,6 +39,8 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
     if user == bot.user:
         return
     if reaction.message.author != bot.user:
+        return
+    if reaction.emoji != '🔄':
         return
     if reaction.message.embeds[0].url:
         # Waiting Embed
