@@ -32,16 +32,39 @@ SPECS = {
 
 ZONE_IMAGES = {
     0: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png',
+    # Molten Core
     1000: 'https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg',
+    # Onyxia
+    1001: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
+    # BWL
+    1002: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309376688128/image2.jpg',
+    # ZG
+    1003: 'https://cdn.discordapp.com/attachments/762790105026920468/763170902271197204/RH-ZG2.png',
+    # AQ20
+    1004: 'https://cdn.discordapp.com/attachments/762790105026920468/763170907035533362/RH-AQ20-1.png',
+    # AQ40
+    1005: 'https://cdn.discordapp.com/attachments/762790105026920468/763170914220900392/RH-AQ40-1.png',
+    # Naxx
     1006: 'https://media.discordapp.net/attachments/762790105026920468/773622157456572486/RH-Naxx-2.png',
+    # Karazhan
     1007: 'https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png',
+    # Gruul + Magtheridon
     1008: 'https://cdn.discordapp.com/attachments/762790105026920468/'
           '876774093943349258/RH-TBC-GruulMaggie_1200x300.png',
+    # Heroics
+    1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
+    # SSK + TK
+    1010: 'https://www.wowhcb.ru/drcrazy/ssk-tk.png'
 }
 
 ZONE_NAMES = {
     0: ':regional_indicator_r: :regional_indicator_a: :id:',
-    1000: 'MC',
+    1000: ':regional_indicator_m: :regional_indicator_c:',
+    1001: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
+    1002: ':regional_indicator_b: :regional_indicator_w: :regional_indicator_l:',
+    1003: ':regional_indicator_z: :regional_indicator_g:',
+    1004: ':regional_indicator_a: :regional_indicator_q: :two: :zero:',
+    1005: ':regional_indicator_a: :regional_indicator_q: :four: :zero:',
     1006: ':regional_indicator_n: :regional_indicator_a: :regional_indicator_x: :regional_indicator_x:'
           ':regional_indicator_r: :regional_indicator_a: :regional_indicator_m: :regional_indicator_a:'
           ':regional_indicator_s:',
@@ -50,6 +73,10 @@ ZONE_NAMES = {
     1008: ':regional_indicator_g: :regional_indicator_r: :regional_indicator_u: :regional_indicator_u: '
           ':regional_indicator_l: :left_right_arrow: :regional_indicator_m: :regional_indicator_a: '
           ':regional_indicator_g: :regional_indicator_a:',
+    1009: ':regional_indicator_p: :regional_indicator_a: :regional_indicator_r: :regional_indicator_t:'
+          ':regional_indicator_y:',
+    1010: ':regional_indicator_s: :regional_indicator_s: :regional_indicator_k: :left_right_arrow:'
+          ':regional_indicator_t: :regional_indicator_k:'
 }
 EXEC_VALUES = {
     0: 'Слабо',
