@@ -31,12 +31,12 @@ SPECS = {
 }
 
 ZONE_IMAGES = {
+    0: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png',
     1000: 'https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg',
     1007: 'https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png',
     1008: 'https://cdn.discordapp.com/attachments/762790105026920468/'
           '876774093943349258/RH-TBC-GruulMaggie_1200x300.png',
-    0: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png',
-}
+    }
 
 ZONE_NAMES = {
     0: ':regional_indicator_r: :regional_indicator_a: :id:',
