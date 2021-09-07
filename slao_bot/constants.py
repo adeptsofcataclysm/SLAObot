@@ -54,7 +54,7 @@ ZONE_IMAGES = {
     # Heroics
     1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # SSK + TK
-    1010: 'https://www.wowhcb.ru/drcrazy/ssk-tk.png'
+    1010: 'https://www.wowhcb.ru/drcrazy/ssk-tk.png',
 }
 
 ZONE_NAMES = {
@@ -76,7 +76,7 @@ ZONE_NAMES = {
     1009: ':regional_indicator_p: :regional_indicator_a: :regional_indicator_r: :regional_indicator_t:'
           ':regional_indicator_y:',
     1010: ':regional_indicator_s: :regional_indicator_s: :regional_indicator_k: :left_right_arrow:'
-          ':regional_indicator_t: :regional_indicator_k:'
+          ':regional_indicator_t: :regional_indicator_k:',
 }
 EXEC_VALUES = {
     0: 'Слабо',
