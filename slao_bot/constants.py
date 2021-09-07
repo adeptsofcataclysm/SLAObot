@@ -37,7 +37,7 @@ ZONE_IMAGES = {
     1007: 'https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png',
     1008: 'https://cdn.discordapp.com/attachments/762790105026920468/'
           '876774093943349258/RH-TBC-GruulMaggie_1200x300.png',
-    }
+}
 
 ZONE_NAMES = {
     0: ':regional_indicator_r: :regional_indicator_a: :id:',
