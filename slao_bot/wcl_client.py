@@ -56,6 +56,7 @@ class WCLClient:
                 ds.Report.exportedSegments,
                 ds.Report.zone.select(ds.Zone.id),
                 ds.Report.zone.select(ds.Zone.name),
+                ds.Report.zone.select(ds.Zone.frozen),
                 ds.Report.rankings(compare='Rankings'),
                 ds.Report.rankings(compare='Rankings', playerMetric='hps').alias('hps'),
             ))
