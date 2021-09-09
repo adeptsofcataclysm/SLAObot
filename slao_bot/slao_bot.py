@@ -63,7 +63,7 @@ async def msg_command(ctx: Context, msg_id: int) -> None:
     await ctx.send(resp)
 
 
-@bot.command(name='wcl', aliases=['🍦'],  help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
+@bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
 async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
     await process_report(ctx, report_id, author_icon)
@@ -106,7 +106,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
             if fights[-1]['fightID'] == 10000:
                 embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
             elif len(fights) <= 4:
-                for fight_num, fight in enumerate(fights):
+                for fight in fights:
                     embed.add_field(name='⚔️' + fight['encounter']['name'],
                                     value=Report.make_fight_info(fight),
                                     inline=False,
@@ -163,8 +163,8 @@ def make_composition(rs: List[Dict[str, Any]]) -> Dict[str, List]:
                     {
                         'name': raider['name'],
                         'class': raider['type'],
-                        'spec': next(role_spec)['spec']
-                    }
+                        'spec': next(role_spec)['spec'],
+                    },
                 )
 
     return roles
