@@ -1,9 +1,9 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import discord
 import tenacity
 from config import settings
-from constants import ZONE_IMAGES
+from constants import ZONE_IMAGES, Role
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
@@ -102,79 +102,56 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
 
         # Print bosses, speed and execution
         if not rs['reportData']['report']['zone']['frozen']:
-            fights = rs['reportData']['report']['rankings']['data']
-            if fights[-1]['fightID'] == 10000:
-                embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
-            elif len(fights) <= 4:
-                for fight in fights:
-                    embed.add_field(name='⚔️' + fight['encounter']['name'],
-                                    value=Report.make_fight_info(fight),
-                                    inline=False,
-                                    )
-                await waiting_embed.add_reaction('🔄')
-            else:
-                bosses = ''
-                execution = 0
-                speed = 0
-                for fight in fights:
-                    bosses += f"⚔{bold(fight['encounter']['name'])} "
-                    execution += fight['execution']['rankPercent']
-                    speed += fight['speed']['rankPercent']
-
-                value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
-                value += f'Скорость: {bold(int(speed / len(fights)))}%'
-                embed.add_field(name=bosses, value=value, inline=False)
-                await waiting_embed.add_reaction('🔄')
-
-        # Split all raiders into roles
-        raid = make_composition(rs['reportData']['report']['table']['data']['composition'])
-        # Add DamageDone
-        add_total(raid.get('dps'), rs['reportData']['report']['table']['data']['damageDone'])
-        # Add HealingDone
-        add_total(raid.get('healer'), rs['reportData']['report']['table']['data']['healingDone'])
+            await _make_fights(rs, embed, waiting_embed)
 
         # Print raiders
-        _make_raiders(embed, raid)
+        _make_raiders(embed, rs)
 
     await waiting_embed.edit(embed=embed)
 
 
+async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
+    fights = rs['reportData']['report']['rankings']['data']
+
+    if fights[-1]['fightID'] == 10000:
+        embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
+    elif len(fights) <= 4:
+        for fight in fights:
+            embed.add_field(
+                name='⚔️' + fight['encounter']['name'],
+                value=Report.make_fight_info(fight),
+                inline=False,
+            )
+        await waiting_embed.add_reaction('🔄')
+    else:
+        bosses = ''
+        execution = 0
+        speed = 0
+        for fight in fights:
+            bosses += f"⚔{bold(fight['encounter']['name'])} "
+            execution += fight['execution']['rankPercent']
+            speed += fight['speed']['rankPercent']
+
+        value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
+        value += f'Скорость: {bold(int(speed / len(fights)))}%'
+        embed.add_field(name=bosses, value=value, inline=False)
+        await waiting_embed.add_reaction('🔄')
+
+
 def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
-    embed.add_field(name='Танки', value=Report.make_spec(rs.get('tank')), inline=False)
+    raiders_by_role = Report.get_raiders_by_role(rs)
+
+    embed.add_field(name='Танки', value=Report.make_spec(raiders_by_role[Role.TANK]), inline=False)
     embed.add_field(
         name='Дамагеры',
-        value=Report.make_spec(rs.get('dps'), show_trophy=True),
+        value=Report.make_spec(raiders_by_role[Role.DPS], show_trophy=True),
         inline=False,
     )
     embed.add_field(
         name='Лекари',
-        value=Report.make_spec(rs.get('healer'), show_trophy=True),
+        value=Report.make_spec(raiders_by_role[Role.HEALER], show_trophy=True),
         inline=False,
     )
-
-
-def make_composition(rs: List[Dict[str, Any]]) -> Dict[str, List]:
-    roles = {'tank': [], 'dps': [], 'healer': []}
-    for raider in rs:
-        for role in roles.keys():
-            if any(spec.get('role') == role for spec in raider['specs']):
-                role_spec = filter(lambda x: x['role'] == role, raider['specs'])
-                roles[role].append(
-                    {
-                        'name': raider['name'],
-                        'class': raider['type'],
-                        'spec': next(role_spec)['spec'],
-                    },
-                )
-
-    return roles
-
-
-def add_total(raiders: List, rs: List) -> None:
-    for raider in raiders:
-        for char in rs:
-            if char.get('name') == raider.get('name'):
-                raider['total'] = char.get('total')
 
 
 if __name__ == '__main__':
