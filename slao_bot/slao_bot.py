@@ -83,6 +83,9 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         wait_embed.set_thumbnail(url=author_icon)
         wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
+        # Delete original WCL message
+        if ctx.message.embeds and ctx.message.author != bot.user:
+            await ctx.message.delete()
 
         async with WCLClient() as client:
             try:
