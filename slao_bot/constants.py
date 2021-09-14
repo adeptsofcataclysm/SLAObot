@@ -1,3 +1,12 @@
+from enum import Enum
+
+
+class Role(str, Enum):
+    TANK = 'tank'
+    DPS = 'dps'
+    HEALER = 'healer'
+
+
 SPECS = {
     'Druid_Balance': '<:Druid_Balance:880098174985961542>',
     'Druid_Feral': '<:Druid_Feral:880098483636408392>',

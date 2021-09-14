@@ -3,7 +3,7 @@ from typing import Any, Dict
 import discord
 import tenacity
 from config import settings
-from constants import ZONE_IMAGES
+from constants import ZONE_IMAGES, Role
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
@@ -63,7 +63,7 @@ async def msg_command(ctx: Context, msg_id: int) -> None:
     await ctx.send(resp)
 
 
-@bot.command(name='🍦', help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
+@bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
 async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
     await process_report(ctx, report_id, author_icon)
@@ -83,6 +83,9 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         wait_embed.set_thumbnail(url=author_icon)
         wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
+        # Delete original WCL message
+        if ctx.message.embeds and ctx.message.author != bot.user:
+            await ctx.message.delete()
 
         async with WCLClient() as client:
             try:
@@ -92,7 +95,6 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
                 return
 
         report_title = Report.make_report_title(rs)
-
         report_description = Report.make_report_description(rs)
         embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
 
@@ -101,102 +103,58 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
 
         embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
-        fights = rs['reportData']['report']['rankings']['data']
-        if fights[-1]['fightID'] == 10000:
-            make_total(embed, rs)
-        elif len(fights) <= 4:
-            make_all_fights(embed, rs)
-            await waiting_embed.add_reaction('🔄')
-        else:
-            make_avg(embed, rs)
-            await waiting_embed.add_reaction('🔄')
+        # Print bosses, speed and execution
+        if not rs['reportData']['report']['zone']['frozen']:
+            await _make_fights(rs, embed, waiting_embed)
+
+        # Print raiders
+        _make_raiders(embed, rs)
+
     await waiting_embed.edit(embed=embed)
 
 
-def make_total(embed: Embed, rs: Dict[str, Any]) -> None:
-    """
-    Process total instance info only, not a per-boss info
+async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
+    fights = rs['reportData']['report']['rankings']['data']
 
-    :param embed: :class:`discord.Embed` Embed to add fields to
-    :param rs: :class:`dict' GraphQL request result
-    :return:
-    """
+    if fights[-1]['fightID'] == 10000:
+        embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
+    elif len(fights) <= 4:
+        for fight in fights:
+            embed.add_field(
+                name='⚔️' + fight['encounter']['name'],
+                value=Report.make_fight_info(fight),
+                inline=False,
+            )
+        await waiting_embed.add_reaction('🔄')
+    else:
+        bosses = ''
+        execution = 0
+        speed = 0
+        for fight in fights:
+            bosses += f"⚔{bold(fight['encounter']['name'])} "
+            execution += fight['execution']['rankPercent']
+            speed += fight['speed']['rankPercent']
 
-    rank = rs['reportData']['report']['rankings']['data'][-1]
-
-    embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(rank), inline=False)
-    _add_specs(embed, rs, fight_num=-1)
-
-
-def make_all_fights(embed: discord.Embed, rs: Dict[str, Any]):
-    """
-    Process all fights from report
-
-    :param embed: :class:`discord.Embed` Embed to add fields to
-    :param rs: :class:`dict' GraphQL request result
-    :return:
-    """
-    for fight_num, fight in enumerate(rs['reportData']['report']['rankings']['data']):
-        embed.add_field(name='⚔️' + fight['encounter']['name'], value=Report.make_fight_info(fight), inline=False)
-        _add_specs(embed, rs, fight_num)
+        value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
+        value += f'Скорость: {bold(int(speed / len(fights)))}%'
+        embed.add_field(name=bosses, value=value, inline=False)
+        await waiting_embed.add_reaction('🔄')
 
 
-def _add_specs(embed: discord.Embed, rs: Dict[str, Any], fight_num: int) -> None:
-    fight = rs['reportData']['report']['rankings']['data'][fight_num]
+def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
+    raiders_by_role = Report.get_raiders_by_role(rs)
 
-    embed.add_field(name='Танки', value=Report.make_spec(fight['roles']['tanks']['characters']), inline=False)
+    embed.add_field(name='Танки', value=Report.make_spec(raiders_by_role[Role.TANK]), inline=False)
     embed.add_field(
         name='Дамагеры',
-        value=Report.make_spec(fight['roles']['dps']['characters'], show_trophy=True),
+        value=Report.make_spec(raiders_by_role[Role.DPS], show_trophy=True),
         inline=False,
     )
-
-    hps_rank = rs['reportData']['report']['hps']['data'][fight_num]['roles']['healers']['characters']
     embed.add_field(
         name='Лекари',
-        value=Report.make_spec(hps_rank, show_trophy=True),
+        value=Report.make_spec(raiders_by_role[Role.HEALER], show_trophy=True),
         inline=False,
     )
-
-
-def make_avg(embed: Embed, result: Dict[str, Any]) -> None:
-    bosses = ''
-    execution = 0
-    speed = 0
-    tank = []
-    damage = []
-    heal = []
-    fights = result['reportData']['report']['rankings']['data']
-    for fight in fights:
-        bosses += f"⚔{bold(fight['encounter']['name'])} "
-        execution += fight['execution']['rankPercent']
-        speed += fight['speed']['rankPercent']
-        Report.sum_rank(tank, fight['roles']['tanks']['characters'])
-        Report.sum_rank(damage, fight['roles']['dps']['characters'])
-
-    for char in tank:
-        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
-
-    for char in damage:
-        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
-
-    fights = result['reportData']['report']['hps']['data']
-    for fight in fights:
-        Report.sum_rank(heal, fight['roles']['healers']['characters'])
-
-    for char in heal:
-        char['rankPercent'] = int(char['rankPercent'] / char['fightsAmount'])
-
-    embed.add_field(name='Убиты: ', value=bosses)
-
-    execution = int(execution / len(fights))
-    speed = int(speed / len(fights))
-    value = f'Исполнение: {bold(make_execution(execution))}\n'
-    value += f'Скорость: {bold(speed)}%'
-    embed.add_field(name='Рейтинг', value=value, inline=False)
-    embed.add_field(name='Танки', value=Report.make_spec(tank), inline=False)
-    embed.add_field(name='Дамагеры', value=Report.make_spec(damage, show_trophy=True), inline=False)
-    embed.add_field(name='Лекари', value=Report.make_spec(heal, show_trophy=True), inline=False)
 
 
 if __name__ == '__main__':

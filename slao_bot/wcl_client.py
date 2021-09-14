@@ -52,22 +52,29 @@ class WCLClient:
             ds.ReportData.report(code=report_id).select(
                 ds.Report.startTime,
                 ds.Report.endTime,
-                ds.Report.owner.select(ds.User.name),
-                ds.Report.exportedSegments,
-                ds.Report.zone.select(ds.Zone.id),
                 ds.Report.zone.select(ds.Zone.name),
-                ds.Report.zone.select(ds.Zone.frozen),
-                ds.Report.rankings(compare='Rankings'),
-                ds.Report.rankings(compare='Rankings', playerMetric='hps').alias('hps'),
             ))
-
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
 
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
-        if len(result['reportData']['report']['rankings']['data']) == 0:
-            raise Exception('Data is empty')
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.owner.select(ds.User.name),
+                ds.Report.zone.select(ds.Zone.id),
+                ds.Report.zone.select(ds.Zone.name),
+                ds.Report.zone.select(ds.Zone.frozen),
+                ds.Report.rankings(compare='Rankings'),
+                ds.Report.table(dataType='Summary', startTime=0, endTime=end_time),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
 
         return result
