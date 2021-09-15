@@ -15,7 +15,7 @@ SPECS = {
     'Druid_Warden': '<:Druid_Warden:880081285501046854>',
     'Hunter_BeastMastery': '<:Hunter_BeastMastery:880083922120233030>',
     'Hunter_Marksmanship': '<:Hunter_Marksmanship:881622924564516934>',
-    'Hunter_Survival': '<:HunterSurvival:887527410004803624>',
+    'Hunter_Survival': '<:Hunter_Survival:887527410004803624>',
     'Mage_Arcane': '<:Mage_Arcane:880098759936196669>',
     'Mage_Fire': '<:Mage_Fire:880083302306947113>',
     'Mage_Frost': '<:Mage_Frost:881623228177596437>',
