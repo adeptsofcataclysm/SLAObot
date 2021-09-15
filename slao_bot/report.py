@@ -50,7 +50,7 @@ class Report:
         except TypeError:
             execution = fight['execution']['rankPercent']
 
-        value += f"Исполнение: {bold(execution)}\n"
+        value += f'Исполнение: {bold(execution)}\n'
         value += f"Скорость: {bold(fight['speed']['rankPercent'])}%"
         return value
 
