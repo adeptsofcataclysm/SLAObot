@@ -45,7 +45,12 @@ class Report:
     def make_fight_info(fight: Dict[str, Any]) -> str:
         duration = datetime.fromtimestamp(fight['duration'] / 1000.0, timezone.utc).strftime('%Hч %Mм %Sс')
         value = f'Длительность: {bold(duration)}\n'
-        value += f"Исполнение: {bold(make_execution(fight['execution']['rankPercent']))}\n"
+        try:
+            execution = make_execution(fight['execution']['rankPercent'])
+        except TypeError:
+            execution = fight['execution']['rankPercent']
+
+        value += f"Исполнение: {bold(execution)}\n"
         value += f"Скорость: {bold(fight['speed']['rankPercent'])}%"
         return value
 
