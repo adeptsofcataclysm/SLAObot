@@ -79,7 +79,11 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     """
     async with ctx.typing():
         report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
-        wait_embed = Embed(title='Новый лог подъехал', description='Получаю данные с WarcraftLogs', colour=Colour.orange(), url=report_url)
+        wait_embed = Embed(
+            title='Новый лог подъехал',
+            description='Получаю данные с WarcraftLogs',
+            colour=Colour.orange(),
+            url=report_url)
         wait_embed.set_thumbnail(url=author_icon)
         wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
