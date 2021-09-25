@@ -65,7 +65,7 @@ ZONE_IMAGES = {
     # Heroics
     1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # SSK + TK
-    1010: 'https://www.wowhcb.ru/drcrazy/ssk-tk.png',
+    1010: 'https://cdn.discordapp.com/attachments/762790105026920468/887556750134374420/EyeAndSSCpng.png',
 }
 
 ZONE_NAMES = {
