@@ -79,7 +79,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     """
     async with ctx.typing():
         report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
-        wait_embed = Embed(description='Получаю данные с WarcraftLogs', colour=Colour.orange(), url=report_url)
+        wait_embed = Embed(title='Новый лог подъехал', description='Получаю данные с WarcraftLogs', colour=Colour.orange(), url=report_url)
         wait_embed.set_thumbnail(url=author_icon)
         wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
         waiting_embed = await ctx.send(embed=wait_embed)
@@ -115,6 +115,11 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
 
 async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
     fights = rs['reportData']['report']['rankings']['data']
+
+    if len(fights) == 0:
+        embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
+        await waiting_embed.add_reaction('🔄')
+        return
 
     if fights[-1]['fightID'] == 10000:
         embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
