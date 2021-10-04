@@ -5,7 +5,6 @@ import tenacity
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from config import settings
 from constants import ZONE_IMAGES, Role
 from report import Report
