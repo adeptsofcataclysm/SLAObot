@@ -1,13 +1,13 @@
-import asyncio
 from typing import Any, Dict
 
 import discord
 import tenacity
-from config import settings
-from constants import ZONE_IMAGES, Role
 from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
+
+from config import settings
+from constants import ZONE_IMAGES, Role
 from report import Report
 from utils import bold, make_execution
 from wcl_client import WCLClient
@@ -78,12 +78,6 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     :param report_id: WarcraftLogs report ID
     :param author_icon:
     """
-    try:
-        async with ctx.typing():
-            await asyncio.sleep(1)
-    except discord.ext.commands.errors.CommandInvokeError:
-        print('Not able to send typing. Check Discord status')
-
     report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
     wait_embed = Embed(
         title='Новый лог подъехал',
