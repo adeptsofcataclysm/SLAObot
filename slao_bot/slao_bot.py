@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Dict
 
 import discord
@@ -77,42 +78,47 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     :param report_id: WarcraftLogs report ID
     :param author_icon:
     """
-    async with ctx.typing():
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
-        wait_embed = Embed(
-            title='Новый лог подъехал',
-            description='Получаю данные с WarcraftLogs',
-            colour=Colour.orange(),
-            url=report_url)
-        wait_embed.set_thumbnail(url=author_icon)
-        wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
-        waiting_embed = await ctx.send(embed=wait_embed)
-        # Delete original WCL message
-        if ctx.message.embeds and ctx.message.author != bot.user:
-            await ctx.message.delete()
+    try:
+        async with ctx.typing():
+            await asyncio.sleep(1)
+    except discord.ext.commands.errors.CommandInvokeError:
+        print("Not able to send typing. Check Discord status")
 
-        async with WCLClient() as client:
-            try:
-                rs = await client.get_data(report_id)
-            except tenacity.RetryError:
-                await waiting_embed.add_reaction('🔄')
-                return
+    report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+    wait_embed = Embed(
+        title='Новый лог подъехал',
+        description='Получаю данные с WarcraftLogs',
+        colour=Colour.orange(),
+        url=report_url)
+    wait_embed.set_thumbnail(url=author_icon)
+    wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
+    waiting_embed = await ctx.send(embed=wait_embed)
+    # Delete original WCL message
+    if ctx.message.embeds and ctx.message.author != bot.user:
+        await ctx.message.delete()
 
-        report_title = Report.make_report_title(rs)
-        report_description = Report.make_report_description(rs)
-        embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
+    async with WCLClient() as client:
+        try:
+            rs = await client.get_data(report_id)
+        except tenacity.RetryError:
+            await waiting_embed.add_reaction('🔄')
+            return
 
-        report_owner = rs['reportData']['report']['owner']['name']
-        embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
+    report_title = Report.make_report_title(rs)
+    report_description = Report.make_report_description(rs)
+    embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
 
-        embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
+    report_owner = rs['reportData']['report']['owner']['name']
+    embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
 
-        # Print bosses, speed and execution
-        if not rs['reportData']['report']['zone']['frozen']:
-            await _make_fights(rs, embed, waiting_embed)
+    embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
-        # Print raiders
-        _make_raiders(embed, rs)
+    # Print bosses, speed and execution
+    if not rs['reportData']['report']['zone']['frozen']:
+        await _make_fights(rs, embed, waiting_embed)
+
+    # Print raiders
+    _make_raiders(embed, rs)
 
     await waiting_embed.edit(embed=embed)
 
