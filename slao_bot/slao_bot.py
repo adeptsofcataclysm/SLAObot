@@ -82,7 +82,7 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
         async with ctx.typing():
             await asyncio.sleep(1)
     except discord.ext.commands.errors.CommandInvokeError:
-        print("Not able to send typing. Check Discord status")
+        print('Not able to send typing. Check Discord status')
 
     report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
     wait_embed = Embed(
