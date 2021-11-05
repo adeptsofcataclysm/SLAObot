@@ -129,7 +129,7 @@ async def process_pots(ctx: Context, report_id: str) -> None:
         except tenacity.RetryError:
             return
 
-    embed = Embed(title='Поты', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
+    embed = Embed(title='Расходники', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
     embed.add_field(name="<:inv_potion_137:906160204960395284>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                     inline=False)
