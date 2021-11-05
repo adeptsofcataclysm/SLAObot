@@ -121,11 +121,6 @@ class WCLClient:
                     startTime=0,
                     endTime=end_time,
                     filterExpression="ability.id in (45051)"),
-                managem=ds.Report.table(
-                    dataType='Casts',
-                    startTime=0,
-                    endTime=end_time,
-                    filterExpression="ability.id in (10052, 10058, 27103)"),
                 manarunes=ds.Report.table(
                     dataType='Casts',
                     startTime=0,

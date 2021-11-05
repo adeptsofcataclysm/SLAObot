@@ -142,10 +142,6 @@ async def process_pots(ctx: Context, report_id: str) -> None:
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Камни маны",
-                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['managem']['data']['entries']),
-                    inline=False)
-
     embed.add_field(name="Мана руны",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                     inline=False)
