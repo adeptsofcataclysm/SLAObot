@@ -130,31 +130,34 @@ async def process_pots(ctx: Context, report_id: str) -> None:
             return
 
     embed = Embed(title='Поты', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
-    embed.add_field(name="Мана",
+    embed.add_field(name="<:inv_potion_137:906160204960395284>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Здоровье",
+    embed.add_field(name="<:inv_potion_131:906160204868100127>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Здоровье и Мана",
+    embed.add_field(name="<:inv_potion_134:906161254316507187>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Мана руны",
+    embed.add_field(name="<:spell_shadow_sealofkings:906160351064760332> или <:inv_misc_rune_04:906160171238195200>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Барабаны",
+    embed.add_field(name="<:inv_misc_drum_021:906160171489853470> <:inv_misc_drum_03:906160171217190912>"
+                         " <:inv_misc_drum_07:906160171204616232>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Трава",
+    embed.add_field(name="<:inv_misc_herb_flamecap:906160171007492097>"
+                         " <:inv_misc_herb_nightmareseed:906160171246567454>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="Зелья на урон или броню",
+    embed.add_field(name="<:inv_potion_108:906160205094584380> <:inv_potion_107:906160171246551050>"
+                         "<:inv_potion_133:906160204985544744>",
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                     inline=False)
 
