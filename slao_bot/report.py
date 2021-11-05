@@ -102,3 +102,19 @@ class Report:
                 ))
 
         return result
+
+    @staticmethod
+    def get_pot_usage_sorted(entries: Dict) -> str:
+        pots = {}
+        for entry in entries:
+            pots[entry['name']] = entry['total']
+
+        pots = sorted(pots.items(), key=lambda item: item[1], reverse=True)
+
+        result = ''
+        for k, v in pots:
+            if len(result) > 0:
+                result += ', '
+            result += f'{k}({v})'
+
+        return result

@@ -32,7 +32,7 @@ async def on_message(message: Message) -> None:
         author_icon = message.embeds[0].thumbnail.url
         if report_id:
             ctx = await bot.get_context(message)
-            await process_report(ctx, report_id, author_icon)
+            await process_pots(ctx, report_id)
 
 
 @bot.event
@@ -54,7 +54,7 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
 
     ctx = await bot.get_context(reaction.message)
     await reaction.message.delete()
-    await process_report(ctx, report_id, author_icon)
+    await process_pots(ctx, report_id)
 
 
 @bot.command(name='msg', help='Get message by ID. Format: <prefix>msg SOME_MESSAGE_ID')
@@ -64,10 +64,15 @@ async def msg_command(ctx: Context, msg_id: int) -> None:
     await ctx.send(resp)
 
 
-@bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>лог SOME_REPORT_ID')
+@bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>wcl SOME_REPORT_ID')
 async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
-    await process_report(ctx, report_id, author_icon)
+    await process_pots(ctx, report_id)
+
+
+@bot.command(name="pot", help='Get data about potions used. Format: <prefix>pot SOME_REPORT_ID')
+async def pot_command(ctx: Context, report_id: str) -> None:
+    await process_pots(ctx, report_id)
 
 
 async def process_report(ctx: Context, report_id: str, author_icon: str) -> None:
@@ -115,6 +120,49 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     _make_raiders(embed, rs)
 
     await waiting_embed.edit(embed=embed)
+
+
+async def process_pots(ctx: Context, report_id: str) -> None:
+    async with WCLClient() as client:
+        try:
+            rs = await client.get_pots(report_id)
+        except tenacity.RetryError:
+            return
+
+    embed = Embed(title='Поты', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
+    embed.add_field(name="Мана",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Здоровье",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Здоровье и Мана",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Камни маны",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['managem']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Мана руны",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Барабаны",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Трава",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
+                    inline=False)
+
+    embed.add_field(name="Зелья на урон или броню",
+                    value=Report.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
+                    inline=False)
+
+    await ctx.send(embed=embed)
 
 
 async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
