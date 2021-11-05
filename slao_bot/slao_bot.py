@@ -32,7 +32,7 @@ async def on_message(message: Message) -> None:
         author_icon = message.embeds[0].thumbnail.url
         if report_id:
             ctx = await bot.get_context(message)
-            await process_pots(ctx, report_id)
+            await process_report(ctx, report_id, author_icon)
 
 
 @bot.event
@@ -41,20 +41,24 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
         return
     if reaction.message.author != bot.user:
         return
-    if reaction.emoji != '🔄':
-        return
-    if reaction.message.embeds[0].url:
-        # Waiting Embed
-        report_id = reaction.message.embeds[0].url.split('/')[-1]
-        author_icon = reaction.message.embeds[0].thumbnail.url
-    else:
-        # Rankings embed
-        report_id = reaction.message.embeds[0].author.url.split('/')[-1]
-        author_icon = reaction.message.embeds[0].author.icon_url
+    if reaction.emoji == '🔄':
+        if reaction.message.embeds[0].url:
+            # Waiting Embed
+            report_id = reaction.message.embeds[0].url.split('/')[-1]
+            author_icon = reaction.message.embeds[0].thumbnail.url
+        else:
+            # Rankings embed
+            report_id = reaction.message.embeds[0].author.url.split('/')[-1]
+            author_icon = reaction.message.embeds[0].author.icon_url
 
-    ctx = await bot.get_context(reaction.message)
-    await reaction.message.delete()
-    await process_pots(ctx, report_id)
+        ctx = await bot.get_context(reaction.message)
+        await reaction.message.delete()
+        await process_report(ctx, report_id, author_icon)
+
+    if reaction.emoji == '🧪':
+        ctx = await bot.get_context(reaction.message)
+        report_id = reaction.message.embeds[0].author.url.split('/')[-1]
+        await process_pots(ctx, report_id)
 
 
 @bot.command(name='msg', help='Get message by ID. Format: <prefix>msg SOME_MESSAGE_ID')
@@ -67,7 +71,7 @@ async def msg_command(ctx: Context, msg_id: int) -> None:
 @bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>wcl SOME_REPORT_ID')
 async def wcl_command(ctx: Context, report_id: str) -> None:
     author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
-    await process_pots(ctx, report_id)
+    await process_report(ctx, report_id, author_icon)
 
 
 @bot.command(name="pot", help='Get data about potions used. Format: <prefix>pot SOME_REPORT_ID')
@@ -195,6 +199,8 @@ async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message)
         value += f'Скорость: {bold(int(speed / len(fights)))}%'
         embed.add_field(name=bosses, value=value, inline=False)
         await waiting_embed.add_reaction('🔄')
+
+    await waiting_embed.add_reaction('🧪')
 
 
 def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
