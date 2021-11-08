@@ -119,18 +119,31 @@ EXEC_VALUES = {
 #   35476: "Drums of Battle"
 #   35478: "Drums of Restoration"
 #   41617: "Cenarion Mana"
+#   41618: "Bottled Nethergon Energy"
 #   45051: "Mad Alchemist's Potion"
 
 
 COMBAT_POTS = {
-    "Mana Pot": [17531, 28499, 41617],
-    "Healing Pot": [17534, 28495],
-    "Heal and Mana Pot": [45051],
-    "Mana Gem": [10052, 10058, 27103],
-    "Healthstone": [27235, 27236, 27237],
-    "Mana Runes": [16666, 27869],
-    "Drums": [35476, 35478],
-    "Herbs": [28527, 28714, 28726],
-    "School Prot": [28513],
-    "Combat Pot": [28507, 28508, 28515],
+    'Mana Pot': [17531, 28499, 41617, 41618],
+    'Healing Pot': [17534, 28495],
+    'Heal and Mana Pot': [45051],
+    'Mana Gem': [10052, 10058, 27103],
+    'Healthstone': [27235, 27236, 27237],
+    'Mana Runes': [16666, 27869],
+    'Drums': [35476, 35478],
+    'Herbs': [28527, 28714, 28726],
+    'School Prot': [28513],
+    'Combat Pot': [28507, 28508, 28515],
+}
+
+POT_IMAGES = {
+    'mana': '<:inv_potion_137:906160204960395284>',
+    'hp': '<:inv_potion_131:906160204868100127>',
+    'hpmana': '<:inv_potion_134:906161254316507187>',
+    'manarunes': '<:spell_shadow_sealofkings:906160351064760332> или <:inv_misc_rune_04:906160171238195200>',
+    'drums': '<:inv_misc_drum_021:906160171489853470> <:inv_misc_drum_03:906160171217190912>'
+             ' <:inv_misc_drum_07:906160171204616232>',
+    'herbs': '<:inv_misc_herb_flamecap:906160171007492097> <:inv_misc_herb_nightmareseed:906160171246567454>',
+    'combatpots': '<:inv_potion_108:906160205094584380> <:inv_potion_107:906160171246551050>'
+                  '<:inv_potion_133:906160204985544744>',
 }

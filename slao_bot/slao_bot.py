@@ -7,7 +7,7 @@ from discord import Colour, Embed, Message, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
 from config import settings
-from constants import ZONE_IMAGES, Role
+from constants import ZONE_IMAGES, Role, POT_IMAGES
 from report import Report
 from utils import bold, make_execution
 from wcl_client import WCLClient
@@ -134,34 +134,31 @@ async def process_pots(ctx: Context, report_id: str) -> None:
             return
 
     embed = Embed(title='Расходники', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
-    embed.add_field(name="<:inv_potion_137:906160204960395284>",
+    embed.add_field(name=POT_IMAGES.get('mana'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:inv_potion_131:906160204868100127>",
+    embed.add_field(name=POT_IMAGES.get('hp'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:inv_potion_134:906161254316507187>",
+    embed.add_field(name=POT_IMAGES.get('hpmana'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:spell_shadow_sealofkings:906160351064760332> или <:inv_misc_rune_04:906160171238195200>",
+    embed.add_field(name=POT_IMAGES.get('manarunes'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:inv_misc_drum_021:906160171489853470> <:inv_misc_drum_03:906160171217190912>"
-                         " <:inv_misc_drum_07:906160171204616232>",
+    embed.add_field(name=POT_IMAGES.get('drums'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:inv_misc_herb_flamecap:906160171007492097>"
-                         " <:inv_misc_herb_nightmareseed:906160171246567454>",
+    embed.add_field(name=POT_IMAGES.get('herbs'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
                     inline=False)
 
-    embed.add_field(name="<:inv_potion_108:906160205094584380> <:inv_potion_107:906160171246551050>"
-                         "<:inv_potion_133:906160204985544744>",
+    embed.add_field(name=POT_IMAGES.get('combatpots'),
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                     inline=False)
 
