@@ -4,7 +4,7 @@ import discord
 import tenacity
 from config import settings
 from constants import POT_IMAGES, ZONE_IMAGES, Role
-from discord import Colour, Embed, Message, Reaction, RawReactionActionEvent
+from discord import Colour, Embed, Message, RawReactionActionEvent, Reaction
 from discord.ext import commands
 from discord.ext.commands import Context
 from report import Report
@@ -70,7 +70,7 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
 
 @bot.event
 async def on_raw_reaction_remove(payload: RawReactionActionEvent) -> None:
-    if not payload.event_type == 'REACTION_REMOVE':
+    if payload.event_type != 'REACTION_REMOVE':
         return
     if payload.user_id == bot.user.id:
         return
