@@ -73,7 +73,8 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent) -> None:
     elif payload.emoji.name == '🧪':
         reaction = discord.utils.get(message.reactions, emoji='🧪')
         if reaction.count > 2:
-            await reaction.remove(bot.get_user(payload.user_id))
+            await reaction.remove(payload.member)
+            return
 
         ctx = await bot.get_context(message)
         report_id = message.embeds[0].author.url.split('/')[-1]
