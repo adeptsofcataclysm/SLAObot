@@ -4,7 +4,7 @@ import discord
 import tenacity
 from config import settings
 from constants import POT_IMAGES, ZONE_IMAGES, Role
-from discord import Colour, Embed, Message, RawReactionActionEvent, Reaction
+from discord import Colour, Embed, Message, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
 from report import Report
@@ -31,43 +31,56 @@ async def on_message(message: Message) -> None:
         author_icon = message.embeds[0].thumbnail.url
         if report_id:
             ctx = await bot.get_context(message)
+
+            # Delete original WCL message
+            await ctx.message.delete()
+
             await process_report(ctx, report_id, author_icon)
 
 
 @bot.event
-async def on_reaction_add(reaction: Reaction, user) -> None:
-    if user == bot.user:
+async def on_raw_reaction_add(payload: RawReactionActionEvent) -> None:
+    if payload.event_type != 'REACTION_ADD':
         return
-    if reaction.message.author != bot.user:
+    if payload.user_id == bot.user.id:
         return
-    if reaction.emoji == '🔄':
-        if reaction.message.embeds[0].url:
-            # Waiting Embed
-            report_id = reaction.message.embeds[0].url.split('/')[-1]
-            author_icon = reaction.message.embeds[0].thumbnail.url
+
+    channel = bot.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    if message.author != bot.user:
+        return
+    if len(message.embeds) < 1:
+        return
+
+    if payload.emoji.name == '🔄':
+        if message.embeds[0].url:
+            # Waiting embed
+            report_id = message.embeds[0].url.split('/')[-1]
+            author_icon = message.embeds[0].thumbnail.url
         else:
             # Rankings embed
-            report_id = reaction.message.embeds[0].author.url.split('/')[-1]
-            author_icon = reaction.message.embeds[0].author.icon_url
+            report_id = message.embeds[0].author.url.split('/')[-1]
+            author_icon = message.embeds[0].author.icon_url
 
-        ctx = await bot.get_context(reaction.message)
+        ctx = await bot.get_context(message)
 
-        # delete replies if any
-        async for msg in ctx.channel.history(after=reaction.message.created_at):
-            if msg.reference and msg.reference.message_id == reaction.message.id:
+        # delete reply
+        async for msg in channel.history(limit=200, after=message.created_at):
+            if msg.reference and msg.reference.message_id == message.id:
                 await msg.delete()
 
-        # delete original message with raid report
-        await reaction.message.delete()
+        # delete report
+        await message.delete()
 
         await process_report(ctx, report_id, author_icon)
 
-    if reaction.emoji == '🧪':
+    elif payload.emoji.name == '🧪':
+        reaction = discord.utils.get(message.reactions, emoji="🧪")
         if reaction.count > 2:
-            await reaction.remove(user)
+            await reaction.remove(bot.get_user(payload.user_id))
 
-        ctx = await bot.get_context(reaction.message)
-        report_id = reaction.message.embeds[0].author.url.split('/')[-1]
+        ctx = await bot.get_context(message)
+        report_id = message.embeds[0].author.url.split('/')[-1]
         await process_pots(ctx, report_id)
 
 
@@ -83,7 +96,7 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent) -> None:
         if message.author != bot.user:
             return
 
-        async for msg in channel.history(after=message.created_at):
+        async for msg in channel.history(limit=200, after=message.created_at):
             if msg.reference and msg.reference.message_id == message.id:
                 await msg.delete()
 
@@ -127,9 +140,6 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
     wait_embed.set_thumbnail(url=author_icon)
     wait_embed.set_footer(text='Иногда WCL тормозит, пичалька.')
     waiting_embed = await ctx.send(embed=wait_embed)
-    # Delete original WCL message
-    if ctx.message.embeds and ctx.message.author != bot.user:
-        await ctx.message.delete()
 
     async with WCLClient() as client:
         try:
@@ -144,7 +154,6 @@ async def process_report(ctx: Context, report_id: str, author_icon: str) -> None
 
     report_owner = rs['reportData']['report']['owner']['name']
     embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
-
     embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
     # Print bosses, speed and execution
