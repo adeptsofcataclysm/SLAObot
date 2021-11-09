@@ -63,6 +63,9 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
         await process_report(ctx, report_id, author_icon)
 
     if reaction.emoji == '🧪':
+        if reaction.count > 2:
+            await reaction.remove(user)
+
         ctx = await bot.get_context(reaction.message)
         report_id = reaction.message.embeds[0].author.url.split('/')[-1]
         await process_pots(ctx, report_id)
