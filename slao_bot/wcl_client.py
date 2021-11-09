@@ -38,8 +38,6 @@ class WCLClient:
     async def get_data(self, report_id: str) -> Dict[str, Any]:
         """
         Gets data from WarcraftLog.
-        Authentication token requested as a first call. With logs posted on daily or semi-daily basis
-        and not every minute it is fine to request it each time we make a call to WCL
 
         :param report_id: :class:`str` WarcraftLogs report ID.
         :return: GraphQL request result. Should be a JSON based dictionary object.
@@ -72,6 +70,77 @@ class WCLClient:
                 ds.Report.zone.select(ds.Zone.frozen),
                 ds.Report.rankings(compare='Rankings'),
                 ds.Report.table(dataType='Summary', startTime=0, endTime=end_time),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        return result
+
+    @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+    async def get_pots(self, report_id: str) -> Dict[str, Any]:
+        """
+        Gets data about potions used from WarcraftLog.
+
+        :param report_id: :class:`str` WarcraftLogs report ID.
+        :return: GraphQL request result. Should be a JSON based dictionary object.
+        """
+
+        ds = DSLSchema(self._client.schema)
+
+        query_report = ds.Query.reportData
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.zone.select(ds.Zone.name),
+            ))
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        if result['reportData']['report']['zone']['name'] is None:
+            raise Exception('Zone name not found')
+
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                mana=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (17531, 28499, 41617, 41618)'),
+                hp=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (17534, 28495)'),
+                hpmana=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (45051)'),
+                manarunes=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (16666, 27869)'),
+                drums=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (35476, 35478)'),
+                herbs=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (28527, 28714, 28726)'),
+                combatpots=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    filterExpression='ability.id in (28507, 28508, 28515)'),
             ))
 
         query = dsl_gql(DSLQuery(query_report))
