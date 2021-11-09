@@ -54,6 +54,22 @@ class Report:
         value += f"Скорость: {bold(fight['speed']['rankPercent'])}%"
         return value
 
+    @staticmethod
+    def get_pot_usage_sorted(entries: Dict) -> str:
+        pots = {}
+        for entry in entries:
+            pots[entry['name']] = entry['total']
+
+        pots = sorted(pots.items(), key=lambda item: item[1], reverse=True)
+
+        result = ''
+        for key, value in pots:
+            if len(result) > 0:
+                result += ', '
+            result += f'{key}({value})'
+
+        return result if len(result) > 0 else 'Вагонимся'
+
     @classmethod
     def get_raiders_by_role(cls, rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
         raiders_by_role = cls._get_raiders_by_roles(rs)
@@ -71,22 +87,6 @@ class Report:
         report_zone_id = cls.get_report_zone_id(rs)
 
         return ZONE_NAMES.get(report_zone_id, ZONE_NAMES.get(0))
-
-    @staticmethod
-    def get_pot_usage_sorted(entries: Dict) -> str:
-        pots = {}
-        for entry in entries:
-            pots[entry['name']] = entry['total']
-
-        pots = sorted(pots.items(), key=lambda item: item[1], reverse=True)
-
-        result = ''
-        for key, value in pots:
-            if len(result) > 0:
-                result += ', '
-            result += f'{key}({value})'
-
-        return result if len(result) > 0 else 'Вагонимся'
 
     @staticmethod
     def _add_raiders_totals(raiders: List[Raider], characters: List[Dict[str, Any]]) -> Dict[str, int]:

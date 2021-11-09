@@ -2,12 +2,11 @@ from typing import Any, Dict
 
 import discord
 import tenacity
-
-from discord import Colour, Embed, Message, Reaction
+from config import settings
+from constants import POT_IMAGES, ZONE_IMAGES, Role
+from discord import Colour, Embed, Message, Reaction, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-from config import settings
-from constants import ZONE_IMAGES, Role, POT_IMAGES
 from report import Report
 from utils import bold, make_execution
 from wcl_client import WCLClient
@@ -52,7 +51,15 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
             author_icon = reaction.message.embeds[0].author.icon_url
 
         ctx = await bot.get_context(reaction.message)
+
+        # delete replies if any
+        async for msg in ctx.channel.history(after=reaction.message.created_at):
+            if msg.reference and msg.reference.message_id == reaction.message.id:
+                await msg.delete()
+
+        # delete original message with raid report
         await reaction.message.delete()
+
         await process_report(ctx, report_id, author_icon)
 
     if reaction.emoji == '🧪':
@@ -61,11 +68,32 @@ async def on_reaction_add(reaction: Reaction, user) -> None:
         await process_pots(ctx, report_id)
 
 
-@bot.command(name='msg', help='Get message by ID. Format: <prefix>msg SOME_MESSAGE_ID')
+@bot.event
+async def on_raw_reaction_remove(payload: RawReactionActionEvent) -> None:
+    if not payload.event_type == 'REACTION_REMOVE':
+        return
+    if payload.user_id == bot.user.id:
+        return
+    if payload.emoji.name == '🧪':
+        channel = bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        if message.author != bot.user:
+            return
+
+        async for msg in channel.history(after=message.created_at):
+            if msg.reference and msg.reference.message_id == message.id:
+                await msg.delete()
+
+
+@bot.command(name='msg', help='Get message reply by message ID. Format: <prefix>msg SOME_MESSAGE_ID')
 async def msg_command(ctx: Context, msg_id: int) -> None:
     msg = await ctx.fetch_message(msg_id)
-    resp = msg.embeds[0].url.split('/')[-2]
-    await ctx.send(resp)
+    msg_date = msg.created_at
+    value = '000'
+    async for message in ctx.channel.history(after=msg_date):
+        if message.reference and message.reference.message_id == msg_id:
+            value = message.id
+    await ctx.send(value)
 
 
 @bot.command(name='wcl', aliases=['🍦'], help='Get data from report. Format: <prefix>wcl SOME_REPORT_ID')
@@ -74,7 +102,7 @@ async def wcl_command(ctx: Context, report_id: str) -> None:
     await process_report(ctx, report_id, author_icon)
 
 
-@bot.command(name="pot", help='Get data about potions used. Format: <prefix>pot SOME_REPORT_ID')
+@bot.command(name='pot', help='Get data about potions used. Format: <prefix>pot SOME_REPORT_ID')
 async def pot_command(ctx: Context, report_id: str) -> None:
     await process_pots(ctx, report_id)
 
@@ -162,7 +190,7 @@ async def process_pots(ctx: Context, report_id: str) -> None:
                     value=Report.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                     inline=False)
 
-    await ctx.send(embed=embed)
+    await ctx.reply(embed=embed)
 
 
 async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
