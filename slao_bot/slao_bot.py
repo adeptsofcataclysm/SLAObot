@@ -4,7 +4,7 @@ import discord
 import tenacity
 from config import settings
 from constants import POT_IMAGES, ZONE_IMAGES, Role
-from discord import Colour, Embed, Message, RawReactionActionEvent
+from discord import Colour, Embed, Message, RawReactionActionEvent, TextChannel
 from discord.ext import commands
 from discord.ext.commands import Context
 from report import Report
@@ -62,20 +62,16 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent) -> None:
             report_id = message.embeds[0].author.url.split('/')[-1]
             author_icon = message.embeds[0].author.icon_url
 
-        ctx = await bot.get_context(message)
-
         # delete reply
-        async for msg in channel.history(limit=200, after=message.created_at):
-            if msg.reference and msg.reference.message_id == message.id:
-                await msg.delete()
-
+        await _delete_reply(channel, message)
         # delete report
         await message.delete()
 
+        ctx = await bot.get_context(message)
         await process_report(ctx, report_id, author_icon)
 
     elif payload.emoji.name == '🧪':
-        reaction = discord.utils.get(message.reactions, emoji="🧪")
+        reaction = discord.utils.get(message.reactions, emoji='🧪')
         if reaction.count > 2:
             await reaction.remove(bot.get_user(payload.user_id))
 
@@ -95,10 +91,7 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent) -> None:
         message = await channel.fetch_message(payload.message_id)
         if message.author != bot.user:
             return
-
-        async for msg in channel.history(limit=200, after=message.created_at):
-            if msg.reference and msg.reference.message_id == message.id:
-                await msg.delete()
+        await _delete_reply(channel, message)
 
 
 @bot.command(name='msg', help='Get message reply by message ID. Format: <prefix>msg SOME_MESSAGE_ID')
@@ -255,6 +248,12 @@ def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
         value=Report.make_spec(raiders_by_role[Role.HEALER], show_trophy=True),
         inline=False,
     )
+
+
+async def _delete_reply(channel: TextChannel, message: Message) -> None:
+    async for msg in channel.history(limit=200, after=message.created_at):
+        if msg.reference and msg.reference.message_id == message.id:
+            await msg.delete()
 
 
 if __name__ == '__main__':
