@@ -13,7 +13,7 @@ After=default.target
 Type=simple
 Restart=always
 WorkingDirectory={{ bot_folder }}
-ExecStart={{ bot_folder }}/env/bin/python {{ bot_folder }}/slao_bot/slao_bot.py
+ExecStart={{ bot_folder }}/env/bin/python {{ bot_folder }}/slao_bot/slaobot.py
 
 
 [Install]

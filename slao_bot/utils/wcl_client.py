@@ -2,11 +2,12 @@ from typing import Any, Dict
 
 import aiohttp
 import tenacity
-from config import settings
 from gql import Client
 from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
+
+from slao_bot.utils.config import settings
 
 
 class WCLClient:
