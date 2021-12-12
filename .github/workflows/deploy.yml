@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase : ${{ secrets.SSH_KEY_PASSPHRASE }}
-        source: "slao_bot/*.py, requirements.txt"
+        source: "slao_bot/*, requirements.txt"
         target: "bot"
     - name: setup dependencies
       uses: appleboy/ssh-action@master
