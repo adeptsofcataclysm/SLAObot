@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 from operator import attrgetter
 from typing import Any, Dict, List
 
-from slao_bot.utils.constants import SPECS, ZONE_NAMES, Role
-from slao_bot.utils.format import bold, make_execution, make_time
-from slao_bot.utils.models import Raider
+from constants import SPECS, ZONE_NAMES, Role
+from format import bold, make_execution, make_time
+from models import Raider
 
 
 class Report:

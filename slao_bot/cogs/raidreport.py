@@ -6,11 +6,11 @@ from discord import Colour, Embed, Message, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
 
-from slao_bot.slaobot import _delete_reply
-from slao_bot.utils.constants import ZONE_IMAGES, Role
-from slao_bot.utils.format import bold, make_execution
-from slao_bot.utils.report import Report
-from slao_bot.utils.wcl_client import WCLClient
+from slaobot import _delete_reply
+from utils.constants import ZONE_IMAGES, Role
+from utils.format import bold, make_execution
+from utils.report import Report
+from utils.wcl_client import WCLClient
 
 
 class RaidReport(commands.Cog):

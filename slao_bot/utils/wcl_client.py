@@ -7,7 +7,7 @@ from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
-from slao_bot.utils.config import settings
+from config import settings
 
 
 class WCLClient:

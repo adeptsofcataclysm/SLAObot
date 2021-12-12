@@ -2,7 +2,7 @@ import discord
 from discord import Message, TextChannel
 from discord.ext import commands
 
-from slao_bot.utils.config import settings
+from utils.config import settings
 
 extensions = (
     'cogs.raidreport',

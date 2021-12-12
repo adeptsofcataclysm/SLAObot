@@ -2,7 +2,7 @@ from discord import Colour, DMChannel, Embed, Member, Message
 from discord.ext import commands
 from discord.ext.commands import Context
 
-from slao_bot.utils.config import settings
+from utils.config import settings
 
 
 class SignUp(commands.Cog):
