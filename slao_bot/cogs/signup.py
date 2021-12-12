@@ -1,4 +1,4 @@
-from discord import DMChannel, Member, Message, Embed, Colour
+from discord import Colour, DMChannel, Embed, Member, Message
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -36,7 +36,8 @@ class SignUp(commands.Cog):
                            '2. Имя персонажа \r\n'
                            '3. Класс, специализация \r\n'
                            '4. Профессии, специализация \r\n'
-                           '5. Имена персонажей твинков \r\n')
+                           '5. Имена персонажей твинков')
+
             await message.channel.send(signup_form)
         elif len(message.content) > 5:
             await message.channel.send('Спасибо! Офицеры в скором времени выдадут права в Discord')
