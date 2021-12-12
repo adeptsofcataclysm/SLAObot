@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from constants import EXEC_VALUES
+from slao_bot.utils.constants import EXEC_VALUES
 
 
 def make_time(timestamp: int) -> str:

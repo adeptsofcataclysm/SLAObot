@@ -13,5 +13,7 @@ class Settings(BaseSettings):
 
     command_prefix: str = 'slao'
 
+    signup_channel_id: int
+
 
 settings = Settings()
