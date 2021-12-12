@@ -1,7 +1,6 @@
 from discord import Colour, DMChannel, Embed, Member, Message
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from utils.config import settings
 
 

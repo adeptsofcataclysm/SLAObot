@@ -5,7 +5,6 @@ import tenacity
 from discord import Colour, Embed, Message, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from slaobot import _delete_reply
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution

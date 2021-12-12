@@ -3,7 +3,6 @@ import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from slaobot import _delete_reply
 from utils.constants import POT_IMAGES
 from utils.report import Report

@@ -1,7 +1,6 @@
 import discord
 from discord import Message, TextChannel
 from discord.ext import commands
-
 from utils.config import settings
 
 extensions = (

@@ -6,8 +6,7 @@ from gql import Client
 from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
-
-from config import settings
+from utils.config import settings
 
 
 class WCLClient:
