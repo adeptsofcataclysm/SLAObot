@@ -147,3 +147,42 @@ class WCLClient:
         result = await self._session.execute(query)
 
         return result
+
+    @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+    async def get_gear(self, report_id: str) -> Dict[str, Any]:
+        """
+        Gets data about gear used from WarcraftLog.
+
+        :param report_id: :class:`str` WarcraftLogs report ID.
+        :return: GraphQL request result. Should be a JSON based dictionary object.
+        """
+
+        ds = DSLSchema(self._client.schema)
+        query_report = ds.Query.reportData
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.zone.select(ds.Zone.name),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        if result['reportData']['report']['zone']['name'] is None:
+            raise Exception('Zone name not found')
+
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.table(dataType='Summary', startTime=0, endTime=end_time),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        return result

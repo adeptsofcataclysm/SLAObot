@@ -118,6 +118,7 @@ class RaidReport(commands.Cog):
             embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
             await waiting_embed.add_reaction('🔄')
             await waiting_embed.add_reaction('🧪')
+            await waiting_embed.add_reaction('🛂')
             return
 
         if fights[-1]['fightID'] == 10000:
@@ -145,6 +146,7 @@ class RaidReport(commands.Cog):
             await waiting_embed.add_reaction('🔄')
 
         await waiting_embed.add_reaction('🧪')
+        await waiting_embed.add_reaction('🛂')
 
     def _make_raiders(self, embed: discord.Embed, rs: Dict[str, Any]) -> None:
         raiders_by_role = Report.get_raiders_by_role(rs)
