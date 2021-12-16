@@ -120,7 +120,7 @@ class RaidReport(commands.Cog):
             await waiting_embed.add_reaction('🧪')
             return
 
-        if fights[-1]['fightID'] == 10000:
+        if fights[-1]['fightID'] == 10000 or fights[-1]['fightID'] == 10001:
             embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
         elif len(fights) <= 4:
             for fight in fights:
