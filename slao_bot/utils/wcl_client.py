@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import aiohttp
 import tenacity
+from diskcache import Cache
 from gql import Client
 from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
@@ -13,6 +14,7 @@ class WCLClient:
 
     _client: Client
     _session: AsyncClientSession
+    _cache: Cache
 
     async def __aenter__(self) -> 'WCLClient':
         async with aiohttp.ClientSession() as cs:
@@ -28,6 +30,7 @@ class WCLClient:
         )
         self._client = Client(transport=transport, fetch_schema_from_transport=True)
         self._session = await self._client.__aenter__()
+        self._cache = Cache('cache')
 
         return self
 
@@ -58,6 +61,10 @@ class WCLClient:
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
+        cached_report = self._cache.get('report_id')
+        if cached_report['reportData']['report']['endTime'] == result['reportData']['report']['endTime']:
+            return cached_report
+
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
         query_report.select(
@@ -74,6 +81,7 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
+        self._cache.set('report_id', result)
 
         return result
 
