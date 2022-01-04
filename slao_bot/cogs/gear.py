@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import discord
 import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
@@ -5,6 +7,8 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 from slaobot import _delete_reply
+from utils.constants import Role
+from utils.report import Report
 from utils.wcl_client import WCLClient
 
 
@@ -51,7 +55,7 @@ class Gear(commands.Cog):
 
     @commands.command(name='gear')
     async def gear_command(self, ctx: Context, report_id: str) -> None:
-        """Get data about potions used. Format: <prefix>gear SOME_REPORT_ID"""
+        """Get data about potions used. Format: <prefix>gear SOME_REPORT_ID."""
         await self.process_gear(ctx, report_id)
 
     async def process_gear(self, ctx: Context, report_id: str) -> None:
@@ -62,6 +66,10 @@ class Gear(commands.Cog):
                 return
 
         embed = Embed(title='Камни и зачаровывание', description='Щас будет душно!', colour=Colour.teal())
+
+        # Prepare gear list
+        _make_raiders(embed, rs)
+
         embed.add_field(name='Нет камней',
                         value=rs['reportData']['report']['startTime'],
                         inline=False)
@@ -76,6 +84,18 @@ class Gear(commands.Cog):
                         inline=False)
 
         await ctx.reply(embed=embed)
+
+
+def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
+    raiders_by_role = Report.get_raiders_by_role(rs)
+
+    for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
+        for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
+            for raider in raiders_by_role[role]:
+                if raider.name == char['name']:
+                    raider.gear = char['combatantInfo']['gear']
+
+    print('Done')
 
 
 def setup(bot):
