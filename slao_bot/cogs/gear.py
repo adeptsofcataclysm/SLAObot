@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import discord
 import tenacity
@@ -8,7 +8,9 @@ from discord.ext.commands import Context
 
 from slaobot import _delete_reply
 from utils.constants import Role
+from utils.models import Raider
 from utils.report import Report
+from utils.sockets import SOCKETS
 from utils.wcl_client import WCLClient
 
 
@@ -68,10 +70,10 @@ class Gear(commands.Cog):
         embed = Embed(title='Камни и зачаровывание', description='Щас будет душно!', colour=Colour.teal())
 
         # Prepare gear list
-        _make_raiders(embed, rs)
+        raiders = _make_raiders(rs)
 
         embed.add_field(name='Нет камней',
-                        value=rs['reportData']['report']['startTime'],
+                        value=_make_empty_sockets(raiders),
                         inline=False)
         embed.add_field(name='Стрёмные камни',
                         value='Empty',
@@ -86,7 +88,7 @@ class Gear(commands.Cog):
         await ctx.reply(embed=embed)
 
 
-def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
+def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
     raiders_by_role = Report.get_raiders_by_role(rs)
 
     for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
@@ -94,8 +96,20 @@ def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
             for raider in raiders_by_role[role]:
                 if raider.name == char['name']:
                     raider.gear = char['combatantInfo']['gear']
+    return raiders_by_role
 
-    print('Done')
+
+def _make_empty_sockets(raiders: Dict[Role, List[Raider]]) -> str:
+    value = set()
+    for raider in raiders[Role.DPS]:
+        for item in raider.gear:
+            sockets_num = SOCKETS.get(item['id'])
+            if sockets_num is not None:
+                item_gems = item.get('gems')
+                if item_gems is None or len(item_gems) < sockets_num:
+                    value.add(raider.name)
+
+    return ', '.join(value)
 
 
 def setup(bot):
