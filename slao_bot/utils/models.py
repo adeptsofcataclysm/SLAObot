@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import Dict, List
 
 
 @dataclass
@@ -9,4 +9,3 @@ class Raider:
     spec: str
     gear: List[Dict] = field(default_factory=list)
     total: float = field(default_factory=lambda: float('+inf'))
-

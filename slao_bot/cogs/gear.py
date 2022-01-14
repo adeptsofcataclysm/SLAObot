@@ -1,16 +1,15 @@
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 import discord
 import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from slaobot import _delete_reply
 from utils.constants import Role
 from utils.models import Raider
 from utils.report import Report
-from utils.sockets import SOCKETS
+from utils.sockets import RARE_GEMS, SOCKETS
 from utils.wcl_client import WCLClient
 
 
@@ -70,13 +69,13 @@ class Gear(commands.Cog):
         embed = Embed(title='Камни и зачаровывание', description='Щас будет душно!', colour=Colour.teal())
 
         # Prepare gear list
-        raiders = _make_raiders(rs)
+        raiders = self._make_raiders(rs)
 
         embed.add_field(name='Нет камней',
-                        value=_make_empty_sockets(raiders),
+                        value=self._make_empty_sockets(raiders),
                         inline=False)
         embed.add_field(name='Стрёмные камни',
-                        value='Empty',
+                        value=self._make_low_quality_sockets(raiders),
                         inline=False)
         embed.add_field(name='Не все энчанты',
                         value='Empty',
@@ -87,29 +86,41 @@ class Gear(commands.Cog):
 
         await ctx.reply(embed=embed)
 
+    def _make_raiders(self, rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
+        raiders_by_role = Report.get_raiders_by_role(rs)
 
-def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
-    raiders_by_role = Report.get_raiders_by_role(rs)
+        for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
+            for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
+                for raider in raiders_by_role[role]:
+                    if raider.name == char['name']:
+                        raider.gear = char['combatantInfo']['gear']
+        return raiders_by_role
 
-    for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
-        for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
-            for raider in raiders_by_role[role]:
-                if raider.name == char['name']:
-                    raider.gear = char['combatantInfo']['gear']
-    return raiders_by_role
+    def _make_empty_sockets(self, raiders: Dict[Role, List[Raider]]) -> str:
+        value = set()
+        for role in raiders:
+            for raider in raiders[role]:
+                for item in raider.gear:
+                    sockets_num = SOCKETS.get(item['id'])
+                    if sockets_num is not None:
+                        item_gems = item.get('gems')
+                        if item_gems is None or len(item_gems) < sockets_num:
+                            value.add(raider.name)
 
+        return 'Камни вставлены у всех!' if len(value) == 0 else ', '.join(value)
 
-def _make_empty_sockets(raiders: Dict[Role, List[Raider]]) -> str:
-    value = set()
-    for raider in raiders[Role.DPS]:
-        for item in raider.gear:
-            sockets_num = SOCKETS.get(item['id'])
-            if sockets_num is not None:
-                item_gems = item.get('gems')
-                if item_gems is None or len(item_gems) < sockets_num:
-                    value.add(raider.name)
+    def _make_low_quality_sockets(self, raiders: Dict[Role, List[Raider]]) -> str:
+        value = set()
+        for role in raiders:
+            for raider in raiders[role]:
+                for item in raider.gear:
+                    if 'gems' not in item:
+                        continue
+                    for gem in item['gems']:
+                        if gem['itemLevel'] == 60 and gem['id'] not in RARE_GEMS:
+                            value.add(raider.name)
 
-    return ', '.join(value)
+        return 'У всех нормальные камни!' if len(value) == 0 else ', '.join(value)
 
 
 def setup(bot):
