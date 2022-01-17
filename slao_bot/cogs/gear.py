@@ -6,10 +6,11 @@ from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
 from slaobot import _delete_reply
+from utils import enchants
 from utils.constants import Role
 from utils.models import Raider
 from utils.report import Report
-from utils.sockets import RARE_GEMS, SOCKETS
+from utils.sockets import MIN_GEM_ILEVEL, RARE_GEMS, SOCKETS
 from utils.wcl_client import WCLClient
 
 
@@ -71,14 +72,27 @@ class Gear(commands.Cog):
         # Prepare gear list
         raiders = self._make_raiders(rs)
 
+        empty_sockets = set()
+        low_quality_gems = set()
+        no_enchants = set()
+        for role in raiders:
+            for raider in raiders[role]:
+                for item in raider.gear:
+                    if not self._check_sockets(item):
+                        empty_sockets.add(raider.name)
+                    if not self._check_gems(item):
+                        low_quality_gems.add(raider.name)
+                    if not self._check_enchants(item):
+                        no_enchants.add(raider.name)
+
         embed.add_field(name='Нет камней',
-                        value=self._make_empty_sockets(raiders),
+                        value='Камни вставлены у всех!' if len(empty_sockets) == 0 else ', '.join(empty_sockets),
                         inline=False)
         embed.add_field(name='Стрёмные камни',
-                        value=self._make_low_quality_sockets(raiders),
+                        value='У всех нормальные камни!' if len(low_quality_gems) == 0 else ', '.join(low_quality_gems),
                         inline=False)
         embed.add_field(name='Не все энчанты',
-                        value='Empty',
+                        value='Зачарованные!' if len(no_enchants) == 0 else ', '.join(no_enchants),
                         inline=False)
         embed.add_field(name='Стрёмные энчанты',
                         value='Empty',
@@ -86,7 +100,14 @@ class Gear(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    def _make_raiders(self, rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
+    @staticmethod
+    def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
+        """
+        Makes dictionary with raiders and adds gear to each raider
+
+        :param rs: Response from WCL API query
+        :return: Dictionary with raiders
+        """
         raiders_by_role = Report.get_raiders_by_role(rs)
 
         for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
@@ -96,31 +117,60 @@ class Gear(commands.Cog):
                         raider.gear = char['combatantInfo']['gear']
         return raiders_by_role
 
-    def _make_empty_sockets(self, raiders: Dict[Role, List[Raider]]) -> str:
-        value = set()
-        for role in raiders:
-            for raider in raiders[role]:
-                for item in raider.gear:
-                    sockets_num = SOCKETS.get(item['id'])
-                    if sockets_num is not None:
-                        item_gems = item.get('gems')
-                        if item_gems is None or len(item_gems) < sockets_num:
-                            value.add(raider.name)
+    @staticmethod
+    def _check_sockets(item: Dict) -> bool:
+        """
+        Check that there are no empty sockets
 
-        return 'Камни вставлены у всех!' if len(value) == 0 else ', '.join(value)
+        :param item: Dictionary with item info
+        :return: True if check passed. False if check failed, e.g. socket(s) is empty
+        """
+        sockets_num = SOCKETS.get(item['id'])
+        if sockets_num is None:
+            # No sockets in item
+            return True
+        if 'gems' not in item:
+            # No gems in sockets
+            return True
+        item_gems = item.get('gems')
+        if len(item_gems) < sockets_num:
+            # Gems not in all sockets
+            return False
+        # All checks passed
+        return True
 
-    def _make_low_quality_sockets(self, raiders: Dict[Role, List[Raider]]) -> str:
-        value = set()
-        for role in raiders:
-            for raider in raiders[role]:
-                for item in raider.gear:
-                    if 'gems' not in item:
-                        continue
-                    for gem in item['gems']:
-                        if gem['itemLevel'] == 60 and gem['id'] not in RARE_GEMS:
-                            value.add(raider.name)
+    @staticmethod
+    def _check_gems(item: Dict) -> bool:
+        """
+        Check gems quality for socket gems
 
-        return 'У всех нормальные камни!' if len(value) == 0 else ', '.join(value)
+        :param item: Dictionary with item info
+        :return: True if check passed. False if check failed, e.g. gem quality if lower then required
+        """
+        if 'gems' not in item:
+            # Either no sockets or no gems. Empty socket already checked in another method
+            return True
+        for gem in item['gems']:
+            if gem['itemLevel'] < MIN_GEM_ILEVEL and gem['id'] not in RARE_GEMS:
+                return False
+        # All checks passed
+        return True
+
+    @staticmethod
+    def _check_enchants(item) -> bool:
+        """
+        Checks that item that should be enchanted is enchanted
+
+        :param item: Dictionary with item info
+        :return: True if check passed. False if check failed, e.g. missing enchant
+        """
+        if item['slot'] not in enchants.ENCHANTABLE_SLOT:
+            # No need to check enchants for that slot
+            return True
+        if 'permanentEnchant' not in item:
+            return False
+        # All checks passed
+        return True
 
 
 def setup(bot):

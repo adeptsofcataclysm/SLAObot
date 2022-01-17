@@ -1,3 +1,5 @@
+from typing import Dict
+
 import discord
 import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
@@ -5,7 +7,6 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from slaobot import _delete_reply
 from utils.constants import POT_IMAGES
-from utils.report import Report
 from utils.wcl_client import WCLClient
 
 
@@ -64,34 +65,50 @@ class Potions(commands.Cog):
 
         embed = Embed(title='Расходники', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
         embed.add_field(name=POT_IMAGES.get('mana'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('hp'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('hpmana'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('manarunes'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('drums'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('herbs'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('combatpots'),
-                        value=Report.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
+                        value=self.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                         inline=False)
 
         await ctx.reply(embed=embed)
+
+    @staticmethod
+    def get_pot_usage_sorted(entries: Dict) -> str:
+        pots = {}
+        for entry in entries:
+            pots[entry['name']] = entry['total']
+
+        pots = sorted(pots.items(), key=lambda item: item[1], reverse=True)
+
+        result = ''
+        for key, value in pots:
+            if len(result) > 0:
+                result += ', '
+            result += f'{key}({value})'
+
+        return result if len(result) > 0 else 'Вагонимся'
 
 
 def setup(bot):

@@ -111,7 +111,8 @@ class RaidReport(commands.Cog):
 
         await waiting_embed.edit(embed=embed)
 
-    async def _make_fights(self, rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
+    @staticmethod
+    async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
         fights = rs['reportData']['report']['rankings']['data']
 
         if len(fights) == 0:
@@ -148,7 +149,8 @@ class RaidReport(commands.Cog):
         await waiting_embed.add_reaction('🧪')
         await waiting_embed.add_reaction('🛂')
 
-    def _make_raiders(self, embed: discord.Embed, rs: Dict[str, Any]) -> None:
+    @staticmethod
+    def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
         raiders_by_role = Report.get_raiders_by_role(rs)
 
         embed.add_field(name='Танки', value=Report.make_spec(raiders_by_role[Role.TANK]), inline=False)
