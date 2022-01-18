@@ -71,19 +71,8 @@ class Gear(commands.Cog):
 
         # Prepare gear list
         raiders = self._make_raiders(rs)
-
-        empty_sockets = set()
-        low_quality_gems = set()
-        no_enchants = set()
-        for role in raiders:
-            for raider in raiders[role]:
-                for item in raider.gear:
-                    if not self._check_sockets(item):
-                        empty_sockets.add(raider.name)
-                    if not self._check_gems(item):
-                        low_quality_gems.add(raider.name)
-                    if not self._check_enchants(item):
-                        no_enchants.add(raider.name)
+        # Check gems and enchants
+        empty_sockets, low_quality_gems, no_enchants, low_enchants = self.check_gear(raiders)
 
         embed.add_field(name='Нет камней',
                         value='Камни вставлены у всех!' if len(empty_sockets) == 0 else ', '.join(empty_sockets),
@@ -99,6 +88,26 @@ class Gear(commands.Cog):
                         inline=False)
 
         await ctx.reply(embed=embed)
+
+    def check_gear(self, raiders: Dict[Role, List[Raider]]):
+        empty_sockets = set()
+        low_quality_gems = set()
+        no_enchants = set()
+        low_enchants = set()
+
+        for role in raiders:
+            for raider in raiders[role]:
+                for item in raider.gear:
+                    if not self._check_sockets(item):
+                        empty_sockets.add(raider.name)
+                    if not self._check_gems(item):
+                        low_quality_gems.add(raider.name)
+                    if not self._check_enchants(item):
+                        no_enchants.add(raider.name)
+                    if not self._check_enchants_quality(item):
+                        low_enchants.add(raider.name)
+
+        return empty_sockets, low_quality_gems, no_enchants, low_enchants
 
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
@@ -150,11 +159,8 @@ class Gear(commands.Cog):
         if 'gems' not in item:
             # Either no sockets or no gems. Empty socket already checked in another method
             return True
-        for gem in item['gems']:
-            if gem['itemLevel'] < MIN_GEM_ILEVEL and gem['id'] not in RARE_GEMS:
-                return False
-        # All checks passed
-        return True
+
+        return all(not (gem['itemLevel'] < MIN_GEM_ILEVEL and gem['id'] not in RARE_GEMS) for gem in item['gems'])
 
     @staticmethod
     def _check_enchants(item) -> bool:
@@ -170,6 +176,10 @@ class Gear(commands.Cog):
         if 'permanentEnchant' not in item:
             return False
         # All checks passed
+        return True
+
+    @staticmethod
+    def _check_enchants_quality(item) -> bool:
         return True
 
 

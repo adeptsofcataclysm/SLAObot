@@ -65,37 +65,37 @@ class Potions(commands.Cog):
 
         embed = Embed(title='Расходники', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
         embed.add_field(name=POT_IMAGES.get('mana'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('hp'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('hpmana'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('manarunes'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('drums'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('herbs'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('combatpots'),
-                        value=self.get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                         inline=False)
 
         await ctx.reply(embed=embed)
 
     @staticmethod
-    def get_pot_usage_sorted(entries: Dict) -> str:
+    def _get_pot_usage_sorted(entries: Dict) -> str:
         pots = {}
         for entry in entries:
             pots[entry['name']] = entry['total']

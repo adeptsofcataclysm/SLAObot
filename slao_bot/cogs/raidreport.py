@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Any, Dict
 
 import discord
@@ -118,8 +119,6 @@ class RaidReport(commands.Cog):
         if len(fights) == 0:
             embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
             await waiting_embed.add_reaction('🔄')
-            await waiting_embed.add_reaction('🧪')
-            await waiting_embed.add_reaction('🛂')
             return
 
         if fights[-1]['fightID'] == 10000:
