@@ -82,11 +82,10 @@ class RaidWeakEquipment:
             # Either no sockets or no gems. Empty socket already checked in another method
             return True
 
-        # TODO Обрати внимание как поправил проверку
         return all((gem['itemLevel'] >= MIN_GEM_ILEVEL or gem['id'] in RARE_GEMS) for gem in item['gems'])
 
     @staticmethod
-    def _check_enchants(item) -> bool:
+    def _check_enchants(item: Dict) -> bool:
         """
         Checks that item that should be enchanted is enchanted
 
@@ -102,7 +101,22 @@ class RaidWeakEquipment:
         return True
 
     @staticmethod
-    def _check_enchants_quality(item) -> bool:
+    def _check_enchants_quality(item: Dict) -> bool:
+        """
+        Checks that item doesn't have low level enchants
+
+        :param item: Dictionary with item info
+        :return: True if check passed. False if check failed, e.g. low level enchant used
+        """
+        if item['slot'] not in enchants.ENCHANTABLE_SLOT:
+            # No need to check enchants for that slot
+            return True
+        if 'permanentEnchant' not in item:
+            # No enchant already checked in another method
+            return True
+        if item['permanentEnchant'] in enchants.BAD_ENCHANTS[item['slot']]:
+            return False
+
         return True
 
 
@@ -112,9 +126,9 @@ class Gear(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
-        if payload.event_type != 'REACTION_ADD':  # TODO Следующие 11 строк дублируются символ в символ 3 раза
+        if payload.event_type != 'REACTION_ADD':
             return
-        if payload.user_id == self.bot.user.id:
+        if not self.validate_payload(payload):
             return
 
         channel = self.bot.get_channel(payload.channel_id)
@@ -124,28 +138,28 @@ class Gear(commands.Cog):
         if len(message.embeds) < 1:
             return
 
-        if payload.emoji.name == '🛂':
-            reaction = discord.utils.get(message.reactions, emoji='🛂')
-            if reaction.count > 2:
-                await reaction.remove(payload.member)
-                return
+        reaction = discord.utils.get(message.reactions, emoji='🛂')
+        if reaction.count > 2:
+            await reaction.remove(payload.member)
+            return
 
-            ctx = await self.bot.get_context(message)
-            report_id = message.embeds[0].author.url.split('/')[-1]
-            await self.process_gear(ctx, report_id)
+        ctx = await self.bot.get_context(message)
+        report_id = message.embeds[0].author.url.split('/')[-1]
+        await self.process_gear(ctx, report_id)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: RawReactionActionEvent) -> None:
         if payload.event_type != 'REACTION_REMOVE':
             return
-        if payload.user_id == self.bot.user.id:
+        if not self.validate_payload(payload):
             return
-        if payload.emoji.name == '🛂':
-            channel = self.bot.get_channel(payload.channel_id)
-            message = await channel.fetch_message(payload.message_id)
-            if message.author != self.bot.user:
-                return
-            await _delete_reply(channel, message)
+
+        channel = self.bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        if message.author != self.bot.user:
+            return
+
+        await _delete_reply(channel, message)
 
     @commands.command(name='gear')
     async def gear_command(self, ctx: Context, report_id: str) -> None:
@@ -166,7 +180,6 @@ class Gear(commands.Cog):
         # Check gems and enchants
         equipment = RaidWeakEquipment.from_raiders(chain.from_iterable(raiders.values()))
 
-        # TODO вместо if len(no_enchants) == 0: пиши if not no_enchants:
         embed.add_field(
             name='Нет камней',
             value=', '.join(equipment.empty_sockets) or 'Камни вставлены у всех!',
@@ -189,6 +202,19 @@ class Gear(commands.Cog):
         )
 
         await ctx.reply(embed=embed)
+
+    def validate_payload(self, payload: RawReactionActionEvent) -> bool:
+        """
+        Validates reaction event payload
+
+        :param payload: Raw Reaction Event Payload
+        :return: True if all checks passed
+        """
+        if payload.user_id == self.bot.user.id:
+            return False
+        if payload.emoji.name != '🛂':
+            return False
+        return True
 
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
