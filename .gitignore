@@ -108,3 +108,4 @@ venv.bak/
 # editors
 .idea
 .vscode
+.iml
