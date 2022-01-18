@@ -7,7 +7,7 @@ extensions = (
     'cogs.raidreport',
     'cogs.potions',
     'cogs.signup',
-
+    'cogs.gear',
 )
 
 
