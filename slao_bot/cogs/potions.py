@@ -12,6 +12,10 @@ from utils.wcl_client import WCLClient
 
 class Potions(commands.Cog):
     def __init__(self, bot):
+        """Cog to check potions used during a raid.
+
+        :param bot:
+        """
         self.bot = bot
 
     @commands.Cog.listener()
@@ -53,7 +57,7 @@ class Potions(commands.Cog):
 
     @commands.command(name='pot')
     async def pot_command(self, ctx: Context, report_id: str) -> None:
-        """Get data about potions used. Format: <prefix>pot SOME_REPORT_ID"""
+        """Get data about potions used. Format: <prefix>pot SOME_REPORT_ID."""
         await self.process_pots(ctx, report_id)
 
     async def process_pots(self, ctx: Context, report_id: str) -> None:

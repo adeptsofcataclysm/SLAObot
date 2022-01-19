@@ -6,5 +6,3 @@ either for full clear or for up to 4 fights.
 
 ## Install
 Rename .env.template to .env and fill values
-
-

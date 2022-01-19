@@ -50,8 +50,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_sockets(item: Dict) -> bool:
-        """
-        Check that there are no empty sockets
+        """Check that there are no empty sockets
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. socket(s) is empty
@@ -72,8 +71,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_gems(item: Dict) -> bool:
-        """
-        Check gems quality for socket gems
+        """Check gems quality for socket gems
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. gem quality if lower then required
@@ -86,8 +84,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_enchants(item: Dict) -> bool:
-        """
-        Checks that item that should be enchanted is enchanted
+        """Checks that item that should be enchanted is enchanted
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. missing enchant
@@ -102,8 +99,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_enchants_quality(item: Dict) -> bool:
-        """
-        Checks that item doesn't have low level enchants
+        """Checks that item doesn't have low level enchants
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. low level enchant used
@@ -122,6 +118,10 @@ class RaidWeakEquipment:
 
 class Gear(commands.Cog):
     def __init__(self, bot):
+        """Cog to check gems and enchants.
+
+        :param bot: Bot instance
+        """
         self.bot = bot
 
     @commands.Cog.listener()
@@ -204,8 +204,7 @@ class Gear(commands.Cog):
         await ctx.reply(embed=embed)
 
     def validate_payload(self, payload: RawReactionActionEvent) -> bool:
-        """
-        Validates reaction event payload
+        """Validates reaction event payload
 
         :param payload: Raw Reaction Event Payload
         :return: True if all checks passed
@@ -218,8 +217,7 @@ class Gear(commands.Cog):
 
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
-        """
-        Makes dictionary with raiders and adds gear to each raider
+        """Makes dictionary with raiders and adds gear to each raider
 
         :param rs: Response from WCL API query
         :return: Dictionary with raiders

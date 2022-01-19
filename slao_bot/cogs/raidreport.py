@@ -15,6 +15,10 @@ from utils.wcl_client import WCLClient
 
 class RaidReport(commands.Cog):
     def __init__(self, bot):
+        """Cog to provide basic statistics about raid.
+
+        :param bot: Bot instance
+        """
         self.bot = bot
 
     @commands.Cog.listener()
@@ -66,13 +70,12 @@ class RaidReport(commands.Cog):
 
     @commands.command(name='wcl', aliases=['🍦'])
     async def wcl_command(self, ctx: Context, report_id: str) -> None:
-        """Get data from report. Format: <prefix>wcl SOME_REPORT_ID"""
+        """Get data from report. Format: <prefix>wcl SOME_REPORT_ID."""
         author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
         await self.process_report(ctx, report_id, author_icon)
 
     async def process_report(self, ctx: Context, report_id: str, author_icon: str) -> None:
-        """
-        Process a single report and sends embed to context channel
+        """Process a single report and sends embed to context channel
 
         :param ctx: Invocation context. Should be a channel
         :param report_id: WarcraftLogs report ID

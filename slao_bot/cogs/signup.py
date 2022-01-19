@@ -6,6 +6,10 @@ from utils.config import settings
 
 class SignUp(commands.Cog):
     def __init__(self, bot):
+        """Cog to greet newcomers and give them some basic questionnaire.
+
+        :param bot: Bot instance
+        """
         self.bot = bot
 
     @commands.Cog.listener()
@@ -53,7 +57,7 @@ class SignUp(commands.Cog):
 
     @commands.command(hidden=True)
     async def emit_join(self, ctx: Context) -> None:
-        """Emit member_join event"""
+        """Emit member_join event."""
         self.bot.dispatch('member_join', ctx.author)
 
 
