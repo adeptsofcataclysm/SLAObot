@@ -1,5 +1,7 @@
+from typing import Any
+
 import discord
-from discord import Message, TextChannel
+from discord import Message, RawReactionActionEvent, TextChannel
 from discord.ext import commands
 from utils.config import settings
 
@@ -51,6 +53,46 @@ async def _delete_reply(channel: TextChannel, message: Message) -> None:
         if msg.reference and msg.reference.message_id == message.id:
             await msg.delete()
 
+
+def _validate_reaction_payload(payload: RawReactionActionEvent, bot: commands.Bot, emoji: str) -> bool:
+    """Validates payload for reactions based cogs.
+
+    Reaction should be from user.
+    Emoji should be same as provided.
+
+    :param payload: Reaction Event Payload.
+    :param bot: Bot instance.
+    :param emoji: Emoji to check.
+    :return:  True if validation passed.
+    """
+    if payload.user_id == bot.user.id:
+        return False
+    if payload.emoji.name != emoji:
+        return False
+    return True
+
+
+async def _validate_reaction_message(payload: RawReactionActionEvent, bot: commands.Bot) -> Any:
+    """Validates message for reactions based cogs.
+
+    Message should be from bot.
+    Message should have embed.
+
+    :param payload: Reaction event payload.
+    :param bot: Bot instance.
+    :return: Returns message and message channel or None if validation failed.
+    """
+    channel = bot.get_channel(payload.channel_id)
+    if channel is None:
+        return None
+
+    message = await channel.fetch_message(payload.message_id)
+    if message.author != bot.user:
+        return None
+    if len(message.embeds) < 1:
+        return None
+
+    return channel, message
 
 if __name__ == '__main__':
     SlaoBot().run(settings.discord_token)

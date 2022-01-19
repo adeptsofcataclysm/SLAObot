@@ -7,7 +7,9 @@ import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import _delete_reply
+from slaobot import (
+    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
+)
 from utils import enchants
 from utils.constants import Role
 from utils.models import Raider
@@ -50,8 +52,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_sockets(item: Dict) -> bool:
-        """
-        Check that there are no empty sockets
+        """Check that there are no empty sockets
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. socket(s) is empty
@@ -72,8 +73,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_gems(item: Dict) -> bool:
-        """
-        Check gems quality for socket gems
+        """Check gems quality for socket gems
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. gem quality if lower then required
@@ -86,8 +86,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_enchants(item: Dict) -> bool:
-        """
-        Checks that item that should be enchanted is enchanted
+        """Checks that item that should be enchanted is enchanted
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. missing enchant
@@ -102,8 +101,7 @@ class RaidWeakEquipment:
 
     @staticmethod
     def _check_enchants_quality(item: Dict) -> bool:
-        """
-        Checks that item doesn't have low level enchants
+        """Checks that item doesn't have low level enchants
 
         :param item: Dictionary with item info
         :return: True if check passed. False if check failed, e.g. low level enchant used
@@ -122,8 +120,7 @@ class RaidWeakEquipment:
 
 class Gear(commands.Cog):
     def __init__(self, bot):
-        """
-        Cog to check gems and enchants.
+        """Cog to check gems and enchants.
 
         :param bot: Bot instance
         """
@@ -133,14 +130,11 @@ class Gear(commands.Cog):
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
         if payload.event_type != 'REACTION_ADD':
             return
-        if not self.validate_payload(payload):
+        if not _validate_reaction_payload(payload, self.bot, '🛂'):
             return
 
-        channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        if message.author != self.bot.user:
-            return
-        if len(message.embeds) < 1:
+        channel, message = await _validate_reaction_message(payload, self.bot)
+        if message is None:
             return
 
         reaction = discord.utils.get(message.reactions, emoji='🛂')
@@ -156,12 +150,11 @@ class Gear(commands.Cog):
     async def on_raw_reaction_remove(self, payload: RawReactionActionEvent) -> None:
         if payload.event_type != 'REACTION_REMOVE':
             return
-        if not self.validate_payload(payload):
+        if not _validate_reaction_payload(payload, self.bot, '🛂'):
             return
 
-        channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        if message.author != self.bot.user:
+        channel, message = await _validate_reaction_message(payload, self.bot)
+        if message is None:
             return
 
         await _delete_reply(channel, message)
@@ -209,8 +202,7 @@ class Gear(commands.Cog):
         await ctx.reply(embed=embed)
 
     def validate_payload(self, payload: RawReactionActionEvent) -> bool:
-        """
-        Validates reaction event payload
+        """Validates reaction event payload
 
         :param payload: Raw Reaction Event Payload
         :return: True if all checks passed
@@ -223,8 +215,7 @@ class Gear(commands.Cog):
 
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
-        """
-        Makes dictionary with raiders and adds gear to each raider
+        """Makes dictionary with raiders and adds gear to each raider
 
         :param rs: Response from WCL API query
         :return: Dictionary with raiders

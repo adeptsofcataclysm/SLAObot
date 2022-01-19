@@ -6,7 +6,9 @@ import tenacity
 from discord import Colour, Embed, Message, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import _delete_reply
+from slaobot import (
+    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
+)
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
 from utils.report import Report
@@ -15,8 +17,7 @@ from utils.wcl_client import WCLClient
 
 class RaidReport(commands.Cog):
     def __init__(self, bot):
-        """
-        Cog to provide basic statistics about raid.
+        """Cog to provide basic statistics about raid.
 
         :param bot: Bot instance
         """
@@ -41,33 +42,29 @@ class RaidReport(commands.Cog):
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
         if payload.event_type != 'REACTION_ADD':
             return
-        if payload.user_id == self.bot.user.id:
+        if not _validate_reaction_payload(payload, self.bot, '🔄'):
             return
 
-        channel = self.bot.get_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        if message.author != self.bot.user:
-            return
-        if len(message.embeds) < 1:
+        channel, message = await _validate_reaction_message(payload, self.bot)
+        if message is None:
             return
 
-        if payload.emoji.name == '🔄':
-            if message.embeds[0].url:
-                # Waiting embed
-                report_id = message.embeds[0].url.split('/')[-1]
-                author_icon = message.embeds[0].thumbnail.url
-            else:
-                # Rankings embed
-                report_id = message.embeds[0].author.url.split('/')[-1]
-                author_icon = message.embeds[0].author.icon_url
+        if message.embeds[0].url:
+            # Waiting embed
+            report_id = message.embeds[0].url.split('/')[-1]
+            author_icon = message.embeds[0].thumbnail.url
+        else:
+            # Rankings embed
+            report_id = message.embeds[0].author.url.split('/')[-1]
+            author_icon = message.embeds[0].author.icon_url
 
-            # delete reply
-            await _delete_reply(channel, message)
-            # delete report
-            await message.delete()
+        # delete reply
+        await _delete_reply(channel, message)
+        # delete report
+        await message.delete()
 
-            ctx = await self.bot.get_context(message)
-            await self.process_report(ctx, report_id, author_icon)
+        ctx = await self.bot.get_context(message)
+        await self.process_report(ctx, report_id, author_icon)
 
     @commands.command(name='wcl', aliases=['🍦'])
     async def wcl_command(self, ctx: Context, report_id: str) -> None:
@@ -76,8 +73,7 @@ class RaidReport(commands.Cog):
         await self.process_report(ctx, report_id, author_icon)
 
     async def process_report(self, ctx: Context, report_id: str, author_icon: str) -> None:
-        """
-        Process a single report and sends embed to context channel
+        """Process a single report and sends embed to context channel
 
         :param ctx: Invocation context. Should be a channel
         :param report_id: WarcraftLogs report ID
