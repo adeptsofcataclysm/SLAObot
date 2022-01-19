@@ -62,8 +62,9 @@ class WCLClient:
             raise Exception('Zone name not found')
 
         cached_report = self._cache.get('report_id')
-        if cached_report['reportData']['report']['endTime'] == result['reportData']['report']['endTime']:
-            return cached_report
+        if cached_report is not None:
+            if cached_report['reportData']['report']['endTime'] == result['reportData']['report']['endTime']:
+                return cached_report
 
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
