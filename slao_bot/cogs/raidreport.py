@@ -15,7 +15,8 @@ from utils.wcl_client import WCLClient
 
 class RaidReport(commands.Cog):
     def __init__(self, bot):
-        """Cog to provide basic statistics about raid.
+        """
+        Cog to provide basic statistics about raid.
 
         :param bot: Bot instance
         """
@@ -75,7 +76,8 @@ class RaidReport(commands.Cog):
         await self.process_report(ctx, report_id, author_icon)
 
     async def process_report(self, ctx: Context, report_id: str, author_icon: str) -> None:
-        """Process a single report and sends embed to context channel
+        """
+        Process a single report and sends embed to context channel
 
         :param ctx: Invocation context. Should be a channel
         :param report_id: WarcraftLogs report ID

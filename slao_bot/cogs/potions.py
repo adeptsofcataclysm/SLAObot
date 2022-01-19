@@ -12,7 +12,8 @@ from utils.wcl_client import WCLClient
 
 class Potions(commands.Cog):
     def __init__(self, bot):
-        """Cog to check potions used during a raid.
+        """
+        Cog to check potions used during a raid.
 
         :param bot:
         """

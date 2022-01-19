@@ -6,7 +6,8 @@ from utils.config import settings
 
 class SignUp(commands.Cog):
     def __init__(self, bot):
-        """Cog to greet newcomers and give them some basic questionnaire.
+        """
+        Cog to greet newcomers and give them some basic questionnaire.
 
         :param bot: Bot instance
         """
