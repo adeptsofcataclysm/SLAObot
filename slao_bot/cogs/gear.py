@@ -225,8 +225,9 @@ class Gear(commands.Cog):
         for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
             for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
                 for raider in raiders_by_role[role]:
-                    if raider.name == char['name']:
+                    if raider.name == char['name'] and char['combatantInfo']:
                         raider.gear = char['combatantInfo']['gear']
+                        continue
         return raiders_by_role
 
 
