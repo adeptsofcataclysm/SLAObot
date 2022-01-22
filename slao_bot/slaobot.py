@@ -87,6 +87,8 @@ async def _validate_reaction_message(payload: RawReactionActionEvent, bot: comma
         return None
 
     message = await channel.fetch_message(payload.message_id)
+    if message is None:
+        return None
     if message.author != bot.user:
         return None
     if len(message.embeds) < 1:

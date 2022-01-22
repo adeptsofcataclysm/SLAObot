@@ -168,3 +168,43 @@ BAD_ENCHANTS = {
         1900,  # Weapon - Crusader
     ],
 }
+
+EXCLUDED_GEAR = {
+    15138,  # Onyxia Scale Cloak
+    9449,   # Manual Crowd Pummeler
+    19022,  # Nat Pagle's Extreme Angler FC-5000
+    19970,  # Arcanite Fishing Pole
+    25978,  # Seth's Graphite Fishing Pole
+    6365,   # Strong Fishing Pole
+    12225,  # Blump Family Fishing Pole
+    6367,   # Big Iron Fishing Pole
+    6366,   # Darkwood Fishing Pole
+    6256,   # Fishing Pole
+    38175,  # The Horseman's Blade
+    21864,  # Soulcloth Shoulders
+    21865,  # Soulcloth Vest
+    21868,  # Arcanoweave Robe
+    23509,  # Enchanted Adamantite Breastplate
+    23512,  # Enchanted Adamantite Leggings
+    21867,  # Arcanoweave Boots
+    23511,  # Enchanted Adamantite Boots
+    21863,  # Soulcloth Gloves
+    28301,  # Syrannis' Mystic Sheen
+    31938,  # Enigmatic Cloak
+    27449,  # Blood Knight Defender
+    29495,  # Enchanted Clefthoof Leggings
+    29489,  # Enchanted Felscale Leggings
+    29497,  # Enchanted Clefthoof Boots
+    29491,  # Enchanted Felscale Boots
+    21866,  # Arcanoweave Bracers
+    29496,  # Enchanted Clefthoof Gloves
+    29490,  # Enchanted Felscale Gloves
+    30831,  # Cloak of Arcane Evasion
+    30311,  # Warp Slicer
+    30312,  # Infinity Blade
+    30313,  # Staff of Disintegration
+    30314,  # Phaseshift Bulwark
+    30316,  # Devastation
+    30317,  # Cosmic Infuser
+    30318,  # Netherstrand Longbow
+}

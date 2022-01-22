@@ -94,6 +94,8 @@ class RaidWeakEquipment:
         if item['slot'] not in enchants.ENCHANTABLE_SLOT:
             # No need to check enchants for that slot
             return True
+        if item['id'] in enchants.EXCLUDED_GEAR:
+            return True
         if 'permanentEnchant' not in item:
             return False
         # All checks passed
@@ -119,7 +121,7 @@ class RaidWeakEquipment:
 
 
 class Gear(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         """Cog to check gems and enchants.
 
         :param bot: Bot instance
@@ -133,7 +135,7 @@ class Gear(commands.Cog):
         if not _validate_reaction_payload(payload, self.bot, '🛂'):
             return
 
-        channel, message = await _validate_reaction_message(payload, self.bot)
+        _, message = await _validate_reaction_message(payload, self.bot)
         if message is None:
             return
 
@@ -201,18 +203,6 @@ class Gear(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    def validate_payload(self, payload: RawReactionActionEvent) -> bool:
-        """Validates reaction event payload
-
-        :param payload: Raw Reaction Event Payload
-        :return: True if all checks passed
-        """
-        if payload.user_id == self.bot.user.id:
-            return False
-        if payload.emoji.name != '🛂':
-            return False
-        return True
-
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
         """Makes dictionary with raiders and adds gear to each raider
@@ -231,5 +221,5 @@ class Gear(commands.Cog):
         return raiders_by_role
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(Gear(bot))
