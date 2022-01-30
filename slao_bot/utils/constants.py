@@ -66,6 +66,7 @@ ZONE_IMAGES = {
     1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # SSK + TK
     1010: 'https://cdn.discordapp.com/attachments/762790105026920468/887556750134374420/EyeAndSSCpng.png',
+    1011: 'https://cdn.discordapp.com/attachments/762790105026920468/935942801642905600/RH-TBC-MTBT2_1200x300.png',
 }
 
 ZONE_NAMES = {
@@ -88,6 +89,8 @@ ZONE_NAMES = {
           ':regional_indicator_y:',
     1010: ':regional_indicator_s: :regional_indicator_s: :regional_indicator_k: :left_right_arrow:'
           ':regional_indicator_t: :regional_indicator_k:',
+    1011: ':regional_indicator_b: :regional_indicator_t: :left_right_arrow: :regional_indicator_h:'
+          ':regional_indicator_y: :regional_indicator_j: :regional_indicator_a::regional_indicator_l:',
 }
 EXEC_VALUES = {
     0: 'Слабо',
