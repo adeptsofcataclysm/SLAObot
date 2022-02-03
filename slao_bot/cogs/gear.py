@@ -1,6 +1,7 @@
+from collections import defaultdict
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, Dict, Iterable, List, Set
+from typing import Any, Dict, Iterable, List, Optional, Set
 
 import discord
 import tenacity
@@ -11,7 +12,7 @@ from slaobot import (
     _delete_reply, _validate_reaction_message, _validate_reaction_payload,
 )
 from utils import enchants
-from utils.constants import Role
+from utils.constants import SLOT_NAMES, Role
 from utils.models import Raider
 from utils.report import Report
 from utils.sockets import MIN_GEM_ILEVEL, RARE_GEMS, SOCKETS
@@ -20,28 +21,28 @@ from utils.wcl_client import WCLClient
 
 @dataclass
 class RaidWeakEquipment:
-    empty_sockets: Set[str]
-    low_quality_gems: Set[str]
-    no_enchants: Set[str]
-    low_enchants: Set[str]
+    empty_sockets: Dict[str, Set]
+    low_quality_gems: Dict[str, Set]
+    no_enchants: Dict[str, Set]
+    low_enchants: Dict[str, Set]
 
     @classmethod
     def from_raiders(cls, raiders: Iterable[Raider]) -> 'RaidWeakEquipment':
-        empty_sockets = set()
-        low_quality_gems = set()
-        no_enchants = set()
-        low_enchants = set()
+        empty_sockets = defaultdict(set)
+        low_quality_gems = defaultdict(set)
+        no_enchants = defaultdict(set)
+        low_enchants = defaultdict(set)
 
         for raider in raiders:
             for item in raider.gear:
                 if not cls._check_sockets(item):
-                    empty_sockets.add(raider.name)
+                    empty_sockets[raider.name].add(SLOT_NAMES.get(item['slot']))
                 if not cls._check_gems(item):
-                    low_quality_gems.add(raider.name)
+                    low_quality_gems[raider.name].add(SLOT_NAMES.get(item['slot']))
                 if not cls._check_enchants(item):
-                    no_enchants.add(raider.name)
+                    no_enchants[raider.name].add(SLOT_NAMES.get(item['slot']))
                 if not cls._check_enchants_quality(item):
-                    low_enchants.add(raider.name)
+                    low_enchants[raider.name].add(SLOT_NAMES.get(item['slot']))
 
         return cls(
             empty_sockets=empty_sockets,
@@ -49,6 +50,15 @@ class RaidWeakEquipment:
             no_enchants=no_enchants,
             low_enchants=low_enchants,
         )
+
+    @classmethod
+    def add_raider(cls, blacklist: Dict[str, Set], raider: Raider, item: Dict) -> Dict[str, Set]:
+        if raider.name in blacklist:
+            blacklist[raider.name].add(SLOT_NAMES.get(item['slot']))
+        else:
+            blacklist[raider.name].add(SLOT_NAMES.get(item['slot']))
+
+        return blacklist
 
     @staticmethod
     def _check_sockets(item: Dict) -> bool:
@@ -182,26 +192,44 @@ class Gear(commands.Cog):
 
         embed.add_field(
             name='Нет камней',
-            value=', '.join(equipment.empty_sockets) or 'Камни вставлены у всех!',
+            value=self._print_raiders(equipment.empty_sockets) or 'Камни вставлены у всех!',
             inline=False,
         )
         embed.add_field(
             name='Стрёмные камни',
-            value=', '.join(equipment.low_quality_gems) or 'У всех нормальные камни!',
+            value=self._print_raiders(equipment.low_quality_gems) or 'У всех нормальные камни!',
             inline=False,
         )
         embed.add_field(
             name='Не все энчанты',
-            value=', '.join(equipment.no_enchants) or 'Зачарованные!',
+            value=self._print_raiders(equipment.no_enchants) or 'Зачарованные!',
             inline=False,
         )
         embed.add_field(
             name='Стрёмные энчанты',
-            value=', '.join(equipment.low_enchants) or 'С пивком потянет!',
+            value=self._print_raiders(equipment.low_enchants) or 'С пивком потянет!',
             inline=False,
         )
 
         await ctx.reply(embed=embed)
+
+    @staticmethod
+    def _print_raiders(gear_issues: Dict[str, Set]) -> Optional[str]:
+        if len(gear_issues) == 0:
+            return None
+        value = ''
+
+        for index, raider in enumerate(gear_issues):
+            if len(value) > 980:
+                return value
+            if index > 0:
+                value += ', '
+            value += raider
+            value += '('
+            value += ', '.join(gear_issues[raider])
+            value += ')'
+
+        return value
 
     @staticmethod
     def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
