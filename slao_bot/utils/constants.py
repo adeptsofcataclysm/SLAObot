@@ -129,6 +129,8 @@ EXEC_VALUES = {
 #   41618: "Bottled Nethergon Energy"
 #   45051: "Mad Alchemist's Potion"
 #   351355: "Greater Drums of Battle"
+#   351360: "Greater Drums of War"
+#   351358: "Greater Drums of Restoration"
 
 
 COMBAT_POTS = {
@@ -138,7 +140,7 @@ COMBAT_POTS = {
     'Mana Gem': [10052, 10058, 27103],
     'Healthstone': [27235, 27236, 27237],
     'Mana Runes': [16666, 27869],
-    'Drums': [35476, 35478, 351355],
+    'Drums': [35476, 35478, 351355, 351360, 351358],
     'Herbs': [28527, 28714, 28726],
     'School Prot': [28513],
     'Combat Pot': [28507, 28508, 28515],
