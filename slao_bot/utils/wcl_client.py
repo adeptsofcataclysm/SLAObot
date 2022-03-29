@@ -139,7 +139,7 @@ class WCLClient:
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
-                    filterExpression='ability.id in (35476, 35478)'),
+                    filterExpression='ability.id in (35476, 35478, 351355, 351360, 351358)'),
                 herbs=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
