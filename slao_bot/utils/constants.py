@@ -20,6 +20,7 @@ SPECS = {
     'Mage_Fire': '<:Mage_Fire:880083302306947113>',
     'Mage_Frost': '<:Mage_Frost:881623228177596437>',
     'Paladin_Holy': '<:Paladin_Holy:880089741847060550>',
+    'Paladin_Justicar': '<:Paladin_Justicar:967337482020585553>',
     'Paladin_Protection': '<:Paladin_Protection:880076303615787009>',
     'Paladin_Retribution': '<:Paladin_Retribution:880099271645470750>',
     'Priest_Discipline': '<:Priest_Discipline:880089778551414824>',
