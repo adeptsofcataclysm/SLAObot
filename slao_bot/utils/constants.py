@@ -69,6 +69,7 @@ ZONE_IMAGES = {
     1010: 'https://cdn.discordapp.com/attachments/762790105026920468/887556750134374420/EyeAndSSCpng.png',
     1011: 'https://cdn.discordapp.com/attachments/762790105026920468/935942801642905600/RH-TBC-MTBT2_1200x300.png',
     1012: 'https://cdn.discordapp.com/attachments/762790105026920468/951451058985652264/RH-TBC-ZA1_1200x300.png',
+    1013: 'https://cdn.discordapp.com/attachments/762790105026920468/773981418052386866/8._TBC_SWP.png',
 }
 
 ZONE_NAMES = {
@@ -95,6 +96,8 @@ ZONE_NAMES = {
           ':regional_indicator_y: :regional_indicator_j: :regional_indicator_a::regional_indicator_l:',
     1012: ':regional_indicator_z: :regional_indicator_u: :regional_indicator_l: :regional_indicator_a: '
           ':regional_indicator_m: :regional_indicator_a: :regional_indicator_n:',
+    1013: ':regional_indicator_s: :regional_indicator_u: :regional_indicator_n: :regional_indicator_w: '
+          ':regional_indicator_e: :regional_indicator_l: :regional_indicator_l:',
 
 }
 EXEC_VALUES = {
