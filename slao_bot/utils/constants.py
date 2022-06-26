@@ -9,6 +9,7 @@ class Role(str, Enum):
 
 SPECS = {
     'Druid_Balance': '<:Druid_Balance:880098174985961542>',
+    'Druid_Dreamstate': '<:Druid_Dreamstate:990644826657681418>',
     'Druid_Feral': '<:Druid_Feral:880098483636408392>',
     'Druid_Guardian': '<:druid_guardian:880068396803297311>',
     'Druid_Restoration': '<:Druid_Restoration:880089474753785897>',
