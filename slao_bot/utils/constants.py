@@ -8,6 +8,9 @@ class Role(str, Enum):
 
 
 SPECS = {
+    'DeathKnight_Blood': '<:DeathKnight_Blood:1015254887040303143>',
+    'DeathKnight_Frost': '<:DeathKnight_Frost:1015254314547167252>',
+    'DeathKnight_Unholy': '<:DeathKnight_Unholy:1015252279668002826>',
     'Druid_Balance': '<:Druid_Balance:880098174985961542>',
     'Druid_Dreamstate': '<:Druid_Dreamstate:990644826657681418>',
     'Druid_Feral': '<:Druid_Feral:880098483636408392>',
@@ -68,8 +71,11 @@ ZONE_IMAGES = {
     1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # SSK + TK
     1010: 'https://cdn.discordapp.com/attachments/762790105026920468/887556750134374420/EyeAndSSCpng.png',
+    # BT
     1011: 'https://cdn.discordapp.com/attachments/762790105026920468/935942801642905600/RH-TBC-MTBT2_1200x300.png',
+    # ZA
     1012: 'https://cdn.discordapp.com/attachments/762790105026920468/951451058985652264/RH-TBC-ZA1_1200x300.png',
+    # SWP
     1013: 'https://cdn.discordapp.com/attachments/762790105026920468/773981418052386866/8._TBC_SWP.png',
 }
 
