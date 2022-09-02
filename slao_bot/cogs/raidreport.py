@@ -30,7 +30,7 @@ class RaidReport(commands.Cog):
         if not message.embeds:
             return
 
-        report_id = message.embeds[0].url.split('/')[-2]
+        report_id = message.embeds[0].url.split('/')[-1]
         author_icon = message.embeds[0].thumbnail.url
         if report_id:
             ctx = await self.bot.get_context(message)
