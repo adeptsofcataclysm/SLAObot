@@ -77,6 +77,14 @@ ZONE_IMAGES = {
     1012: 'https://cdn.discordapp.com/attachments/762790105026920468/951451058985652264/RH-TBC-ZA1_1200x300.png',
     # SWP
     1013: 'https://cdn.discordapp.com/attachments/762790105026920468/773981418052386866/8._TBC_SWP.png',
+    # WotLK Heorics
+    1014: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
+    # Naxx, Sart, Maly
+    1015: 'https://media.discordapp.net/attachments/762790105026920468/1023622172117311528/'
+          'RH-Wrath-P1Raids_1200x300.png',
+    # Archavon
+    1016: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/'
+          'RH-TBC-DarkPortal1-1200x300.png',
 }
 
 ZONE_NAMES = {
@@ -105,6 +113,15 @@ ZONE_NAMES = {
           ':regional_indicator_m: :regional_indicator_a: :regional_indicator_n:',
     1013: ':regional_indicator_s: :regional_indicator_u: :regional_indicator_n: :regional_indicator_w: '
           ':regional_indicator_e: :regional_indicator_l: :regional_indicator_l:',
+    1014: ':regional_indicator_h: :regional_indicator_e: :regional_indicator_r: :regional_indicator_o: '
+          ':regional_indicator_i: :regional_indicator_k: :regional_indicator_s:',
+    1015: ':regional_indicator_n: :regional_indicator_a: :regional_indicator_x: :regional_indicator_x: '
+          ':left_right_arrow: :regional_indicator_m: :regional_indicator_a: :regional_indicator_l:'
+          ':regional_indicator_y: :left_right_arrow: :regional_indicator_s: :regional_indicator_a:'
+          ':regional_indicator_r: :regional_indicator_t:',
+    1016: ':regional_indicator_a: :regional_indicator_r: :regional_indicator_c: :regional_indicator_h: '
+          ':regional_indicator_a: :regional_indicator_v: :regional_indicator_o: :regional_indicator_n:',
+
 
 }
 EXEC_VALUES = {
