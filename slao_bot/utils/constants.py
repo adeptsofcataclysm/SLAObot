@@ -176,9 +176,6 @@ EXEC_VALUES = {
 # 67489: "Runic healing injector"
 # 67490: "Runic mana injector"
 
-
-
-
 COMBAT_POTS = {
     'Mana Pot': [43186, 67490],
     'Healing Pot': [43185, 67489],
@@ -186,9 +183,6 @@ COMBAT_POTS = {
     'Mana Gem': [42987],
     'Healthstone': [47872, 47873, 47874, 47875, 47876, 47877],
     'Mana Runes': [16666, 27869],
-    'Drums': [],
-    'Herbs': [],
-    'School Prot': [],
     'Combat Pot': [53908, 53909, 53762],
 }
 

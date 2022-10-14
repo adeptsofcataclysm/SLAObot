@@ -65,7 +65,7 @@ class Potions(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        embed = Embed(title='Расходники', description='Пьём по КД, крутим ЕП!', colour=Colour.teal())
+        embed = Embed(title='Расходники', description='Пьём по КД, крутим логи!', colour=Colour.teal())
         embed.add_field(name=POT_IMAGES.get('mana'),
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                         inline=False)
