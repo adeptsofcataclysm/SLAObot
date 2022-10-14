@@ -10,6 +10,7 @@ class Role(str, Enum):
 SPECS = {
     'DeathKnight_Blood': '<:DeathKnight_Blood:1015254887040303143>',
     'DeathKnight_Frost': '<:DeathKnight_Frost:1015254314547167252>',
+    'DeathKnight_Runeblade': '<:DeathKnight_Runeblade:1030424355508863027>',
     'DeathKnight_Unholy': '<:DeathKnight_Unholy:1015252279668002826>',
     'Druid_Balance': '<:Druid_Balance:880098174985961542>',
     'Druid_Dreamstate': '<:Druid_Dreamstate:990644826657681418>',
@@ -80,11 +81,9 @@ ZONE_IMAGES = {
     # WotLK Heorics
     1014: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # Naxx, Sart, Maly
-    1015: 'https://media.discordapp.net/attachments/762790105026920468/1023622172117311528/'
-          'RH-Wrath-P1Raids_1200x300.png',
+    1015: 'https://cdn.discordapp.com/attachments/776184190743216128/1029314252177166346/naxx1.png',
     # Archavon
-    1016: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/'
-          'RH-TBC-DarkPortal1-1200x300.png',
+    1016: 'https://cdn.discordapp.com/attachments/776184190743216128/1030423276092149801/vault.png',
 }
 
 ZONE_NAMES = {
@@ -176,7 +175,7 @@ POT_IMAGES = {
     'mana': '<:inv_potion_137:906160204960395284>',
     'hp': '<:inv_potion_131:906160204868100127>',
     'hpmana': '<:inv_potion_134:906161254316507187>',
-    'manarunes': '<:spell_shadow_sealofkings:906160351064760332> или <:inv_misc_rune_04:906160171238195200>',
+    'manarunes': '<:spell_shadow_sealofkings:906160351064760332>',
     'drums': '<:inv_misc_drum_021:906160171489853470> <:inv_misc_drum_03:906160171217190912>'
              ' <:inv_misc_drum_07:906160171204616232>',
     'herbs': '<:inv_misc_herb_flamecap:906160171007492097> <:inv_misc_herb_nightmareseed:906160171246567454>',
