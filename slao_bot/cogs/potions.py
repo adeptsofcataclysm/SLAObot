@@ -82,14 +82,6 @@ class Potions(commands.Cog):
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
                         inline=False)
 
-        embed.add_field(name=POT_IMAGES.get('drums'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['drums']['data']['entries']),
-                        inline=False)
-
-        embed.add_field(name=POT_IMAGES.get('herbs'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['herbs']['data']['entries']),
-                        inline=False)
-
         embed.add_field(name=POT_IMAGES.get('combatpots'),
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                         inline=False)
