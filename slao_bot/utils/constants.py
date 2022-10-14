@@ -129,6 +129,7 @@ EXEC_VALUES = {
 }
 
 # Combat consumables with short cooldown
+# TBC consumables
 #   10052: "Mana Jade"
 #   10058: "Mana Ruby"
 #   16666: "Demonic Rune"
@@ -157,18 +158,38 @@ EXEC_VALUES = {
 #   351360: "Greater Drums of War"
 #   351358: "Greater Drums of Restoration"
 
+# WotLK consumables
+# 42987: "Mana Sapphire"
+# 43185: "Runic healing pot"
+# 43186: "Runic mana pot"
+# 47872: "Master Healthstone"
+# 47873: "Master Healthstone"
+# 47874: "Master Healthstone"
+# 47875: "Master Healthstone"
+# 47876: "Master Healthstone"
+# 47877: "Master Healthstone"
+# 53750: "Crazy Alchemist's pot"
+# 53761: "Powerful Rejuvenation pot"
+# 53762: "3.5k armor"
+# 53908: "Potion of Speed"
+# 53909: "Wild Magic pot"
+# 67489: "Runic healing injector"
+# 67490: "Runic mana injector"
+
+
+
 
 COMBAT_POTS = {
-    'Mana Pot': [17531, 28499, 41617, 41618],
-    'Healing Pot': [17534, 28495],
-    'Heal and Mana Pot': [45051],
-    'Mana Gem': [10052, 10058, 27103],
-    'Healthstone': [27235, 27236, 27237],
+    'Mana Pot': [43186, 67490],
+    'Healing Pot': [43185, 67489],
+    'Heal and Mana Pot': [53750, 53761],
+    'Mana Gem': [42987],
+    'Healthstone': [47872, 47873, 47874, 47875, 47876, 47877],
     'Mana Runes': [16666, 27869],
-    'Drums': [35476, 35478, 351355, 351360, 351358],
-    'Herbs': [28527, 28714, 28726],
-    'School Prot': [28513],
-    'Combat Pot': [28507, 28508, 28515],
+    'Drums': [],
+    'Herbs': [],
+    'School Prot': [],
+    'Combat Pot': [53908, 53909, 53762],
 }
 
 POT_IMAGES = {
