@@ -115,10 +115,8 @@ ZONE_NAMES = {
           ':regional_indicator_e: :regional_indicator_l: :regional_indicator_l:',
     1014: ':regional_indicator_h: :regional_indicator_e: :regional_indicator_r: :regional_indicator_o: '
           ':regional_indicator_i: :regional_indicator_k: :regional_indicator_s:',
-    1015: ':regional_indicator_n: :regional_indicator_a: :regional_indicator_x: :regional_indicator_x: '
-          ':left_right_arrow: :regional_indicator_m: :regional_indicator_a: :regional_indicator_l:'
-          ':regional_indicator_y: :left_right_arrow: :regional_indicator_s: :regional_indicator_a:'
-          ':regional_indicator_r: :regional_indicator_t:',
+    1015: ':regional_indicator_t: :regional_indicator_i: :regional_indicator_e: :regional_indicator_r: '
+          ':seven:',
     1016: ':regional_indicator_a: :regional_indicator_r: :regional_indicator_c: :regional_indicator_h: '
           ':regional_indicator_a: :regional_indicator_v: :regional_indicator_o: :regional_indicator_n:',
 
