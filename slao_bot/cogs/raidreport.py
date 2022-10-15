@@ -143,6 +143,10 @@ class RaidReport(commands.Cog):
 
             value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
             value += f'Скорость: {bold(int(speed / len(fights)))}%'
+
+            if len(bosses) > 255:
+                bosses = '⚔️Мноха Боссаф'
+
             embed.add_field(name=bosses, value=value, inline=False)
             await waiting_embed.add_reaction('🔄')
 
