@@ -192,8 +192,6 @@ POT_IMAGES = {
     'hp': '<:inv_potion_131:906160204868100127>',
     'hpmana': '<:inv_potion_134:906161254316507187>',
     'manarunes': '<:spell_shadow_sealofkings:906160351064760332>',
-    'drums': '<:inv_misc_drum_021:906160171489853470> <:inv_misc_drum_03:906160171217190912>'
-             ' <:inv_misc_drum_07:906160171204616232>',
     'herbs': '<:inv_misc_herb_flamecap:906160171007492097> <:inv_misc_herb_nightmareseed:906160171246567454>',
     'combatpots': '<:inv_potion_108:906160205094584380> <:inv_potion_107:906160171246551050>'
                   '<:inv_potion_133:906160204985544744>',

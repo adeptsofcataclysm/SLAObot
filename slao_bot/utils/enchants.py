@@ -6,166 +6,292 @@ ENCHANTABLE_SLOT = {
     7,  # Boots
     8,  # Bracers
     9,  # Hands
+    14,  # Cloak
     15,  # Main hand
 }
 
 BAD_ENCHANTS = {
     0: [
-        2841,  # Heavy Knothide Kit
-        2591,  # Head/Legs - ZG
-        2586,  # Head/Legs - ZG
-        2588,  # Head/Legs - ZG
         2584,  # Head/Legs - ZG
-        2590,  # Head/Legs - ZG
         2585,  # Head/Legs - ZG
+        2586,  # Head/Legs - ZG
         2587,  # Head/Legs - ZG
+        2588,  # Head/Legs - ZG
         2589,  # Head/Legs - ZG
+        2590,  # Head/Legs - ZG
+        2591,  # Head/Legs - ZG
+        2792,  # Knothide Kit
+        2841,  # Heavy Knothide Kit
+        2999,  # Arcanum of the Defender
+        3001,  # Arcanum of Renewal
+        3002,  # Arcanum of Power
+        3003,  # Arcanum of Ferocity
+        3004,  # Arcanum of the Gladiator
+        3096,  # Arcanum of the Outcast
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
     ],
     2: [
-        2606,  # Shoulder - ZG
-        2605,  # Shoulder - ZG
         2604,  # Shoulder - ZG
-        2996,  # Shoulder - Scryer Hon
-        2990,  # Shoulder - Scryer Hon
-        2992,  # Shoulder - Scryer Hon
-        2994,  # Shoulder - Scryer Hon
-        2981,  # Shoulder - Aldor Hon
-        2979,  # Shoulder - Aldor Hon
-        2983,  # Shoulder - Aldor Hon
-        2977,  # Shoulder - Aldor Hon
+        2605,  # Shoulder - ZG
+        2606,  # Shoulder - ZG
+        2792,  # Knothide Kit
         2841,  # Heavy Knothide Kit
+        2977,  # Shoulder - Aldor Hon
+        2978,  # Greater of Warding
+        2979,  # Shoulder - Aldor Hon
+        2980,  # Greater of Faith
+        2981,  # Shoulder - Aldor Hon
+        2982,  # Greater of Discipline
+        2983,  # Shoulder - Aldor Hon
+        2986,  # Greater of Vengeance
+        2990,  # Shoulder - Scryer Hon
+        2991,  # Greater of the Knight
+        2992,  # Shoulder - Scryer Hon
+        2993,  # Greater of the Oracle
+        2994,  # Shoulder - Scryer Hon
+        2995,  # Greater of the Orb
+        2996,  # Shoulder - Scryer Hon
+        2997,  # Greater of the Blade
+        2998,  # Inscription of Endurance
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
+        3806,  # Lesser of the Storm
+        3807,  # Lesser of the Crag
+        3875,  # Lesser of Axe
+        3876,  # Lesser of the Pinnacle
     ],
     4: [
-        908,  # Chest - 50 HP
-        850,  # Chest - 35 HP
-        254,  # Chest - 25 HP
+        15,  # 8 Armor
+        16,  # 16 Armor
+        17,  # 24 Armor
+        18,  # 32 Armor
+        24,  # Chest - 5 Mana
+        41,  # Chest - 5 HP
+        44,  # Chest - 10 Absorb
+        63,  # Chest - 25 Absorb
         242,  # Chest - 15 HP
-        41,   # Chest - 5 HP
-        913,  # Chest - 65 Mana
-        857,  # Chest - 50 Mana
-        843,  # Chest - 30 Mana
         246,  # Chest - 20 Mana
-        24,   # Chest - 5 Mana
-        928,  # Chest - 3 Stats
-        866,  # Chest - 2 Stats
+        254,  # Chest - 25 HP
+        843,  # Chest - 30 Mana
         847,  # Chest - 1 Stats
-        63,   # Chest - 25 Absorb
-        44,   # Chest - 10 Absorb
+        850,  # Chest - 35 HP
+        857,  # Chest - 50 Mana
+        866,  # Chest - 2 Stats
+        908,  # Chest - 50 HP
+        913,  # Chest - 65 Mana
+        928,  # Chest - 3 Stats
+        1843,  # 40 Armor
         1891,  # Chest - 4 Stats
         1893,  # Chest - 100 Mana
-        2841,  # Heavy Knothide Kit
-        2792,  # Knothide Kit
+        1960,  # Chest - 15 Def
+        1951,  # Chest - 16 Def
         2503,  # 3 Def
-        1843,  # 40 Armor
-        18,   # 32 Armor
-        17,   # 24 Armor
-        16,   # 16 Armor
-        15,   # 8 Armor
+        2659,  # Chest - 150 HP
+        2661,  # Chest - 6 Stats
+        2792,  # Knothide Kit
+        2841,  # Heavy Knothide Kit
+        2933,  # Chest - 15 Resilience
+        3233,  # Chest - 250 Mana
+        3236,  # Chest - 200 HP
+        3252,  # Chest - 8 Stats
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
     ],
     6: [
-        2591,  # Head/Legs - ZG
-        2586,  # Head/Legs - ZG
-        2588,  # Head/Legs - ZG
-        2584,  # Head/Legs - ZG
-        2590,  # Head/Legs - ZG
-        2585,  # Head/Legs - ZG
-        2587,  # Head/Legs - ZG
-        2589,  # Head/Legs - ZG
-        2583,  # Warrior Legs - ZG
-        2841,  # Heavy Knothide Kit
-        2792,  # Knothide Kit
-        2503,  # 3 Def
-        1843,  # 40 Armor
-        18,    # 32 Armor
-        17,    # 24 Armor
-        16,    # 16 Armor
         15,    # 8 Armor
+        16,    # 16 Armor
+        17,    # 24 Armor
+        18,    # 32 Armor
+        1843,  # 40 Armor
+        2503,  # 3 Def
+        2583,  # Warrior Legs - ZG
+        2584,  # Head/Legs - ZG
+        2585,  # Head/Legs - ZG
+        2586,  # Head/Legs - ZG
+        2587,  # Head/Legs - ZG
+        2588,  # Head/Legs - ZG
+        2589,  # Head/Legs - ZG
+        2590,  # Head/Legs - ZG
+        2591,  # Head/Legs - ZG
         2745,  # Legs - Silver Thread
+        2746,  # Legs - Golden Thread
         2747,  # Legs - Mystic Thread
+        2748,  # Legs - Runic Thread
+        2792,  # Knothide Kit
+        2841,  # Heavy Knothide Kit
         3010,  # Legs - 40AP/10Crit
+        3012,  # Legs - 50AP/12Crit
+        3013,  # Legs - 40Sta/12Agi
+        3325,  # Legs - 45Sta/15Agi
+        3326,  # Legs - 55AP/15Crit
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
+        3718,  # Legs - Shining Thread
+        3720,  # Legs - Azure Thread
+
     ],
     7: [
-        255,  # Boots - 3 Spi
-        904,  # Boots - 5 Agi
-        849,  # Boots - 3 Agi
-        247,  # Boots - 1 Agi
-        852,  # Boots - 5 Sta
-        724,  # Boots - 3 Sta
-        66,   # Boots - 1 Sta
-        1887,  # Boots - 7 Agi
-        929,  # Boots - 7 Sta
-        911,  # Boots - Minor Speed
-        464,  # Boots - Mount Speed
-        2841,  # Heavy Knothide Kit
-        2792,  # Knothide Kit
-        2503,  # 3 Def
-        1843,  # 40 Armor
-        18,   # 32 Armor
-        17,   # 24 Armor
-        16,   # 16 Armor
         15,   # 8 Armor
+        16,   # 16 Armor
+        17,   # 24 Armor
+        18,   # 32 Armor
+        66,   # Boots - 1 Sta
+        247,  # Boots - 1 Agi
+        255,  # Boots - 3 Spi
+        464,  # Boots - Mount Speed
+        724,  # Boots - 3 Sta
+        849,  # Boots - 3 Agi
+        852,  # Boots - 5 Sta
+        904,  # Boots - 5 Agi
+        911,  # Boots - Minor Speed
+        929,  # Boots - 7 Sta
+        1843,  # 40 Armor
+        1887,  # Boots - 7 Agi
+        2503,  # 3 Def
+        2649,  # Boots - 12 Sta
+        2656,  # Boots - Vitality
+        2657,  # Boots - 12 Agi
+        2658,  # Boots - Surefooted
+        2792,  # Knothide Kit
+        2841,  # Heavy Knothide Kit
+        2939,  # Cat's Swiftness
+        2940,  # Boar's SPeed
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
+        3824,  # Boots - 24 AP
+        3858,  # Boots - 5 hit
     ],
     8: [
-        927,  # Bracers - 7 Str
-        856,  # Bracers - 5 Str
-        823,  # Bracers - 3 Str
-        248,  # Bracers - 1 Str
-        929,  # Bracers - 7 Sta
-        852,  # Bracers - 5 Sta
-        724,  # Bracers - 3 Sta
-        66,   # Bracers - 1 Sta
         41,   # Bracers - 5 HP
-        907,  # Bracers - 7 Spi
-        851,  # Bracers - 5 Spi
+        66,   # Bracers - 1 Sta
+        248,  # Bracers - 1 Str
         255,  # Bracers - 3 Spi
-        905,  # Bracers - 5 Int
+        369,  # Bracers - 12 Int
         723,  # Bracers - 3 Int
+        724,  # Bracers - 3 Sta
+        823,  # Bracers - 3 Str
+        851,  # Bracers - 5 Spi
+        852,  # Bracers - 5 Sta
+        856,  # Bracers - 5 Str
+        905,  # Bracers - 5 Int
+        907,  # Bracers - 7 Spi
         923,  # Bracers - 3 Def
-        925,  # Bracers - 2 Def
         924,  # Bracers - 1 Def
-        1886,  # Bracers - 9 Sta
+        925,  # Bracers - 2 Def
+        927,  # Bracers - 7 Str
+        929,  # Bracers - 7 Sta
+        1600,  # Bracers - 38 AP
         1885,  # Bracers - 9 Str
+        1886,  # Bracers - 9 Sta
+        1891,  # Bracers - 4 stats
+        2326,  # Bracers - 23 SP
+        2647,  # Bracers - 12 Str
+        2648,  # Bracers - 12 def
+        2649,  # Bracers - 12 Sta
+        2650,  # Bracers - 20 SP
+        2679,  # Bracers - 6 mp5
     ],
     9: [
-        1887,  # Gloves - 7 Agi
-        904,   # Gloves - 5 Agi
-        856,   # Gloves - 5 Str
-        909,   # Gloves - 5 Herb
-        845,   # Gloves - 3 Herb
-        906,   # Gloves - 5 Mining
+        15,    # 8 Armor
+        16,    # 16 Armor
+        17,    # 24 Armor
+        18,    # 32 Armor
+        684,   # Gloves - 15 Str
         844,   # Gloves - 3 Mining
-        865,   # Gloves - 5 Skinn
+        845,   # Gloves - 3 Herb
         846,   # Gloves - 2 Fishing
-        2934,  # Gloves - Blasting
+        856,   # Gloves - 5 Str
+        865,   # Gloves - 5 Skinn
+        904,   # Gloves - 5 Agi
+        906,   # Gloves - 5 Mining
+        909,   # Gloves - 5 Herb
         927,   # Gloves - 7 Str
         930,   # Gloves - Mount Speed
-        2503,  # 3 Def
+        1594,  # Gloves - 26 AP
         1843,  # 40 Armor
-        18,    # 32 Armor
-        17,    # 24 Armor
-        16,    # 16 Armor
-        15,    # 8 Armor
+        1887,  # Gloves - 7 Agi
+        2322,  # Gloves - 19 SP
+        2503,  # 3 Def
+        2564,  # Gloves - 15 Agi
+        2613,  # Gloves - Threat
+        2614,  # Gloves - 20 SP
+        2615,  # Gloves - 20 SP
+        2616,  # Gloves - 20 SP
+        2617,  # Gloves - 20 SP
         2792,  # Knothide Kit
+        2841,  # Heavy Knothide Kit
+        2934,  # Gloves - Blasting
+        2935,  # Gloves - 15 Hit
+        2937,  # Gloves - 20 SP
+        3238,  # Gloves - Gatherer
+        3249,  # Gloves - 16 Crit
+        3329,  # Borean Kit
+        3330,  # Heavy Borean Kit
+        3829,  # Gloves - 35 AP
+    ],
+    14: [
+        65,  # Cloak - 1 Res
+        247,  # Cloak - 1 Agi
+        256,  # Cloak - 5 FR
+        368,  # Cloak - 12 Agi
+        744,  # Cloak - 20 Armor
+        783,  # Cloak - 10 Armor
+        848,  # Cloak - 30 Armor
+        884,  # Cloak - 50 Armor
+        903,  # Cloak - 3 Res
+        910,  # Cloak - Stealth
+        1257,  # Cloak - 15 Res
+        1441,  # Cloak - 15 Res
+        1889,  # Cloak - 70 Armor
+        2463,  # Cloak - 7 FR
+        2619,  # Cloak - 15 Res
+        2620,  # Cloak - 15 Res
+        2622,  # Cloak - 12 Dodge
+        2648,  # Cloak - 12 Def
+        2662,  # Cloak - 120 Armor
+        2664,  # Cloak - 7 Res
+        2938,  # Cloak - Spell Pen
+        3825,  # Cloak - 15 Haste
+        4747,  # Cloak - 16 Agi
+
     ],
     15: [
-        1903,  # Weapon - 9 Spi
-        255,  # Weapon - 3 Spi
-        1904,  # Weapon - 9 Int
-        723,  # Weapon - 3 Int
-        1896,  # Weapon - 9 Dmg
-        963,  # Weapon - 7 Dmg
-        943,  # Weapon - 3 Dmg
         241,  # Weapon - 2 Dmg
-        2443,  # Weapon - 7 Frost
-        1899,  # Weapon - Unholy
-        1898,  # Weapon - Lifesteal
+        255,  # Weapon - 3 Spi
+        723,  # Weapon - 3 Int
         803,  # Weapon - Fiery
-        854,  # Weapon - Elemental
         805,  # Weapon - 4 Dmg
+        854,  # Weapon - Elemental
         943,  # Weapon - 3 Dmg
-        2646,  # Weapon - 25 Agi
-        2568,  # Weapon - 22 Int
+        963,  # Weapon - 7 Dmg
+        1606,  # Weapon - 50 AP
+        1896,  # Weapon - 9 Dmg
+        1898,  # Weapon - Lifesteal
+        1899,  # Weapon - Unholy
         1900,  # Weapon - Crusader
+        1903,  # Weapon - 9 Spi
+        1904,  # Weapon - 9 Int
+        2443,  # Weapon - 7 Frost
+        2564,  # Weapon - 15 Agi
+        2567,  # Weapon - 20 Spi
+        2568,  # Weapon - 22 Int
+        2646,  # Weapon - 25 Agi
+        2667,  # Weapon - 70 AP
+        2668,  # Weapon - 20 Str
+        2669,  # Weapon - 40 SP
+        2670,  # Weapon - 35 Agi
+        2671,  # Weapon - 50 SP
+        2672,  # Weapon - 54 SP
+        2673,  # Weapon - Mongoose
+        2674,  # Weapon - Spellsurge
+        2675,  # Weapon - Battlemaster
+        3222,  # Weapon - 20 Agi
+        3225,  # Weapon - Executioner
+        3273,  # Weapon - Deathfrost
+        3828,  # Weapon - 85 AP
+        3846,  # Weapon - 40 SP
+        3830,  # Weapon - 50 SP
     ],
 }
 
