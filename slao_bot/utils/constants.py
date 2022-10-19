@@ -10,6 +10,7 @@ class Role(str, Enum):
 SPECS = {
     'DeathKnight_Blood': '<:DeathKnight_Blood:1015254887040303143>',
     'DeathKnight_Frost': '<:DeathKnight_Frost:1015254314547167252>',
+    'DeathKnight_Lichborne': '<:DeathKnight_Lichborne:1032213432382005268>',
     'DeathKnight_Runeblade': '<:DeathKnight_Runeblade:1030424355508863027>',
     'DeathKnight_Unholy': '<:DeathKnight_Unholy:1015252279668002826>',
     'Druid_Balance': '<:Druid_Balance:880098174985961542>',
