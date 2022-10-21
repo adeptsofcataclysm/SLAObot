@@ -1,33 +1,5 @@
 # Optimal gems should be at least of a Rare quality
-MIN_GEM_ILEVEL = 70
-
-# Usually rare gems are having 70 item level, but there are some exclusion.
-RARE_GEMS = {
-    38549,  # Epic PvP Gem
-    32836,  # Purified Shadow pearl
-    28118,  # Epic PvP Gem
-    27679,  # Epic PvP Gem
-    30571,  # Rare Haala Gem
-    27812,  # Rare Honor Hold Gem
-    30598,  # Rare Haala Gem
-    27777,  # Rare Thrallmar Gem
-    28362,  # Epic PvP Gem
-    28361,  # Rare Honor Hold Gem
-    28363,  # Epic PvP Gem
-    28123,  # Epic PvP Gem
-    28119,  # Epic PvP Gem
-    28120,  # Epic PvP Gem
-    28360,  # Rare Thrallmar Gem
-    38545,  # Epic PvP Gem
-    38550,  # Epic PvP Gem
-    27785,  # Rare Thrallmar Gem
-    27809,  # Rare Honor Hold Gem
-    38546,  # Epic PvP Gem
-    27820,  # Rare Honor Hold Gem
-    38548,  # Epic PvP Gem
-    27786,  # Rare Thrallmar Gem
-    38547,  # Epic PvP Gem
-}
+MIN_GEM_ILEVEL = 80
 
 # Number of sockets in a particular item.
 SOCKETS = {

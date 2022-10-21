@@ -15,7 +15,7 @@ from utils import enchants
 from utils.constants import SLOT_NAMES, Role
 from utils.models import Raider
 from utils.report import Report
-from utils.sockets import MIN_GEM_ILEVEL, RARE_GEMS, SOCKETS
+from utils.sockets import MIN_GEM_ILEVEL, SOCKETS
 from utils.wcl_client import WCLClient
 
 
@@ -92,7 +92,7 @@ class RaidWeakEquipment:
             # Either no sockets or no gems. Empty socket already checked in another method
             return True
 
-        return all((gem['itemLevel'] >= MIN_GEM_ILEVEL or gem['id'] in RARE_GEMS) for gem in item['gems'])
+        return all((gem['itemLevel'] >= MIN_GEM_ILEVEL) for gem in item['gems'])
 
     @staticmethod
     def _check_enchants(item: Dict) -> bool:
