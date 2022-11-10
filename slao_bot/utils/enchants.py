@@ -94,7 +94,7 @@ BAD_ENCHANTS = {
         2933,  # Chest - 15 Resilience
         3233,  # Chest - 250 Mana
         3236,  # Chest - 200 HP
-        3252,  # Chest - 8 Stats
+        # fine for phase 1        3252,  # Chest - 8 Stats
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
     ],
