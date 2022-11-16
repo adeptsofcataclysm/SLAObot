@@ -333,4 +333,6 @@ EXCLUDED_GEAR = {
     30316,  # Devastation
     30317,  # Cosmic Infuser
     30318,  # Netherstrand Longbow
+    23824,  # Rocket Boots Xtreme
+    35581,  # Rocket Boots Xtreme Lite
 }

@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import aiohttp
 import tenacity
+import utils.engineer
 from diskcache import Cache
 from gql import Client
 from gql.client import AsyncClientSession
@@ -185,3 +186,64 @@ class WCLClient:
         result = await self._session.execute(query)
 
         return result
+
+    @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+    async def get_bombs(self, report_id: str) -> Dict[str, Any]:
+        """
+        Gets data about bombs and other similar consumables.
+
+        :param report_id: :class:`str` WarcraftLogs report ID.
+        :return: GraphQL request result. Should be a JSON based dictionary object.
+        """
+
+        ds = DSLSchema(self._client.schema)
+
+        query_report = ds.Query.reportData
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.zone.select(ds.Zone.name),
+            ))
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        if result['reportData']['report']['zone']['name'] is None:
+            raise Exception('Zone name not found')
+
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+        bomb_spells = ",".join(utils.engineer.BOMB_SPELLS)
+        other_spells = ",".join(utils.engineer.OTHER_SPELLS)
+
+        query_report = ds.Query.reportData
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                engineers=ds.Report.table(
+                    dataType='Casts',
+                    startTime=0,
+                    endTime=end_time,
+                    abilityID=utils.engineer.GLOVES_ENCHANT),
+                bombs=ds.Report.table(
+                    dataType='DamageTaken',
+                    startTime=0,
+                    endTime=end_time,
+                    hostilityType='Enemies',
+                    viewBy='Ability',
+                    filterExpression=f'ability.ID in ({bomb_spells})'),
+                others=ds.Report.table(
+                    dataType='DamageTaken',
+                    startTime=0,
+                    endTime=end_time,
+                    hostilityType='Enemies',
+                    viewBy='Ability',
+                    filterExpression=f'ability.ID in ({other_spells})'),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        return result
+
+

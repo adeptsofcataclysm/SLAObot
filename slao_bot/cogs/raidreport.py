@@ -152,6 +152,7 @@ class RaidReport(commands.Cog):
 
         await waiting_embed.add_reaction('🧪')
         await waiting_embed.add_reaction('🛂')
+        await waiting_embed.add_reaction('💣')
 
     @staticmethod
     def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:

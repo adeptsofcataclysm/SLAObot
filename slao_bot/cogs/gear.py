@@ -121,6 +121,8 @@ class RaidWeakEquipment:
         if item['slot'] not in enchants.ENCHANTABLE_SLOT:
             # No need to check enchants for that slot
             return True
+        if item['id'] in enchants.EXCLUDED_GEAR:
+            return True
         if 'permanentEnchant' not in item:
             # No enchant already checked in another method
             return True

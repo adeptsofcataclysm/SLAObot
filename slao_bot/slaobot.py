@@ -10,6 +10,7 @@ extensions = (
     'cogs.potions',
     'cogs.signup',
     'cogs.gear',
+    'cogs.bomberman',
 )
 
 
