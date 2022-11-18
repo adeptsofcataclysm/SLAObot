@@ -36,5 +36,3 @@ OTHER_SPELLS = {
     '11350',  # Oil of Immolation
     '28715',  # Flamecap
 }
-
-

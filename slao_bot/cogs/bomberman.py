@@ -2,11 +2,12 @@ from typing import Dict
 
 import discord
 import tenacity
-from discord import Embed, Colour, RawReactionActionEvent
+from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-
-from slaobot import _validate_reaction_payload, _validate_reaction_message, _delete_reply
+from slaobot import (
+    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
+)
 from utils.wcl_client import WCLClient
 
 
@@ -64,8 +65,8 @@ class Bomberman(commands.Cog):
                 return
 
         engs = self._make_engineers(rs['reportData']['report']['engineers']['data']['entries'])
-        dmg = self._calculate_damage(rs['reportData']['report']['bombs']['data']['entries'])
-        other = self._calculate_other(rs['reportData']['report']['others']['data']['entries'])
+        dmg = self.calculate_damage(rs['reportData']['report']['bombs']['data']['entries'])
+        other = self.calculate_damage(rs['reportData']['report']['others']['data']['entries'])
 
         embed = Embed(title='Бомбим!', description='Использование гранат и схожих расходников. '
                                                    'Много гранат - быстрее пройден рейд.', colour=Colour.teal())
@@ -76,6 +77,19 @@ class Bomberman(commands.Cog):
         embed.add_field(name='Их соратники', value=self._print_others(other), inline=False)
 
         await ctx.reply(embed=embed)
+
+    def calculate_damage(self, entries: Dict) -> Dict:
+        damage = {}
+        if len(entries) == 0:
+            return damage
+        for entry in entries:
+            if 'subentries' in entry:
+                for subentry in entry['subentries']:
+                    damage = self._add_damage(subentry, damage)
+            else:
+                damage = self._add_damage(entry, damage)
+
+        return damage
 
     @staticmethod
     def _make_engineers(entries: Dict) -> Dict:
@@ -88,52 +102,15 @@ class Bomberman(commands.Cog):
         return engineers
 
     @staticmethod
-    def _calculate_damage(entries: Dict) -> Dict:
-        damage = {}
-        if len(entries) == 0:
-            return damage
-        for entry in entries:
-            if 'subentries' in entry:
-                for subentry in entry['subentries']:
-                    if subentry['actorType'] == 'TricksOfTheTrade':
-                        continue
-                    if subentry['actorName'] in damage:
-                        damage[subentry['actorName']] += subentry['total']
-                    else:
-                        damage[subentry['actorName']] = subentry['total']
-            else:
-                if entry['actorType'] == 'TricksOfTheTrade':
-                    continue
-                if entry['actorName'] in damage:
-                    damage[entry['actorName']] += entry['total']
-                else:
-                    damage[entry['actorName']] = entry['total']
+    def _add_damage(raider: Dict, result: Dict) -> Dict:
+        if raider['actorType'] == 'TricksOfTheTrade':
+            return result
+        if raider['actorName'] in result:
+            result[raider['actorName']] += raider['total']
+        else:
+            result[raider['actorName']] = raider['total']
 
-        return damage
-
-    @staticmethod
-    def _calculate_other(entries: Dict) -> Dict:
-        others = {}
-        if len(entries) == 0:
-            return others
-        for entry in entries:
-            if 'subentries' in entry:
-                for subentry in entry['subentries']:
-                    if subentry['actorType'] == 'TricksOfTheTrade':
-                        continue
-                    if subentry['actorName'] in others:
-                        others[subentry['actorName']] += subentry['total']
-                    else:
-                        others[subentry['actorName']] = subentry['total']
-            else:
-                if entry['actorType'] == 'TricksOfTheTrade':
-                    continue
-                if entry['actorName'] in others:
-                    others[entry['actorName']] += entry['total']
-                else:
-                    others[entry['actorName']] = entry['total']
-
-        return others
+        return result
 
     @staticmethod
     def _print_engineers(engineers: Dict, damage: Dict) -> str:
@@ -156,7 +133,7 @@ class Bomberman(commands.Cog):
             engineers = {key: val for key, val in engineers.items() if val != raider_name}
 
         if len(engineers) > 0:
-            for raider_id, raider_name in engineers.items():
+            for _raider_id, raider_name in engineers.items():
                 if len(value) > 980:
                     return value
                 if len(value) > 0:

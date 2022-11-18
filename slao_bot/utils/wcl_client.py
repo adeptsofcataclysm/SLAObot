@@ -213,8 +213,8 @@ class WCLClient:
             raise Exception('Zone name not found')
 
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
-        bomb_spells = ",".join(utils.engineer.BOMB_SPELLS)
-        other_spells = ",".join(utils.engineer.OTHER_SPELLS)
+        bomb_spells = ','.join(utils.engineer.BOMB_SPELLS)
+        other_spells = ','.join(utils.engineer.OTHER_SPELLS)
 
         query_report = ds.Query.reportData
 
@@ -245,5 +245,3 @@ class WCLClient:
         result = await self._session.execute(query)
 
         return result
-
-
