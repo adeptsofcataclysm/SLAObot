@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import aiohttp
 import tenacity
@@ -112,10 +112,16 @@ class WCLClient:
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
+        report_key = 'pots_' + report_id
+        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        if cached_report:
+            return cached_report
+
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
         query_report.select(
             ds.ReportData.report(code=report_id).select(
+                ds.Report.endTime,
                 mana=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
@@ -145,6 +151,7 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
+        self._cache.set(report_key, result)
 
         return result
 
@@ -173,6 +180,11 @@ class WCLClient:
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
+        report_key = 'gear_' + report_id
+        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        if cached_report:
+            return cached_report
+
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
         query_report.select(
@@ -184,6 +196,7 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
+        self._cache.set(report_key, result)
 
         return result
 
@@ -212,6 +225,11 @@ class WCLClient:
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
+        report_key = 'bombs_' + report_id
+        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        if cached_report:
+            return cached_report
+
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
         bomb_spells = ','.join(utils.engineer.BOMB_SPELLS)
         other_spells = ','.join(utils.engineer.OTHER_SPELLS)
@@ -220,6 +238,7 @@ class WCLClient:
 
         query_report.select(
             ds.ReportData.report(code=report_id).select(
+                ds.Report.endTime,
                 engineers=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
@@ -243,5 +262,20 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
+        self._cache.set(report_key, result)
 
         return result
+
+    def get_cache(self, report_key: str, end_time: int) -> Optional[Dict]:
+        cached_report = self._cache.get(report_key)
+
+        if cached_report is None:
+            return None
+
+        if 'endTime' not in cached_report['reportData']['report']:
+            return None
+
+        if cached_report['reportData']['report']['endTime'] != end_time:
+            return None
+
+        return cached_report

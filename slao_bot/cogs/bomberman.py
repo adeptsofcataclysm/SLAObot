@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Dict
 
 import discord
@@ -12,12 +13,20 @@ from utils.wcl_client import WCLClient
 
 
 class Bomberman(commands.Cog):
+
+    _engineers: Dict
+    _bomb_damage: Dict[str, int]
+    _other_damage: Dict[str, int]
+
     def __init__(self, bot):
         """Cog to check potions used during a raid.
 
         :param bot:
         """
         self.bot = bot
+        self._engineers = defaultdict()
+        self._bomb_damage = defaultdict()
+        self._other_damage = defaultdict()
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
@@ -64,17 +73,19 @@ class Bomberman(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        engs = self._make_engineers(rs['reportData']['report']['engineers']['data']['entries'])
-        dmg = self.calculate_damage(rs['reportData']['report']['bombs']['data']['entries'])
-        other = self.calculate_damage(rs['reportData']['report']['others']['data']['entries'])
+        self.make_engineers(rs['reportData']['report']['engineers']['data']['entries'])
+        self._bomb_damage = self.calculate_damage(rs['reportData']['report']['bombs']['data']['entries'])
+        self._bomb_damage = dict(sorted(self._bomb_damage.items(), key=lambda item: item[1], reverse=True))
+        self._other_damage = self.calculate_damage(rs['reportData']['report']['others']['data']['entries'])
+        self._other_damage = dict(sorted(self._other_damage.items(), key=lambda item: item[1], reverse=True))
 
         embed = Embed(title='Бомбим!', description='Использование гранат и схожих расходников. '
                                                    'Много гранат - быстрее пройден рейд.', colour=Colour.teal())
         embed.set_author(name='Элитный отряд синих гренадёров', url='',
                          icon_url='https://cdn.icon-icons.com/icons2/1465/PNG/64/409bomb_100833.png')
 
-        embed.add_field(name='Сапёры', value=self._print_engineers(engs, dmg), inline=False)
-        embed.add_field(name='Их соратники', value=self._print_others(other), inline=False)
+        embed.add_field(name='Сапёры', value=self.print_engineers(), inline=False)
+        embed.add_field(name='Их соратники', value=self.print_others(), inline=False)
 
         await ctx.reply(embed=embed)
 
@@ -91,15 +102,53 @@ class Bomberman(commands.Cog):
 
         return damage
 
-    @staticmethod
-    def _make_engineers(entries: Dict) -> Dict:
-        engineers = {}
+    def make_engineers(self, entries: Dict) -> None:
         if len(entries) == 0:
-            return engineers
+            return
         for entry in entries:
-            engineers[entry['id']] = entry['name']
+            self._engineers[entry['id']] = entry['name']
 
-        return engineers
+        return
+
+    def print_engineers(self) -> str:
+        if len(self._bomb_damage) == 0:
+            return 'Вагонимся'
+
+        value = ''
+        for raider_name, raider_damage in self._bomb_damage.items():
+            if len(value) > 980:
+                return value
+            if len(value) > 0:
+                value += ', '
+
+            value += f'{raider_name}({raider_damage})'
+            self._engineers = {key: val for key, val in self._engineers.items() if val != raider_name}
+
+        if len(self._engineers) > 0:
+            for _raider_id, raider_name in self._engineers.items():
+                if len(value) > 980:
+                    return value
+                if len(value) > 0:
+                    value += ', '
+
+                value += f'{raider_name}(0)'
+
+        return value
+
+    def print_others(self) -> str:
+        if len(self._other_damage) == 0:
+            return 'Не завезли'
+
+        value = ''
+        for raider_name, raider_damage in self._other_damage.items():
+            if len(value) > 980:
+                return value
+            if len(value) > 0:
+                value += ', '
+
+            value += f'{raider_name}({raider_damage})'
+
+        return value
 
     @staticmethod
     def _add_damage(raider: Dict, result: Dict) -> Dict:
@@ -111,59 +160,6 @@ class Bomberman(commands.Cog):
             result[raider['actorName']] = raider['total']
 
         return result
-
-    @staticmethod
-    def _print_engineers(engineers: Dict, damage: Dict) -> str:
-        if len(damage) == 0:
-            return 'Вагонимся'
-
-        damage = sorted(damage.items(), key=lambda item: item[1], reverse=True)
-
-        value = ''
-        for raider_name, raider_damage in damage:
-            if len(value) > 980:
-                return value
-            if len(value) > 0:
-                value += ', '
-
-            value += raider_name
-            value += '('
-            value += str(raider_damage)
-            value += ')'
-            engineers = {key: val for key, val in engineers.items() if val != raider_name}
-
-        if len(engineers) > 0:
-            for _raider_id, raider_name in engineers.items():
-                if len(value) > 980:
-                    return value
-                if len(value) > 0:
-                    value += ', '
-
-                value += raider_name
-                value += '(0)'
-
-        return value
-
-    @staticmethod
-    def _print_others(others: Dict) -> str:
-        if len(others) == 0:
-            return 'Не завезли'
-
-        others = sorted(others.items(), key=lambda item: item[1], reverse=True)
-
-        value = ''
-        for raider_name, raider_damage in others:
-            if len(value) > 980:
-                return value
-            if len(value) > 0:
-                value += ', '
-
-            value += raider_name
-            value += '('
-            value += str(raider_damage)
-            value += ')'
-
-        return value
 
 
 def setup(bot):
