@@ -33,6 +33,6 @@ OTHER_SPELLS = {
     '22792',  # Thornling Seed
     '15239',  # Crystal Charge
     '23000',  # Ez-Thro Dynamite II
-    '11350',  # Oil of Immolation
+    '11351',  # Oil of Immolation
     '28715',  # Flamecap
 }
