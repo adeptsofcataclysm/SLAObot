@@ -73,7 +73,7 @@ class RaidWeakEquipment:
             return True
         if 'gems' not in item:
             # No gems in sockets
-            return True
+            return False
         item_gems = item.get('gems')
         if len(item_gems) < sockets_num:
             # Gems not in all sockets
