@@ -1,4 +1,4 @@
-aiohttp==3.7.4.post0
+aiohttp==3.8.0
 discord==1.7.3
 gql[all]==3.0.0a6
 pydantic==1.8.2
