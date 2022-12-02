@@ -20,7 +20,7 @@ class SignUp(commands.Cog):
         dm_channel = await member.create_dm()
         intro_message = (f'Привет, {format(member.mention)}! \r\n'
                          'Приветствуем тебя на Discord сервере гильдии <Адепты Катаклизма>! \r\n'
-                         'Мы играем в The Burning Crusade Classic за Альянс на Пламегоре. \r\n'
+                         'Мы играем в Wrath of the Lich King Classic за Альянс на Пламегоре. \r\n'
                          'Если хочешь вступить к нам в гильдию, то напиши мне + в ответ. \r\n'
                          'Удачного времяпрепровождения!')
 
@@ -53,7 +53,7 @@ class SignUp(commands.Cog):
                                      description=message.content,
                                      colour=Colour.light_gray())
                 signup_embed.add_field(name='Пользователь', value=format(message.author.mention))
-                signup_embed.set_thumbnail(url=message.author.avatar_url)
+                signup_embed.set_thumbnail(url=message.author.avatar.url)
                 await signup_channel.send(embed=signup_embed)
 
     @commands.command(hidden=True)
@@ -62,5 +62,5 @@ class SignUp(commands.Cog):
         self.bot.dispatch('member_join', ctx.author)
 
 
-def setup(bot):
-    bot.add_cog(SignUp(bot))
+async def setup(bot):
+    await bot.add_cog(SignUp(bot))

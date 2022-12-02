@@ -251,5 +251,5 @@ class Gear(commands.Cog):
         return raiders_by_role
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Gear(bot))
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Gear(bot))

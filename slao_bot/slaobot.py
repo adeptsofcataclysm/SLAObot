@@ -21,6 +21,7 @@ class SlaoBot(commands.Bot):
             members=True,
             emojis=True,
             messages=True,
+            message_content=True,
             reactions=True,
         )
 
@@ -30,8 +31,12 @@ class SlaoBot(commands.Bot):
             activity=discord.Activity(type=discord.ActivityType.listening, name=f'{settings.command_prefix}'),
         )
 
+    async def setup_hook(self) -> None:
         for extension in extensions:
-            self.load_extension(extension)
+            try:
+                await self.load_extension(extension)
+            except Exception:
+                print(f'Failed to load extension {extension}.')
 
     async def on_ready(self) -> None:
         print(f'We have logged in as {self.user}')

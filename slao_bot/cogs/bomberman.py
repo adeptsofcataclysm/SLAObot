@@ -162,5 +162,5 @@ class Bomberman(commands.Cog):
         return result
 
 
-def setup(bot):
-    bot.add_cog(Bomberman(bot))
+async def setup(bot):
+    await bot.add_cog(Bomberman(bot))

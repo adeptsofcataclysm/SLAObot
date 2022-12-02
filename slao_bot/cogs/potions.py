@@ -105,5 +105,5 @@ class Potions(commands.Cog):
         return result if len(result) > 0 else 'Вагонимся'
 
 
-def setup(bot):
-    bot.add_cog(Potions(bot))
+async def setup(bot):
+    await bot.add_cog(Potions(bot))
