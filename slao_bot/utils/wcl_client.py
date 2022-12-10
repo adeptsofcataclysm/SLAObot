@@ -62,7 +62,7 @@ class WCLClient:
         if result['reportData']['report']['zone']['name'] is None:
             raise Exception('Zone name not found')
 
-        cached_report = self._cache.get('report_id')
+        cached_report = self._cache.get(report_id)
         if (cached_report
                 and cached_report['reportData']['report']['endTime'] == result['reportData']['report']['endTime']):
             return cached_report
@@ -83,7 +83,7 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
-        self._cache.set('report_id', result)
+        self._cache.set(report_id, result)
 
         return result
 

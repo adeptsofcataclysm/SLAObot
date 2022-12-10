@@ -35,6 +35,8 @@ class RaidWeakEquipment:
 
         for raider in raiders:
             for item in raider.gear:
+                if item['id'] == 0:
+                    continue
                 if not cls._check_sockets(item):
                     empty_sockets[raider.name].add(SLOT_NAMES.get(item['slot']))
                 if not cls._check_gems(item):
