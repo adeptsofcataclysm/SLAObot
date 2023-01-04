@@ -87,6 +87,10 @@ class Bomberman(commands.Cog):
         embed.add_field(name='Сапёры', value=self.print_engineers(), inline=False)
         embed.add_field(name='Их соратники', value=self.print_others(), inline=False)
 
+        self._engineers.clear()
+        self._bomb_damage.clear()
+        self._other_damage.clear()
+
         await ctx.reply(embed=embed)
 
     def calculate_damage(self, entries: Dict) -> Dict:
