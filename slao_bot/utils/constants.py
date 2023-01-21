@@ -85,6 +85,8 @@ ZONE_IMAGES = {
     1015: 'https://cdn.discordapp.com/attachments/776184190743216128/1029314252177166346/naxx1.png',
     # Archavon
     1016: 'https://cdn.discordapp.com/attachments/776184190743216128/1030423276092149801/vault.png',
+    # Ulduar
+    1017: 'https://cdn.discordapp.com/attachments/762790105026920468/1064611612188754090/ulduar_3.png',
 }
 
 ZONE_NAMES = {
@@ -119,6 +121,8 @@ ZONE_NAMES = {
           ':seven:',
     1016: ':regional_indicator_a: :regional_indicator_r: :regional_indicator_c: :regional_indicator_h: '
           ':regional_indicator_a: :regional_indicator_v: :regional_indicator_o: :regional_indicator_n:',
+    1017: ':regional_indicator_u: :regional_indicator_l: :regional_indicator_d: :regional_indicator_u: '
+          ':regional_indicator_a: :regional_indicator_r:',
 
 
 }
