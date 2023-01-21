@@ -1,5 +1,5 @@
 aiohttp==3.8.0
-discord==1.7.3
+discord==2.1.0
 gql[all]==3.4.0
 pydantic==1.8.2
 tenacity==8.0.1
