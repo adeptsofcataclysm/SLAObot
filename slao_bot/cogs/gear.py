@@ -8,15 +8,16 @@ import tenacity
 from discord import Colour, Embed, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import (
-    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
-)
 from utils import enchants
 from utils.constants import SLOT_NAMES, Role
 from utils.models import Raider
 from utils.report import Report
 from utils.sockets import MIN_GEM_ILEVEL, SOCKETS
 from utils.wcl_client import WCLClient
+
+from slaobot import (
+    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
+)
 
 
 @dataclass
@@ -52,15 +53,6 @@ class RaidWeakEquipment:
             no_enchants=no_enchants,
             low_enchants=low_enchants,
         )
-
-    @classmethod
-    def add_raider(cls, blacklist: Dict[str, Set], raider: Raider, item: Dict) -> Dict[str, Set]:
-        if raider.name in blacklist:
-            blacklist[raider.name].add(SLOT_NAMES.get(item['slot']))
-        else:
-            blacklist[raider.name].add(SLOT_NAMES.get(item['slot']))
-
-        return blacklist
 
     @staticmethod
     def _check_sockets(item: Dict) -> bool:

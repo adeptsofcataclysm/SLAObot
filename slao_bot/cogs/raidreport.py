@@ -6,13 +6,14 @@ import tenacity
 from discord import Colour, Embed, Message, RawReactionActionEvent
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import (
-    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
-)
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
 from utils.report import Report
 from utils.wcl_client import WCLClient
+
+from slaobot import (
+    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
+)
 
 
 class RaidReport(commands.Cog):
