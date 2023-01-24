@@ -1,5 +1,5 @@
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set
 
@@ -21,108 +21,60 @@ from utils.wcl_client import WCLClient
 
 @dataclass
 class RaidWeakEquipment:
-    empty_sockets: Dict[str, Set]
-    low_quality_gems: Dict[str, Set]
-    no_enchants: Dict[str, Set]
-    low_enchants: Dict[str, Set]
+    empty_sockets: Dict[str, Set] = field(default_factory=defaultdict)
+    low_quality_gems: Dict[str, Set] = field(default_factory=defaultdict)
+    no_enchants: Dict[str, Set] = field(default_factory=defaultdict)
+    low_enchants: Dict[str, Set] = field(default_factory=defaultdict)
 
-    @classmethod
-    def from_raiders(cls, raiders: Iterable[Raider]) -> 'RaidWeakEquipment':
-        empty_sockets = defaultdict(set)
-        low_quality_gems = defaultdict(set)
-        no_enchants = defaultdict(set)
-        low_enchants = defaultdict(set)
+    def from_raiders(self, raiders: Iterable[Raider]) -> 'RaidWeakEquipment':
+        self.empty_sockets = defaultdict(set)
+        self.low_quality_gems = defaultdict(set)
+        self.no_enchants = defaultdict(set)
+        self.low_enchants = defaultdict(set)
 
         for raider in raiders:
             for item in raider.gear:
                 if item['id'] == 0:
                     continue
-                if not cls._check_sockets(item):
-                    empty_sockets[raider.name].add(SLOT_NAMES.get(item['slot']))
-                if not cls._check_gems(item):
-                    low_quality_gems[raider.name].add(SLOT_NAMES.get(item['slot']))
-                if not cls._check_enchants(item):
-                    no_enchants[raider.name].add(SLOT_NAMES.get(item['slot']))
-                if not cls._check_enchants_quality(item):
-                    low_enchants[raider.name].add(SLOT_NAMES.get(item['slot']))
+                self._check_sockets(raider.name, item)
+                self._check_enchants(raider.name, item)
 
-        return cls(
-            empty_sockets=empty_sockets,
-            low_quality_gems=low_quality_gems,
-            no_enchants=no_enchants,
-            low_enchants=low_enchants,
-        )
+        return self
 
-    @staticmethod
-    def _check_sockets(item: Dict) -> bool:
-        """Check that there are no empty sockets
+    def _check_sockets(self, raider_name: str, item: Dict) -> None:
+        """Check item for missing or low quality gems
 
-        :param item: Dictionary with item info
-        :return: True if check passed. False if check failed, e.g. socket(s) is empty
+        :param raider_name: Raider name
+        :param item: Equipped item dictionary
         """
         sockets_num = SOCKETS.get(item['id'])
         if sockets_num is None:
             # No sockets in item
-            return True
-        if 'gems' not in item:
+            return
+        if 'gems' not in item or len(item.get('gems')) < sockets_num:
             # No gems in sockets
-            return False
-        item_gems = item.get('gems')
-        if len(item_gems) < sockets_num:
-            # Gems not in all sockets
-            return False
-        # All checks passed
-        return True
+            self.empty_sockets[raider_name].add(SLOT_NAMES.get(item['slot']))
+        else:
+            # All sockets are gemmed. Let's check gems level
+            for gem in item['gems']:
+                if gem['itemLevel'] < MIN_GEM_ILEVEL:
+                    self.low_quality_gems[raider_name].add(SLOT_NAMES.get(item['slot']))
 
-    @staticmethod
-    def _check_gems(item: Dict) -> bool:
-        """Check gems quality for socket gems
+    def _check_enchants(self, raider_name: str, item: Dict) -> None:
+        """Checks item for missing or low quality enchant
 
-        :param item: Dictionary with item info
-        :return: True if check passed. False if check failed, e.g. gem quality if lower then required
-        """
-        if 'gems' not in item:
-            # Either no sockets or no gems. Empty socket already checked in another method
-            return True
-
-        return all((gem['itemLevel'] >= MIN_GEM_ILEVEL) for gem in item['gems'])
-
-    @staticmethod
-    def _check_enchants(item: Dict) -> bool:
-        """Checks that item that should be enchanted is enchanted
-
-        :param item: Dictionary with item info
-        :return: True if check passed. False if check failed, e.g. missing enchant
+        :param raider_name: Raider name
+        :param item: Equipped item dictionary
         """
         if item['slot'] not in enchants.ENCHANTABLE_SLOT:
             # No need to check enchants for that slot
-            return True
+            return
         if item['id'] in enchants.EXCLUDED_GEAR:
-            return True
+            return
         if 'permanentEnchant' not in item:
-            return False
-        # All checks passed
-        return True
-
-    @staticmethod
-    def _check_enchants_quality(item: Dict) -> bool:
-        """Checks that item doesn't have low level enchants
-
-        :param item: Dictionary with item info
-        :return: True if check passed. False if check failed, e.g. low level enchant used
-        """
-        if item['slot'] not in enchants.ENCHANTABLE_SLOT:
-            # No need to check enchants for that slot
-            return True
-        if item['id'] in enchants.EXCLUDED_GEAR:
-            return True
-        if 'permanentEnchant' not in item:
-            # No enchant already checked in another method
-            return True
-        if item['permanentEnchant'] in enchants.BAD_ENCHANTS[item['slot']]:
-            return False
-
-        return True
+            self.no_enchants[raider_name].add(SLOT_NAMES.get(item['slot']))
+        elif item['permanentEnchant'] in enchants.BAD_ENCHANTS[item['slot']]:
+            self.low_enchants[raider_name].add(SLOT_NAMES.get(item['slot']))
 
 
 class Gear(commands.Cog):
@@ -183,7 +135,8 @@ class Gear(commands.Cog):
         # Prepare gear list
         raiders = self._make_raiders(rs)
         # Check gems and enchants
-        equipment = RaidWeakEquipment.from_raiders(chain.from_iterable(raiders.values()))
+        equipment = RaidWeakEquipment()
+        equipment.from_raiders(chain.from_iterable(raiders.values()))
 
         embed.add_field(
             name='Нет камней',
