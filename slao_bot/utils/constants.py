@@ -87,6 +87,11 @@ ZONE_IMAGES = {
     1016: 'https://cdn.discordapp.com/attachments/776184190743216128/1030423276092149801/vault.png',
     # Ulduar
     1017: 'https://cdn.discordapp.com/attachments/762790105026920468/1064611612188754090/ulduar_3.png',
+    # ToC
+    1018: 'https://cdn.discordapp.com/attachments/762790105026920468/1121486358117109912/ToC_Banner.png',
+    # Ony-80
+    1019: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
+
 }
 
 ZONE_NAMES = {
@@ -123,6 +128,8 @@ ZONE_NAMES = {
           ':regional_indicator_a: :regional_indicator_v: :regional_indicator_o: :regional_indicator_n:',
     1017: ':regional_indicator_u: :regional_indicator_l: :regional_indicator_d: :regional_indicator_u: '
           ':regional_indicator_a: :regional_indicator_r:',
+    1018: ':regional_indicator_t: :regional_indicator_o: :regional_indicator_c:',
+    1019: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
 
 
 }
