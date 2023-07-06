@@ -94,6 +94,12 @@ class Gear(commands.Cog):
                 return
 
         embed = Embed(title='Камни и зачаровывание', description='Щас будет душно!', colour=Colour.teal())
+        embed.set_author(
+            name='Лавка зачарованных самоцветов',
+            url='',
+            icon_url='https://cdn.icon-icons.com/icons2/3580/PNG/64/'
+                     'value_jewellery_gem_finance_diamond_icon_225769.png',
+        )
 
         # Prepare gear list
         raiders = self._make_raiders(rs)

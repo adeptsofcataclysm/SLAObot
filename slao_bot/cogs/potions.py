@@ -28,7 +28,12 @@ class Potions(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        embed = Embed(title='Расходники', description='Пьём по КД, крутим логи!', colour=Colour.teal())
+        embed = Embed(title='Всем по пре-поту!', description='Пьём по КД, крутим логи.', colour=Colour.teal())
+        embed.set_author(
+            name='Синяя яма',
+            url='',
+            icon_url='https://cdn.icon-icons.com/icons2/2419/PNG/64/beer_drink_icon_146844.png',
+        )
         embed.add_field(name=POT_IMAGES.get('mana'),
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
                         inline=False)
