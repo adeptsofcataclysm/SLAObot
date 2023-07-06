@@ -1,6 +1,5 @@
 import discord
 from discord import Embed
-
 from slaobot import SlaoBot
 
 

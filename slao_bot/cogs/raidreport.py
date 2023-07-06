@@ -6,13 +6,12 @@ import tenacity
 from discord import Colour, Embed, Message
 from discord.ext import commands
 from discord.ext.commands import Context
+from slaobot import SlaoBot
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
 from utils.raidview import RaidView
 from utils.report import Report
 from utils.wcl_client import WCLClient
-
-from slaobot import SlaoBot
 
 
 class RaidReport(commands.Cog):
@@ -84,7 +83,7 @@ class RaidReport(commands.Cog):
         # Print raiders
         self._make_raiders(embed, rs)
 
-        await waiting_embed.edit(embed=embed)
+        await waiting_embed.edit(embed=embed, view=RaidView(self.bot))
 
     @staticmethod
     def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
