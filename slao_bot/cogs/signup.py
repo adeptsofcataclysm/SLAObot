@@ -17,6 +17,10 @@ class SignUp(commands.Cog):
     async def on_member_join(self, member: Member) -> None:
         if member.bot:
             return
+
+        if not member.guild.get_channel(settings.signup_channel_id):
+            return
+
         dm_channel = await member.create_dm()
         intro_message = (f'Привет, {format(member.mention)}! \r\n'
                          'Приветствуем тебя на Discord сервере гильдии <Адепты Катаклизма>! \r\n'

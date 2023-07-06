@@ -3,25 +3,26 @@ from typing import Any, Dict
 
 import discord
 import tenacity
-from discord import Colour, Embed, Message, RawReactionActionEvent
+from discord import Colour, Embed, Message
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import (
-    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
-)
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
+from utils.raidview import RaidView
 from utils.report import Report
 from utils.wcl_client import WCLClient
 
+from slaobot import SlaoBot
+
 
 class RaidReport(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: SlaoBot):
         """Cog to provide basic statistics about raid.
 
         :param bot: Bot instance
         """
-        self.bot = bot
+        self.bot: SlaoBot = bot
+        bot.add_view(RaidView(bot))
 
     @commands.Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -37,34 +38,6 @@ class RaidReport(commands.Cog):
             # Delete original WCL message
             await ctx.message.delete()
             await self.process_report(ctx, report_id, author_icon)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
-        if payload.event_type != 'REACTION_ADD':
-            return
-        if not _validate_reaction_payload(payload, self.bot, '🔄'):
-            return
-
-        channel, message = await _validate_reaction_message(payload, self.bot)
-        if message is None:
-            return
-
-        if message.embeds[0].url:
-            # Waiting embed
-            report_id = message.embeds[0].url.split('/')[-1]
-            author_icon = message.embeds[0].thumbnail.url
-        else:
-            # Rankings embed
-            report_id = message.embeds[0].author.url.split('/')[-1]
-            author_icon = message.embeds[0].author.icon_url
-
-        # delete reply
-        await _delete_reply(channel, message)
-        # delete report
-        await message.delete()
-
-        ctx = await self.bot.get_context(message)
-        await self.process_report(ctx, report_id, author_icon)
 
     @commands.command(name='wcl', aliases=['🍦'])
     async def wcl_command(self, ctx: Context, report_id: str) -> None:
@@ -93,7 +66,7 @@ class RaidReport(commands.Cog):
             try:
                 rs = await client.get_data(report_id)
             except tenacity.RetryError:
-                await waiting_embed.add_reaction('🔄')
+                await waiting_embed.edit(view=RaidView(self.bot))
                 return
 
         report_title = Report.make_report_title(rs)
@@ -114,12 +87,27 @@ class RaidReport(commands.Cog):
         await waiting_embed.edit(embed=embed)
 
     @staticmethod
-    async def _make_fights(rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
+    def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
+        raiders_by_role = Report.get_raiders_by_role(rs)
+
+        embed.add_field(name='Танки', value=Report.make_spec(raiders_by_role[Role.TANK]), inline=False)
+        embed.add_field(
+            name='Дамагеры',
+            value=Report.make_spec(raiders_by_role[Role.DPS], show_trophy=True),
+            inline=False,
+        )
+        embed.add_field(
+            name='Лекари',
+            value=Report.make_spec(raiders_by_role[Role.HEALER], show_trophy=True),
+            inline=False,
+        )
+
+    async def _make_fights(self, rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
         fights = rs['reportData']['report']['rankings']['data']
 
         if len(fights) == 0:
             embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
-            await waiting_embed.add_reaction('🔄')
+            await waiting_embed.edit(view=RaidView(self.bot))
             return
 
         if fights[-1]['fightID'] == 10000 or fights[-1]['fightID'] == 10001:
@@ -131,7 +119,7 @@ class RaidReport(commands.Cog):
                     value=Report.make_fight_info(fight),
                     inline=False,
                 )
-            await waiting_embed.add_reaction('🔄')
+            await waiting_embed.edit(view=RaidView(self.bot))
         else:
             bosses = ''
             execution = 0
@@ -148,27 +136,7 @@ class RaidReport(commands.Cog):
                 bosses = '⚔️Мноха Боссаф'
 
             embed.add_field(name=bosses, value=value, inline=False)
-            await waiting_embed.add_reaction('🔄')
-
-        await waiting_embed.add_reaction('🧪')
-        await waiting_embed.add_reaction('🛂')
-        await waiting_embed.add_reaction('💣')
-
-    @staticmethod
-    def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
-        raiders_by_role = Report.get_raiders_by_role(rs)
-
-        embed.add_field(name='Танки', value=Report.make_spec(raiders_by_role[Role.TANK]), inline=False)
-        embed.add_field(
-            name='Дамагеры',
-            value=Report.make_spec(raiders_by_role[Role.DPS], show_trophy=True),
-            inline=False,
-        )
-        embed.add_field(
-            name='Лекари',
-            value=Report.make_spec(raiders_by_role[Role.HEALER], show_trophy=True),
-            inline=False,
-        )
+            await waiting_embed.edit(view=RaidView(self.bot))
 
 
 async def setup(bot):

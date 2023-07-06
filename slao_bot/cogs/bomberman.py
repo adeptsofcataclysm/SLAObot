@@ -1,14 +1,10 @@
 from collections import defaultdict
 from typing import Dict
 
-import discord
 import tenacity
-from discord import Colour, Embed, RawReactionActionEvent
+from discord import Colour, Embed
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import (
-    _delete_reply, _validate_reaction_message, _validate_reaction_payload,
-)
 from utils.wcl_client import WCLClient
 
 
@@ -28,39 +24,6 @@ class Bomberman(commands.Cog):
         self._bomb_damage = defaultdict()
         self._other_damage = defaultdict()
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload: RawReactionActionEvent) -> None:
-        if payload.event_type != 'REACTION_ADD':
-            return
-        if not _validate_reaction_payload(payload, self.bot, '💣'):
-            return
-
-        channel, message = await _validate_reaction_message(payload, self.bot)
-        if message is None:
-            return
-
-        reaction = discord.utils.get(message.reactions, emoji='💣')
-        if reaction.count > 2:
-            await reaction.remove(payload.member)
-            return
-
-        ctx = await self.bot.get_context(message)
-        report_id = message.embeds[0].author.url.split('/')[-1]
-        await self.process_bombs(ctx, report_id)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload: RawReactionActionEvent) -> None:
-        if payload.event_type != 'REACTION_REMOVE':
-            return
-        if not _validate_reaction_payload(payload, self.bot, '💣'):
-            return
-
-        channel, message = await _validate_reaction_message(payload, self.bot)
-        if message is None:
-            return
-
-        await _delete_reply(channel, message)
-
     @commands.command(name='bomb')
     async def bomb_command(self, ctx: Context, report_id: str) -> None:
         """Get data about bombs and bombs-like items used. Format: <prefix>bomb SOME_REPORT_ID."""
@@ -79,10 +42,16 @@ class Bomberman(commands.Cog):
         self._other_damage = self.calculate_damage(rs['reportData']['report']['others']['data']['entries'])
         self._other_damage = dict(sorted(self._other_damage.items(), key=lambda item: item[1], reverse=True))
 
-        embed = Embed(title='Бомбим!', description='Использование гранат и схожих расходников. '
-                                                   'Много гранат - быстрее пройден рейд.', colour=Colour.teal())
-        embed.set_author(name='Элитный отряд синих гренадёров', url='',
-                         icon_url='https://cdn.icon-icons.com/icons2/1465/PNG/64/409bomb_100833.png')
+        embed = Embed(
+            title='Бомбим!',
+            description='Использование гранат и схожих расходников. Много гранат - быстрее пройден рейд.',
+            colour=Colour.teal(),
+        )
+        embed.set_author(
+            name='Элитный отряд синих гренадёров',
+            url='',
+            icon_url='https://cdn.icon-icons.com/icons2/1465/PNG/64/409bomb_100833.png',
+        )
 
         embed.add_field(name='Сапёры', value=self.print_engineers(), inline=False)
         embed.add_field(name='Их соратники', value=self.print_others(), inline=False)
@@ -91,7 +60,9 @@ class Bomberman(commands.Cog):
         self._bomb_damage.clear()
         self._other_damage.clear()
 
-        await ctx.reply(embed=embed)
+        embeds = ctx.message.embeds
+        embeds.append(embed)
+        await ctx.message.edit(embeds=embeds)
 
     def calculate_damage(self, entries: Dict) -> Dict:
         damage = {}
