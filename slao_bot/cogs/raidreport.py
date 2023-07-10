@@ -140,10 +140,10 @@ class RaidReport(commands.Cog):
 
     @staticmethod
     def _make_links(embed: discord.Embed, report_id: str) -> None:
-        wipefest = f'<:wipefest_gg:1127888435697430548> [Wipefest]' \
-                   f'(https://www.wipefest.gg/report/{report_id}?gameVersion=warcraft-classic)'
-        wowanalyzer = f'<:wowanalyzer:1127894170565083156> [WoWAnalyzer]' \
-                      f'(https://www.wowanalyzer.com/report/{report_id})'
+        wipefest = '<:wipefest_gg:1127888435697430548> [Wipefest]'
+        wipefest += f'(https://www.wipefest.gg/report/{report_id}?gameVersion=warcraft-classic)'
+        wowanalyzer = '<:wowanalyzer:1127894170565083156> [WoWAnalyzer]'
+        wowanalyzer += f'(https://www.wowanalyzer.com/report/{report_id})'
         embed.add_field(name='На подумать', value=f'{wipefest} | {wowanalyzer}')
 
 
