@@ -76,14 +76,51 @@ class RaidReport(commands.Cog):
         embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
         embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
-        # Print bosses, speed and execution
-        if not rs['reportData']['report']['zone']['frozen']:
-            await self._make_fights(rs, embed, waiting_embed)
+        if rs['reportData']['report']['zone']['frozen']:
+            return
 
-        # Print raiders
+        # Add bosses, speed and execution
+        self._make_fights(rs, embed)
+        # Add raiders
         self._make_raiders(embed, rs)
+        # Add links
+        self._make_links(embed, report_id)
 
         await waiting_embed.edit(embed=embed, view=RaidView(self.bot))
+
+    @staticmethod
+    def _make_fights(rs: Dict[str, Any], embed: Embed) -> None:
+        fights = rs['reportData']['report']['rankings']['data']
+
+        if len(fights) == 0:
+            embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
+            return
+
+        if fights[-1]['fightID'] == 10000 or fights[-1]['fightID'] == 10001:
+            embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
+        elif len(fights) <= 4:
+            for fight in fights:
+                embed.add_field(
+                    name='⚔️' + fight['encounter']['name'],
+                    value=Report.make_fight_info(fight),
+                    inline=False,
+                )
+        else:
+            bosses = ''
+            execution = 0
+            speed = 0
+            for fight in fights:
+                bosses += f"⚔{bold(fight['encounter']['name'])} "
+                execution += fight['execution']['rankPercent']
+                speed += fight['speed']['rankPercent']
+
+            value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
+            value += f'Скорость: {bold(int(speed / len(fights)))}%'
+
+            if len(bosses) > 255:
+                bosses = '⚔️Мноха Боссаф'
+
+            embed.add_field(name=bosses, value=value, inline=False)
 
     @staticmethod
     def _make_raiders(embed: discord.Embed, rs: Dict[str, Any]) -> None:
@@ -101,41 +138,13 @@ class RaidReport(commands.Cog):
             inline=False,
         )
 
-    async def _make_fights(self, rs: Dict[str, Any], embed: Embed, waiting_embed: Message) -> None:
-        fights = rs['reportData']['report']['rankings']['data']
-
-        if len(fights) == 0:
-            embed.add_field(name='Лог пустой', value='Пора побеждать боссов!', inline=False)
-            await waiting_embed.edit(view=RaidView(self.bot))
-            return
-
-        if fights[-1]['fightID'] == 10000 or fights[-1]['fightID'] == 10001:
-            embed.add_field(name='⚔️Полная зачистка', value=Report.make_fight_info(fights[-1]), inline=False)
-        elif len(fights) <= 4:
-            for fight in fights:
-                embed.add_field(
-                    name='⚔️' + fight['encounter']['name'],
-                    value=Report.make_fight_info(fight),
-                    inline=False,
-                )
-            await waiting_embed.edit(view=RaidView(self.bot))
-        else:
-            bosses = ''
-            execution = 0
-            speed = 0
-            for fight in fights:
-                bosses += f"⚔{bold(fight['encounter']['name'])} "
-                execution += fight['execution']['rankPercent']
-                speed += fight['speed']['rankPercent']
-
-            value = f'Исполнение: {bold(make_execution(int(execution / len(fights))))}\n'
-            value += f'Скорость: {bold(int(speed / len(fights)))}%'
-
-            if len(bosses) > 255:
-                bosses = '⚔️Мноха Боссаф'
-
-            embed.add_field(name=bosses, value=value, inline=False)
-            await waiting_embed.edit(view=RaidView(self.bot))
+    @staticmethod
+    def _make_links(embed: discord.Embed, report_id: str) -> None:
+        wipefest = f'<:wipefest_gg:1127888435697430548> [Wipefest]' \
+                   f'(https://www.wipefest.gg/report/{report_id}?gameVersion=warcraft-classic)'
+        wowanalyzer = f'<:wowanalyzer:1127894170565083156> [WoWAnalyzer]' \
+                      f'(https://www.wowanalyzer.com/report/{report_id})'
+        embed.add_field(name='На подумать', value=f'{wipefest} | {wowanalyzer}')
 
 
 async def setup(bot):

@@ -53,9 +53,13 @@ class Potions(commands.Cog):
         embed.add_field(name=POT_IMAGES.get('combatpots'),
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                         inline=False)
-        embeds = ctx.message.embeds
-        embeds.append(embed)
-        await ctx.message.edit(embeds=embeds)
+
+        if ctx.message.author != self.bot:
+            await ctx.send(embed=embed)
+        else:
+            embeds = ctx.message.embeds
+            embeds.append(embed)
+            await ctx.message.edit(embeds=embeds)
 
     @staticmethod
     def _get_pot_usage_sorted(entries: Dict) -> str:
