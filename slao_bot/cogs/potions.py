@@ -54,7 +54,7 @@ class Potions(commands.Cog):
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
                         inline=False)
 
-        if ctx.message.author != self.bot:
+        if ctx.message.author != self.bot.user:
             await ctx.send(embed=embed)
         else:
             embeds = ctx.message.embeds

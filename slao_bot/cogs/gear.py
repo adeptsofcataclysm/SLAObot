@@ -128,9 +128,12 @@ class Gear(commands.Cog):
             inline=False,
         )
 
-        embeds = ctx.message.embeds
-        embeds.append(embed)
-        await ctx.message.edit(embeds=embeds)
+        if ctx.message.author != self.bot.user:
+            await ctx.send(embed=embed)
+        else:
+            embeds = ctx.message.embeds
+            embeds.append(embed)
+            await ctx.message.edit(embeds=embeds)
 
     @staticmethod
     def _print_raiders(gear_issues: Dict[str, Set]) -> Optional[str]:

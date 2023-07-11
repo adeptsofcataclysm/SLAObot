@@ -60,9 +60,12 @@ class Bomberman(commands.Cog):
         self._bomb_damage.clear()
         self._other_damage.clear()
 
-        embeds = ctx.message.embeds
-        embeds.append(embed)
-        await ctx.message.edit(embeds=embeds)
+        if ctx.message.author != self.bot.user:
+            await ctx.send(embed=embed)
+        else:
+            embeds = ctx.message.embeds
+            embeds.append(embed)
+            await ctx.message.edit(embeds=embeds)
 
     def calculate_damage(self, entries: Dict) -> Dict:
         damage = {}
