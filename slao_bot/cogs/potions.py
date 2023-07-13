@@ -34,16 +34,16 @@ class Potions(commands.Cog):
             url='',
             icon_url='https://cdn.icon-icons.com/icons2/2419/PNG/64/beer_drink_icon_146844.png',
         )
-        embed.add_field(name=POT_IMAGES.get('hp_mana_pots')+'Зелья маны и здоровья',
+        embed.add_field(name=POT_IMAGES.get('hp_mana_pots') + 'Зелья маны и здоровья',
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['hp_mana_pots']['data']['entries']),
                         inline=False)
 
-        embed.add_field(name=POT_IMAGES.get('hp_mana_stones')+'Камни маны и здоровья',
+        embed.add_field(name=POT_IMAGES.get('hp_mana_stones') + 'Камни маны и здоровья',
                         value=self._get_pot_usage_sorted(
                             rs['reportData']['report']['hp_mana_stones']['data']['entries']),
                         inline=False)
 
-        embed.add_field(name=POT_IMAGES.get('combat_pots')+'Боевые зелья',
+        embed.add_field(name=POT_IMAGES.get('combat_pots') + 'Боевые зелья',
                         value=self._get_pot_usage_sorted(rs['reportData']['report']['combat_pots']['data']['entries']),
                         inline=False)
 
