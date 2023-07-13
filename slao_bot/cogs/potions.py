@@ -28,30 +28,23 @@ class Potions(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        embed = Embed(title='Всем по пре-поту!', description='Пьём по КД, крутим логи.', colour=Colour.teal())
+        embed = Embed(title='Потная катка', description='Пьём по КД, крутим логи.', colour=Colour.teal())
         embed.set_author(
             name='Синяя яма',
             url='',
             icon_url='https://cdn.icon-icons.com/icons2/2419/PNG/64/beer_drink_icon_146844.png',
         )
-        embed.add_field(name=POT_IMAGES.get('mana'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['mana']['data']['entries']),
+        embed.add_field(name=POT_IMAGES.get('hp_mana_pots')+'Зелья маны и здоровья',
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['hp_mana_pots']['data']['entries']),
                         inline=False)
 
-        embed.add_field(name=POT_IMAGES.get('hp'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['hp']['data']['entries']),
+        embed.add_field(name=POT_IMAGES.get('hp_mana_stones')+'Камни маны и здоровья',
+                        value=self._get_pot_usage_sorted(
+                            rs['reportData']['report']['hp_mana_stones']['data']['entries']),
                         inline=False)
 
-        embed.add_field(name=POT_IMAGES.get('hpmana'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['hpmana']['data']['entries']),
-                        inline=False)
-
-        embed.add_field(name=POT_IMAGES.get('manarunes'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['manarunes']['data']['entries']),
-                        inline=False)
-
-        embed.add_field(name=POT_IMAGES.get('combatpots'),
-                        value=self._get_pot_usage_sorted(rs['reportData']['report']['combatpots']['data']['entries']),
+        embed.add_field(name=POT_IMAGES.get('combat_pots')+'Боевые зелья',
+                        value=self._get_pot_usage_sorted(rs['reportData']['report']['combat_pots']['data']['entries']),
                         inline=False)
 
         if ctx.message.author != self.bot.user:

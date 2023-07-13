@@ -9,6 +9,7 @@ class Role(str, Enum):
 
 SPECS = {
     'DeathKnight_Blood': '<:DeathKnight_Blood:1015254887040303143>',
+    'DeathKnight_BloodDPS': '<:DeathKnight_BloodDPS:1129197573882794064>',
     'DeathKnight_Frost': '<:DeathKnight_Frost:1015254314547167252>',
     'DeathKnight_Lichborne': '<:DeathKnight_Lichborne:1032213432382005268>',
     'DeathKnight_Runeblade': '<:DeathKnight_Runeblade:1030424355508863027>',
@@ -35,6 +36,7 @@ SPECS = {
     'Priest_Smiter': '<:Priest_Smiter:880085315149258848>',
     'Rogue_Assassination': '<:Rogue_Assassination:881623680025780245>',
     'Rogue_Combat': '<:Rogue_Combat:880082256373370891>',
+    'Rogue_Subtlety': '<:Rogue_Subtlety:1129198294648770681>',
     'Shaman_Elemental': '<:Shaman_Elemental:880084253700923412>',
     'Shaman_Enhancement': '<:Shaman_Enhancement:880082514683756615>',
     'Shaman_Restoration': '<:Shaman_Restoration:880099191706247208>',
@@ -62,7 +64,7 @@ ZONE_IMAGES = {
     1004: 'https://cdn.discordapp.com/attachments/762790105026920468/763170907035533362/RH-AQ20-1.png',
     # AQ40
     1005: 'https://cdn.discordapp.com/attachments/762790105026920468/763170914220900392/RH-AQ40-1.png',
-    # Naxx
+    # Naxramas
     1006: 'https://media.discordapp.net/attachments/762790105026920468/773622157456572486/RH-Naxx-2.png',
     # Karazhan
     1007: 'https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png',
@@ -79,7 +81,7 @@ ZONE_IMAGES = {
     1012: 'https://cdn.discordapp.com/attachments/762790105026920468/951451058985652264/RH-TBC-ZA1_1200x300.png',
     # SWP
     1013: 'https://cdn.discordapp.com/attachments/762790105026920468/773981418052386866/8._TBC_SWP.png',
-    # WotLK Heorics
+    # WotLK Heroics
     1014: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
     # Naxx, Sart, Maly
     1015: 'https://cdn.discordapp.com/attachments/776184190743216128/1029314252177166346/naxx1.png',
@@ -171,41 +173,35 @@ EXEC_VALUES = {
 #   351358: "Greater Drums of Restoration"
 
 # WotLK consumables
-# 42987: "Mana Sapphire"
-# 43185: "Runic healing pot"
-# 43186: "Runic mana pot"
-# 47872: "Master Healthstone"
-# 47873: "Master Healthstone"
-# 47874: "Master Healthstone"
-# 47875: "Master Healthstone"
-# 47876: "Master Healthstone"
-# 47877: "Master Healthstone"
-# 53750: "Crazy Alchemist's pot"
-# 53761: "Powerful Rejuvenation pot"
-# 53762: "3.5k armor"
-# 53908: "Potion of Speed"
-# 53909: "Wild Magic pot"
-# 67489: "Runic healing injector"
-# 67490: "Runic mana injector"
+HP_MANA_POTS = {
+    '43186',  # Runic mana pot
+    '67490',  # Runic mana injector
+    '43185',  # Runic healing pot
+    '67489',  # Runic healing injector
+    '53750',  # Crazy Alchemist's pot
+    '53761',  # Powerful Rejuvenation pot
+}
+
+HP_MANA_STONES = {
+    '42987',  # Mana Sapphire
+    '47872',  # Master Healthstone
+    '47873',  # Master Healthstone
+    '47874',  # Master Healthstone
+    '47875',  # Master Healthstone
+    '47876',  # Master Healthstone
+    '47877',  # Master Healthstone
+}
 
 COMBAT_POTS = {
-    'Mana Pot': [43186, 67490],
-    'Healing Pot': [43185, 67489],
-    'Heal and Mana Pot': [53750, 53761],
-    'Mana Gem': [42987],
-    'Healthstone': [47872, 47873, 47874, 47875, 47876, 47877],
-    'Mana Runes': [16666, 27869],
-    'Combat Pot': [53908, 53909, 53762],
+    '53762',  # 3.5k armor
+    '53908',  # Potion of Speed
+    '53909',  # Wild Magic pot
 }
 
 POT_IMAGES = {
-    'mana': '<:inv_potion_137:906160204960395284>',
-    'hp': '<:inv_potion_131:906160204868100127>',
-    'hpmana': '<:inv_potion_134:906161254316507187>',
-    'manarunes': '<:spell_shadow_sealofkings:906160351064760332>',
-    'herbs': '<:inv_misc_herb_flamecap:906160171007492097>',
-    'combatpots': '<:inv_potion_108:906160205094584380> <:inv_potion_107:906160171246551050>'
-                  '<:inv_potion_133:906160204985544744>',
+    'hp_mana_pots': '<:hp_mana_pot:906161254316507187>',
+    'hp_mana_stones': '<:mana_gem:1129159265274306633>',
+    'combat_pots': '<:combat_pot:1129159544258441377>',
 }
 
 SLOT_NAMES = {

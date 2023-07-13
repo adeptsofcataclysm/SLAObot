@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional
 
 import aiohttp
 import tenacity
+import utils.constants
 import utils.engineer
 from diskcache import Cache
 from gql import Client
@@ -119,34 +120,28 @@ class WCLClient:
 
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
+        hp_mana_pots = ','.join(utils.constants.HP_MANA_POTS)
+        hp_mana_stones = ','.join(utils.constants.HP_MANA_STONES)
+        combat_pots = ','.join(utils.constants.COMBAT_POTS)
+
         query_report.select(
             ds.ReportData.report(code=report_id).select(
                 ds.Report.endTime,
-                mana=ds.Report.table(
+                hp_mana_pots=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
-                    filterExpression='ability.id in (43186, 67490)'),
-                hp=ds.Report.table(
+                    filterExpression=f'ability.ID in ({hp_mana_pots})'),
+                hp_mana_stones=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
-                    filterExpression='ability.id in (43185, 67489)'),
-                hpmana=ds.Report.table(
+                    filterExpression=f'ability.ID in ({hp_mana_stones})'),
+                combat_pots=ds.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
-                    filterExpression='ability.id in (53750, 53761)'),
-                manarunes=ds.Report.table(
-                    dataType='Casts',
-                    startTime=0,
-                    endTime=end_time,
-                    filterExpression='ability.id in (16666, 27869)'),
-                combatpots=ds.Report.table(
-                    dataType='Casts',
-                    startTime=0,
-                    endTime=end_time,
-                    filterExpression='ability.id in (53908, 53909, 53762)'),
+                    filterExpression=f'ability.ID in ({combat_pots})'),
             ))
 
         query = dsl_gql(DSLQuery(query_report))
