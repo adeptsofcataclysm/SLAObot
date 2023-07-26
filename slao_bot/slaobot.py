@@ -1,9 +1,9 @@
-import discord
 import logging
+
+import discord
 from discord import Message
 from discord.ext import commands
 from utils.config import settings
-
 
 extensions = (
     'cogs.raidreport',
