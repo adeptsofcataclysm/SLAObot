@@ -126,6 +126,7 @@ class WCLClient:
 
         query_report.select(
             ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
                 ds.Report.endTime,
                 hp_mana_pots=ds.Report.table(
                     dataType='Casts',
@@ -142,6 +143,7 @@ class WCLClient:
                     startTime=0,
                     endTime=end_time,
                     filterExpression=f'ability.ID in ({combat_pots})'),
+                player_details=ds.Report.playerDetails
             ))
 
         query = dsl_gql(DSLQuery(query_report))
@@ -253,6 +255,51 @@ class WCLClient:
                     hostilityType='Enemies',
                     viewBy='Ability',
                     filterExpression=f'ability.ID in ({other_spells})'),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+        self._cache.set(report_key, result)
+
+        return result
+
+    @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+    async def get_prepotions(self, report_id: str) -> Dict[str, Any]:
+        """
+       Gets data about pre-potions.
+
+       :param report_id: :class:`str` WarcraftLogs report ID.
+       :return: GraphQL request result. Should be a JSON based dictionary object.
+       """
+
+        ds = DSLSchema(self._client.schema)
+
+        query_report = ds.Query.reportData
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.zone.select(ds.Zone.name),
+            ))
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        if result['reportData']['report']['zone']['name'] is None:
+            raise Exception('Zone name not found')
+
+        report_key = 'preports_' + report_id
+        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        if cached_report:
+            return cached_report
+
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+
+        query_report.select(
+            ds.ReportData.report(code=report_id).select(
+                ds.Report.startTime,
+                ds.Report.endTime,
+                ds.Report.events(dataType='CombatantInfo', startTime=0, endTime=end_time),
             ))
 
         query = dsl_gql(DSLQuery(query_report))
