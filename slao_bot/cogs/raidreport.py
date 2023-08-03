@@ -63,7 +63,8 @@ class RaidReport(commands.Cog):
 
         async with WCLClient() as client:
             try:
-                rs = await client.get_data(report_id)
+                rs = await client.get_rankings(report_id)
+                table_summary = await client.get_table_summary(report_id)
             except tenacity.RetryError:
                 await waiting_embed.edit(view=RaidView(self.bot))
                 return
@@ -82,7 +83,7 @@ class RaidReport(commands.Cog):
         # Add bosses, speed and execution
         self._make_fights(rs, embed)
         # Add raiders
-        self._make_raiders(embed, rs)
+        self._make_raiders(embed, table_summary)
         # Add links
         self._make_links(embed, report_id)
 

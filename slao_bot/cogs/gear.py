@@ -89,7 +89,7 @@ class Gear(commands.Cog):
     async def process_gear(self, ctx: Context, report_id: str) -> None:
         async with WCLClient() as client:
             try:
-                rs = await client.get_gear(report_id)
+                rs = await client.get_table_summary(report_id)
             except tenacity.RetryError:
                 return
 

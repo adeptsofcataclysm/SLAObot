@@ -99,6 +99,7 @@ class Report:
                     name=raider['name'],
                     class_=raider['type'],
                     spec=spec['spec'],
+                    raider_id=raider['id'],
                 ))
 
         return result
