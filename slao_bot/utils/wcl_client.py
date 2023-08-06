@@ -13,10 +13,10 @@ from utils.config import settings
 
 
 class WCLClient:
-
     _client: Client
     _session: AsyncClientSession
     _cache: Cache
+    _schema: DSLSchema
 
     async def __aenter__(self) -> 'WCLClient':
         async with aiohttp.ClientSession() as cs:
@@ -33,6 +33,7 @@ class WCLClient:
         self._client = Client(transport=transport, fetch_schema_from_transport=True)
         self._session = await self._client.__aenter__()
         self._cache = Cache('cache')
+        self._schema = DSLSchema(self._client.schema)
 
         return self
 
@@ -40,46 +41,30 @@ class WCLClient:
         await self._client.__aexit__(exc_type, exc_val, exc_tb)
 
     @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
-    async def get_data(self, report_id: str) -> Dict[str, Any]:
+    async def get_rankings(self, report_id: str) -> Dict[str, Any]:
         """
         Gets data from WarcraftLog.
 
         :param report_id: :class:`str` WarcraftLogs report ID.
         :return: GraphQL request result. Should be a JSON based dictionary object.
         """
-        ds = DSLSchema(self._client.schema)
 
-        query_report = ds.Query.reportData
-
-        query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.zone.select(ds.Zone.name),
-            ))
-        query = dsl_gql(DSLQuery(query_report))
-        result = await self._session.execute(query)
-
-        if result['reportData']['report']['zone']['name'] is None:
-            raise Exception('Zone name not found')
-
-        cached_report = self._cache.get(report_id)
-        if (cached_report
-                and cached_report['reportData']['report']['endTime'] == result['reportData']['report']['endTime']):
+        result = await self.get_report_times(report_id)
+        cached_report = self.get_cache(report_id, result['reportData']['report']['endTime'])
+        if cached_report:
             return cached_report
 
-        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+        query_report = self._schema.Query.reportData
 
         query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.owner.select(ds.User.name),
-                ds.Report.zone.select(ds.Zone.id),
-                ds.Report.zone.select(ds.Zone.name),
-                ds.Report.zone.select(ds.Zone.frozen),
-                ds.Report.rankings(compare='Rankings'),
-                ds.Report.table(dataType='Summary', startTime=0, endTime=end_time),
+            self._schema.ReportData.report(code=report_id).select(
+                self._schema.Report.startTime,
+                self._schema.Report.endTime,
+                self._schema.Report.owner.select(self._schema.User.name),
+                self._schema.Report.zone.select(self._schema.Zone.id),
+                self._schema.Report.zone.select(self._schema.Zone.name),
+                self._schema.Report.zone.select(self._schema.Zone.frozen),
+                self._schema.Report.rankings(compare='Rankings'),
             ))
 
         query = dsl_gql(DSLQuery(query_report))
@@ -97,24 +82,8 @@ class WCLClient:
         :return: GraphQL request result. Should be a JSON based dictionary object.
         """
 
-        ds = DSLSchema(self._client.schema)
-
-        query_report = ds.Query.reportData
-
-        query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.zone.select(ds.Zone.name),
-            ))
-        query = dsl_gql(DSLQuery(query_report))
-        result = await self._session.execute(query)
-
-        if result['reportData']['report']['zone']['name'] is None:
-            raise Exception('Zone name not found')
-
-        report_key = 'pots_' + report_id
-        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        result = await self.get_report_times(report_id)
+        cached_report = self.get_cache('pots_' + report_id, result['reportData']['report']['endTime'])
         if cached_report:
             return cached_report
 
@@ -124,20 +93,23 @@ class WCLClient:
         hp_mana_stones = ','.join(utils.constants.HP_MANA_STONES)
         combat_pots = ','.join(utils.constants.COMBAT_POTS)
 
+        query_report = self._schema.Query.reportData
+
         query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.endTime,
-                hp_mana_pots=ds.Report.table(
+            self._schema.ReportData.report(code=report_id).select(
+                self._schema.Report.startTime,
+                self._schema.Report.endTime,
+                hp_mana_pots=self._schema.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
                     filterExpression=f'ability.ID in ({hp_mana_pots})'),
-                hp_mana_stones=ds.Report.table(
+                hp_mana_stones=self._schema.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
                     filterExpression=f'ability.ID in ({hp_mana_stones})'),
-                combat_pots=ds.Report.table(
+                combat_pots=self._schema.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
@@ -146,52 +118,36 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
-        self._cache.set(report_key, result)
+        self._cache.set('pots_' + report_id, result)
 
         return result
 
     @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
-    async def get_gear(self, report_id: str) -> Dict[str, Any]:
+    async def get_table_summary(self, report_id: str) -> Dict[str, Any]:
         """
         Gets data about gear used from WarcraftLog.
 
         :param report_id: :class:`str` WarcraftLogs report ID.
         :return: GraphQL request result. Should be a JSON based dictionary object.
         """
-
-        ds = DSLSchema(self._client.schema)
-        query_report = ds.Query.reportData
-
-        query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.zone.select(ds.Zone.name),
-            ))
-
-        query = dsl_gql(DSLQuery(query_report))
-        result = await self._session.execute(query)
-
-        if result['reportData']['report']['zone']['name'] is None:
-            raise Exception('Zone name not found')
-
-        report_key = 'gear_' + report_id
-        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        result = await self.get_report_times(report_id)
+        cached_report = self.get_cache('gear_' + report_id, result['reportData']['report']['endTime'])
         if cached_report:
             return cached_report
 
         end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
 
+        query_report = self._schema.Query.reportData
         query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.table(dataType='Summary', startTime=0, endTime=end_time),
+            self._schema.ReportData.report(code=report_id).select(
+                self._schema.Report.startTime,
+                self._schema.Report.endTime,
+                self._schema.Report.table(dataType='Summary', startTime=0, endTime=end_time),
             ))
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
-        self._cache.set(report_key, result)
+        self._cache.set('gear_' + report_id, result)
 
         return result
 
@@ -203,25 +159,8 @@ class WCLClient:
         :param report_id: :class:`str` WarcraftLogs report ID.
         :return: GraphQL request result. Should be a JSON based dictionary object.
         """
-
-        ds = DSLSchema(self._client.schema)
-
-        query_report = ds.Query.reportData
-
-        query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.startTime,
-                ds.Report.endTime,
-                ds.Report.zone.select(ds.Zone.name),
-            ))
-        query = dsl_gql(DSLQuery(query_report))
-        result = await self._session.execute(query)
-
-        if result['reportData']['report']['zone']['name'] is None:
-            raise Exception('Zone name not found')
-
-        report_key = 'bombs_' + report_id
-        cached_report = self.get_cache(report_key, result['reportData']['report']['endTime'])
+        result = await self.get_report_times(report_id)
+        cached_report = self.get_cache('bombs_' + report_id, result['reportData']['report']['endTime'])
         if cached_report:
             return cached_report
 
@@ -229,24 +168,24 @@ class WCLClient:
         bomb_spells = ','.join(utils.engineer.BOMB_SPELLS)
         other_spells = ','.join(utils.engineer.OTHER_SPELLS)
 
-        query_report = ds.Query.reportData
+        query_report = self._schema.Query.reportData
 
         query_report.select(
-            ds.ReportData.report(code=report_id).select(
-                ds.Report.endTime,
-                engineers=ds.Report.table(
+            self._schema.ReportData.report(code=report_id).select(
+                self._schema.Report.endTime,
+                engineers=self._schema.Report.table(
                     dataType='Casts',
                     startTime=0,
                     endTime=end_time,
                     abilityID=utils.engineer.GLOVES_ENCHANT),
-                bombs=ds.Report.table(
+                bombs=self._schema.Report.table(
                     dataType='DamageTaken',
                     startTime=0,
                     endTime=end_time,
                     hostilityType='Enemies',
                     viewBy='Ability',
                     filterExpression=f'ability.ID in ({bomb_spells})'),
-                others=ds.Report.table(
+                others=self._schema.Report.table(
                     dataType='DamageTaken',
                     startTime=0,
                     endTime=end_time,
@@ -257,7 +196,39 @@ class WCLClient:
 
         query = dsl_gql(DSLQuery(query_report))
         result = await self._session.execute(query)
-        self._cache.set(report_key, result)
+        self._cache.set('bombs_' + report_id, result)
+
+        return result
+
+    @tenacity.retry(wait=tenacity.wait_exponential(), stop=tenacity.stop_after_delay(120))
+    async def get_events_combatantinfo(self, report_id: str) -> Dict[str, Any]:
+        """
+        Gets CombatantInfo events from WarcraftLog.
+
+        :param report_id: :class:`str` WarcraftLogs report ID.
+        :return: GraphQL request result. Should be a JSON based dictionary object.
+        """
+
+        result = await self.get_report_times(report_id)
+        cached_report = self.get_cache('eci_' + report_id, result['reportData']['report']['endTime'])
+        if cached_report:
+            return cached_report
+
+        end_time = result['reportData']['report']['endTime'] - result['reportData']['report']['startTime']
+
+        query_report = self._schema.Query.reportData
+
+        query_report.select(
+            self._schema.ReportData.report(code=report_id).select(
+                self._schema.Report.startTime,
+                self._schema.Report.endTime,
+                self._schema.Report.events(dataType='CombatantInfo', startTime=0, endTime=end_time).select(
+                    self._schema.ReportEventPaginator.data),
+            ))
+
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+        self._cache.set('eci_' + report_id, result)
 
         return result
 
@@ -274,3 +245,20 @@ class WCLClient:
             return None
 
         return cached_report
+
+    async def get_report_times(self, report_key: str) -> Optional[Dict]:
+        query_report = self._schema.Query.reportData
+
+        query_report.select(
+            self._schema.ReportData.report(code=report_key).select(
+                self._schema.Report.startTime,
+                self._schema.Report.endTime,
+                self._schema.Report.zone.select(self._schema.Zone.name),
+            ))
+        query = dsl_gql(DSLQuery(query_report))
+        result = await self._session.execute(query)
+
+        if result['reportData']['report']['zone']['name'] is None:
+            raise Exception('Zone name not found')
+
+        return result
