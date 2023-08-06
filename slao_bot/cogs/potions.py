@@ -1,13 +1,11 @@
+import tenacity
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict
-
-import tenacity
+from typing import Dict, Any, List
 from discord import Colour, Embed
 from discord.ext import commands
 from discord.ext.commands import Context
 from utils.constants import POT_IMAGES
-from utils.report import Report
 from utils.wcl_client import WCLClient
 
 
@@ -17,7 +15,7 @@ class RaidConsumables:
     hp_mana_stones: Dict[str, int] = field(default_factory=defaultdict)
     combat_potions: Dict[str, int] = field(default_factory=defaultdict)
     combat_prepotions: Dict[str, int] = field(default_factory=defaultdict)
-    combat_total: Dict[str, int] = field(default_factory=defaultdict)
+    combat_total: Dict[str, List] = field(default_factory=defaultdict)
 
     def clear_data(self) -> 'RaidConsumables':
         self.hp_mana_pots = defaultdict()
@@ -46,11 +44,31 @@ class RaidConsumables:
 
         self.combat_potions = dict(sorted(self.combat_potions.items(), key=lambda item: item[1], reverse=True))
 
-    def process_prepotions(self, raiders, events) -> None:
-        return
+    def process_prepotions(self, raiders: Dict[int, str], entries: Dict) -> None:
+        for entry in entries:
+            if entry['type'] != 'combatantinfo':
+                continue
+            for aura in entry['auras']:
+                if aura['ability'] == 53762 or aura['ability'] == 53908 or aura['ability'] == 53909:
+                    self.combat_prepotions[raiders[entry['sourceID']]] = self.combat_prepotions.get(
+                        raiders[entry['sourceID']], 0) + 1
+
+        self.combat_prepotions = dict(sorted(self.combat_prepotions.items(), key=lambda item: item[1], reverse=True))
 
     def calculate_total(self) -> None:
-        return
+
+        for key in self.combat_potions:
+            self.combat_total[key] = [
+                self.combat_potions[key],
+                self.combat_prepotions.get(key, 0),
+                self.combat_potions[key] + self.combat_prepotions.get(key, 0),
+            ]
+
+        for key in self.combat_prepotions:
+            if key not in self.combat_total:
+                self.combat_total[key] = [0, self.combat_prepotions[key], self.combat_prepotions[key]]
+
+        self.combat_total = dict(sorted(self.combat_total.items(), key=lambda item: item[1][2], reverse=True))
 
 
 class Potions(commands.Cog):
@@ -60,6 +78,16 @@ class Potions(commands.Cog):
         :param bot:
         """
         self.bot = bot
+
+    @staticmethod
+    def raiders_by_id(rs: Dict[str, Any]) -> Dict[int, str]:
+        raiders = rs['reportData']['report']['table']['data']['composition']
+        result = defaultdict()
+
+        for raider in raiders:
+            result[raider['id']] = raider['name']
+
+        return result
 
     @commands.command(name='pot')
     async def pot_command(self, ctx: Context, report_id: str) -> None:
@@ -75,13 +103,15 @@ class Potions(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        raiders_by_role = Report.get_raiders_by_role(table_summary)
+        raiders_by_id = self.raiders_by_id(table_summary)
 
         consumables = RaidConsumables()
         consumables.clear_data()
         consumables.process_hp_mana_pots(rs['reportData']['report']['hp_mana_pots']['data']['entries'])
         consumables.process_hp_mana_stones(rs['reportData']['report']['hp_mana_stones']['data']['entries'])
         consumables.process_combat_potions(rs['reportData']['report']['combat_pots']['data']['entries'])
+        consumables.process_prepotions(raiders_by_id, events_info['reportData']['report']['events']['data'])
+        consumables.calculate_total()
 
         embed = Embed(title='Потная катка', description='Пьём по КД, крутим логи.', colour=Colour.teal())
         embed.set_author(
@@ -98,7 +128,7 @@ class Potions(commands.Cog):
                         inline=False)
 
         embed.add_field(name=POT_IMAGES.get('combat_pots') + 'Боевые зелья',
-                        value=self._print_pot_usage(consumables.combat_potions),
+                        value=self._print_pot_total(consumables.combat_total),
                         inline=False)
 
         if ctx.message.author != self.bot.user:
@@ -109,7 +139,7 @@ class Potions(commands.Cog):
             await ctx.message.edit(embeds=embeds)
 
     @staticmethod
-    def _print_pot_usage(entries: Dict) -> str:
+    def _print_pot_usage(entries: Dict[str, int]) -> str:
         result = ''
         for key, value in entries.items():
             if len(result) > 980:
@@ -117,6 +147,18 @@ class Potions(commands.Cog):
             if len(result) > 0:
                 result += ', '
             result += f'{key}({value})'
+
+        return result if len(result) > 0 else 'Вагонимся'
+
+    @staticmethod
+    def _print_pot_total(entries: Dict[str, List]) -> str:
+        result = ''
+        for key, value in entries.items():
+            if len(result) > 980:
+                return result
+            if len(result) > 0:
+                result += ', '
+            result += f'{key}({value[1]} + {value[0]})'
 
         return result if len(result) > 0 else 'Вагонимся'
 
