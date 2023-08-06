@@ -1,7 +1,8 @@
-import tenacity
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
+import tenacity
 from discord import Colour, Embed
 from discord.ext import commands
 from discord.ext.commands import Context
