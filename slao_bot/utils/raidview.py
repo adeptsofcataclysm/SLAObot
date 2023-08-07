@@ -64,7 +64,7 @@ class RaidView(discord.ui.View):
         # Remove potions embed if exists
         current_embeds = interaction.message.embeds
         for item in current_embeds:
-            if item.title == 'Расходники':
+            if item.title == 'Потная катка':
                 current_embeds.remove(item)
                 await interaction.message.edit(embeds=current_embeds)
                 return
