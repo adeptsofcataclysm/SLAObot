@@ -28,8 +28,8 @@ class Report:
             raiders = sorted(raiders, key=attrgetter('total'), reverse=True)
 
         for place, raider in enumerate(raiders):
-            if len(result) > 980:
-                return result
+            if len(result) > 950:
+                return result + 'И исчо немного народа.'
 
             key = raider.class_ + '_' + raider.spec
             spec = SPECS.get(key, '\u200b')
