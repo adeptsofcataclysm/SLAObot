@@ -61,6 +61,8 @@ class WCLClient:
                 self._schema.Report.startTime,
                 self._schema.Report.endTime,
                 self._schema.Report.owner.select(self._schema.User.name),
+                self._schema.Report.title,
+                self._schema.Report.guildTag.select(self._schema.GuildTag.name),
                 self._schema.Report.zone.select(self._schema.Zone.id),
                 self._schema.Report.zone.select(self._schema.Zone.name),
                 self._schema.Report.zone.select(self._schema.Zone.frozen),

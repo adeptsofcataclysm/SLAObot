@@ -69,9 +69,18 @@ class RaidReport(commands.Cog):
                 await waiting_embed.edit(view=RaidView(self.bot))
                 return
 
-        report_title = Report.make_report_title(rs)
+        report_title = rs['reportData']['report'].get('title', Report.make_report_title(rs))
+
+        if rs['reportData']['report']['guildTag']:
+            report_tag = rs['reportData']['report']['guildTag']['name']
+        else:
+            report_tag = 'No tag'
+
         report_description = Report.make_report_description(rs)
-        embed = Embed(title=report_title, description=report_description, color=0xb51cd4)
+        embed = Embed(title=f'{report_title} - {report_tag}',
+                      url=report_url,
+                      description=report_description,
+                      color=0xb51cd4)
 
         report_owner = rs['reportData']['report']['owner']['name']
         embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
