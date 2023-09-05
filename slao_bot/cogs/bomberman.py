@@ -94,7 +94,7 @@ class Bomberman(commands.Cog):
 
         value = ''
         for raider_name, raider_damage in self._bomb_damage.items():
-            if len(value) > 980:
+            if len(value) > 950:
                 return value
             if len(value) > 0:
                 value += ', '
@@ -104,7 +104,7 @@ class Bomberman(commands.Cog):
 
         if len(self._engineers) > 0:
             for _raider_id, raider_name in self._engineers.items():
-                if len(value) > 980:
+                if len(value) > 950:
                     return value
                 if len(value) > 0:
                     value += ', '
@@ -119,7 +119,7 @@ class Bomberman(commands.Cog):
 
         value = ''
         for raider_name, raider_damage in self._other_damage.items():
-            if len(value) > 980:
+            if len(value) > 950:
                 return value
             if len(value) > 0:
                 value += ', '
