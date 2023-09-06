@@ -143,8 +143,8 @@ class Potions(commands.Cog):
     def _print_pot_usage(entries: Dict[str, int]) -> str:
         result = ''
         for key, value in entries.items():
-            if len(result) > 980:
-                return result
+            if len(result) > 950:
+                return result + 'И исчо немного народа.'
             if len(result) > 0:
                 result += ', '
             result += f'{key}({value})'
@@ -155,8 +155,8 @@ class Potions(commands.Cog):
     def _print_pot_total(entries: Dict[str, List]) -> str:
         result = ''
         for key, value in entries.items():
-            if len(result) > 980:
-                return result
+            if len(result) > 950:
+                return result + 'И исчо немного народа.'
             if len(result) > 0:
                 result += ', '
             result += f'{key}({value[1]} + {value[0]})'
