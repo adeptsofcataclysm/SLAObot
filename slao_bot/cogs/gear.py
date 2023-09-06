@@ -142,8 +142,8 @@ class Gear(commands.Cog):
         value = ''
 
         for index, raider in enumerate(gear_issues):
-            if len(value) > 980:
-                return value
+            if len(value) > 950:
+                return value + 'И исчо немного вагонов.'
             if index > 0:
                 value += ', '
             value += raider
