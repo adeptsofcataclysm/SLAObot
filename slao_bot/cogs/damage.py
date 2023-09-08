@@ -18,7 +18,8 @@ class Damage(commands.Cog):
         :param bot:
         """
         self.bot = bot
-        self.dps_threshold = 10000000
+        self.dps_threshold = 8500
+        self.combat_time = 0
 
     @commands.command(name='damage')
     async def damage_command(self, ctx: Context, report_id: str) -> None:
@@ -33,6 +34,10 @@ class Damage(commands.Cog):
                 return
 
         filtered_raiders = self._adjust_damage(Report.get_raiders_by_role(rs)[Role.DPS])
+        self.combat_time = (
+                rs['reportData']['report']['table']['data']['totalTime']
+                - rs['reportData']['report']['table']['data']['damageDowntime']
+        )
 
         embed = Embed(
             title='DPS check!',
@@ -65,7 +70,7 @@ class Damage(commands.Cog):
         for _int, raider in raiders.items():
             if len(result) > 950:
                 return result + 'И исчо немного народа.'
-            if raider.total >= self.dps_threshold:
+            if (raider.total / self.combat_time * 1000) >= self.dps_threshold:
                 if len(result) > 0:
                     result += ', '
                 result += raider.name
@@ -77,7 +82,7 @@ class Damage(commands.Cog):
         for _int, raider in raiders.items():
             if len(result) > 950:
                 return result + 'И исчо немного народа.'
-            if raider.total < self.dps_threshold:
+            if (raider.total / self.combat_time * 1000) < self.dps_threshold:
                 if len(result) > 0:
                     result += ', '
                 result += raider.name
