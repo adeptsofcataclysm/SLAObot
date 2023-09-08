@@ -1,11 +1,11 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import Dict, List
 
 import tenacity
-from discord import Embed, Colour
+from discord import Colour, Embed
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils.constants import Role, CLASS_COEFF
+from utils.constants import CLASS_COEFF, Role
 from utils.models import Raider
 from utils.report import Report
 from utils.wcl_client import WCLClient
