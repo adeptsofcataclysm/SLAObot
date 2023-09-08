@@ -224,3 +224,51 @@ SLOT_NAMES = {
     16: 'Левая рука',
     17: 'Дальний бой',
 }
+
+CLASS_COEFF = {
+    'Mage': {
+        'Arcane': 1.22,
+        'Fire': 1.03,
+        'Frost': 1.55,
+    },
+    'Rogue': {
+        'Combat': 1.12,
+        'Assassination': 1.14,
+        'Subtlety': 1.38,
+    },
+    'Shaman': {
+        'Elemental': 1.14,
+        'Enhancement': 1.14,
+    },
+    'Warrior': {
+        'Fury': 1.13,
+        'Arms': 1.31,
+        'Gladiator': 4.55,
+    },
+    'Paladin': {
+        'Retribution': 1.12,
+    },
+    'Warlock': {
+        'Demonology': 1.2,
+        'Destruction': 1.21,
+        'Affliction': 1.04,
+    },
+    'DeathKnight': {
+        'Unholy': 1,
+        'Frost': 1.12,
+        'BloodDPS': 1.53,
+    },
+    'Hunter': {
+        'Survival': 1.17,
+        'Beast Mastery': 1.43,
+        'Marksmanship': 1.3,
+    },
+    'Druid': {
+        'Balance': 1.16,
+        'Feral': 1.1,
+    },
+    'Priest': {
+        'Shadow': 1.23,
+    },
+
+}
