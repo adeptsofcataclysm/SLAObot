@@ -13,7 +13,7 @@ from utils.wcl_client import WCLClient
 
 class Damage(commands.Cog):
     def __init__(self, bot):
-        """Cog to check potions used during a raid.
+        """Cog to check DPS of a raid members.
 
         :param bot:
         """
@@ -34,10 +34,6 @@ class Damage(commands.Cog):
                 return
 
         filtered_raiders = self._adjust_damage(Report.get_raiders_by_role(rs)[Role.DPS])
-        self.combat_time = (
-                rs['reportData']['report']['table']['data']['totalTime']
-                - rs['reportData']['report']['table']['data']['damageDowntime']
-        )
 
         embed = Embed(
             title='DPS check!',
@@ -50,13 +46,20 @@ class Damage(commands.Cog):
             icon_url='https://cdn.icon-icons.com/icons2/1859/PNG/64/man16_117872.png',
         )
 
-        embed.add_field(name='Памперы',
-                        value=self.print_pumpers(filtered_raiders),
-                        inline=False)
+        raw_combat_time = rs['reportData']['report']['table']['data'].get('totalTime', 0)
+        adjustment = rs['reportData']['report']['table']['data'].get('damageDowntime', 0)
+        self.combat_time = raw_combat_time - adjustment
 
-        embed.add_field(name='Вагоны',
-                        value=self.print_low_dps(filtered_raiders),
-                        inline=False)
+        if self.combat_time == 0:
+            embed.add_field(name='Что-то пошло не так', value='Время в бою - 0', inline=False)
+        else:
+            embed.add_field(name='Памперы',
+                            value=self.print_pumpers(filtered_raiders),
+                            inline=False)
+
+            embed.add_field(name='Вагоны',
+                            value=self.print_low_dps(filtered_raiders),
+                            inline=False)
 
         if ctx.message.author != self.bot.user:
             await ctx.send(embed=embed)

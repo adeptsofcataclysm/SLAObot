@@ -256,7 +256,7 @@ CLASS_COEFF = {
     'DeathKnight': {
         'Unholy': 1,
         'Frost': 1.12,
-        'Blood': 1.53,
+        'BloodDPS': 1.53,
     },
     'Hunter': {
         'Survival': 1.17,
