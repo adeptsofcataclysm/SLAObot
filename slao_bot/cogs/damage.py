@@ -34,10 +34,6 @@ class Damage(commands.Cog):
                 return
 
         filtered_raiders = self._adjust_damage(Report.get_raiders_by_role(rs)[Role.DPS])
-        self.combat_time = (
-                rs['reportData']['report']['table']['data']['totalTime']
-                - rs['reportData']['report']['table']['data']['damageDowntime']
-        )
 
         embed = Embed(
             title='DPS check!',
