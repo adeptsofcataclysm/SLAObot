@@ -93,6 +93,8 @@ ZONE_IMAGES = {
     1018: 'https://cdn.discordapp.com/attachments/762790105026920468/1121486358117109912/ToC_Banner.png',
     # Ony-80
     1019: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
+    # ICC
+    1020: 'https://cdn.discordapp.com/attachments/762790105026920468/1151338038736195684/icc_draft1.jpg',
 
 }
 
@@ -132,6 +134,7 @@ ZONE_NAMES = {
           ':regional_indicator_a: :regional_indicator_r:',
     1018: ':regional_indicator_t: :regional_indicator_o: :regional_indicator_c:',
     1019: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
+    1020: ':regional_indicator_i: :regional_indicator_c: :regional_indicator_c:',
 
 
 }
