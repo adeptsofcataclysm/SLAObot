@@ -57,7 +57,8 @@ class SignUp(commands.Cog):
                                      description=message.content,
                                      colour=Colour.light_gray())
                 signup_embed.add_field(name='Пользователь', value=format(message.author.mention))
-                signup_embed.set_thumbnail(url=message.author.avatar.url)
+                if message.author.avatar:
+                    signup_embed.set_thumbnail(url=message.author.avatar.url)
                 await signup_channel.send(embed=signup_embed)
 
     @commands.command(hidden=True)
