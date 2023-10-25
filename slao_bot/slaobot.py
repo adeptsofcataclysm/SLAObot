@@ -14,6 +14,8 @@ extensions = (
     'cogs.damage',
 )
 
+TEST_GUILD = discord.Object(873894278110265404)
+
 
 class SlaoBot(commands.Bot):
     def __init__(self):
@@ -25,6 +27,7 @@ class SlaoBot(commands.Bot):
             message_content=True,
             reactions=True,
         )
+        logging.basicConfig(level=logging.INFO)
 
         super().__init__(
             command_prefix=f'{settings.command_prefix}',
@@ -37,7 +40,10 @@ class SlaoBot(commands.Bot):
             try:
                 await self.load_extension(extension)
             except Exception:
-                logging.info(f'Failed to load extension {extension}.')
+                logging.exception(f'Failed to load extension {extension}.')
+
+        synced = await self.tree.sync()
+        logging.info(synced)
 
     async def on_ready(self) -> None:
         logging.info(f'We have logged in as {self.user}')
