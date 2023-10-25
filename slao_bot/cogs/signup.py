@@ -2,7 +2,6 @@ import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-
 from slaobot import SlaoBot
 from utils.config import settings
 
@@ -67,7 +66,7 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
 
         await interaction.response.send_message(
             f'Спасибо, {self.name.value}! Офицеры в скором времени выдадут права в Discord',
-            ephemeral=True
+            ephemeral=True,
         )
 
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
