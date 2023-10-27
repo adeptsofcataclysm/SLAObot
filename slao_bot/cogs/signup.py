@@ -105,11 +105,8 @@ class SignUp(commands.Cog):
         """Emit member_join event."""
         self.bot.dispatch('member_join', ctx.author)
 
-    @app_commands.command(description='SignUp Form')
+    @app_commands.command(description='Немного о себе')
     async def signup(self, interaction: discord.Interaction):
-        # Send the modal with an instance of our `Feedback` class
-        # Since modals require an interaction, they cannot be done as a response to a text command.
-        # They can only be done as a response to either an application command or a button press.
         await interaction.response.send_modal(SignUpModal())
 
 

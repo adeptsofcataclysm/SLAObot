@@ -27,7 +27,7 @@ class SlaoBot(commands.Bot):
             message_content=True,
             reactions=True,
         )
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.WARN)
 
         super().__init__(
             command_prefix=f'{settings.command_prefix}',

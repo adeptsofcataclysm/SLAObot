@@ -71,7 +71,7 @@ class Damage(commands.Cog):
     def print_pumpers(self, raiders: Dict[int, Raider]) -> str:
         result = ''
         for _int, raider in raiders.items():
-            if len(result) > 950:
+            if len(result) > 940:
                 return result + 'И исчо немного народа.'
             if (raider.total / self.combat_time * 1000) >= self.dps_threshold:
                 if len(result) > 0:
@@ -83,7 +83,7 @@ class Damage(commands.Cog):
     def print_low_dps(self, raiders: Dict[int, Raider]) -> str:
         result = ''
         for _int, raider in raiders.items():
-            if len(result) > 950:
+            if len(result) > 940:
                 return result + 'И исчо немного народа.'
             if (raider.total / self.combat_time * 1000) < self.dps_threshold:
                 if len(result) > 0:
