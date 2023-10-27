@@ -1,10 +1,10 @@
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, Optional
 
+import discord
 import tenacity
-from discord import Colour, Embed
+from discord import Colour, Embed, app_commands
 from discord.ext import commands
-from discord.ext.commands import Context
 from utils.wcl_client import WCLClient
 
 
@@ -24,17 +24,22 @@ class Bomberman(commands.Cog):
         self._bomb_damage = defaultdict()
         self._other_damage = defaultdict()
 
-    @commands.command(name='bomb')
-    async def bomb_command(self, ctx: Context, report_id: str) -> None:
-        """Get data about bombs and bombs-like items used. Format: <prefix>bomb SOME_REPORT_ID."""
-        await self.process_bombs(ctx, report_id)
+    @app_commands.command(description='Использование гранат и схожих расходников')
+    @app_commands.describe(report_id='WCL report ID')
+    async def engineers(self, interaction: discord.Interaction, report_id: str) -> None:
+        """Get data about bombs and bombs-like items used."""
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
 
-    async def process_bombs(self, ctx: Context, report_id: str) -> None:
+        embed = await self.process_bombs(report_id)
+        await interaction.edit_original_response(embed=embed)
+
+    async def process_bombs(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_bombs(report_id)
             except tenacity.RetryError:
-                return
+                return None
 
         self.make_engineers(rs['reportData']['report']['engineers']['data']['entries'])
         self._bomb_damage = self.calculate_damage(rs['reportData']['report']['bombs']['data']['entries'])
@@ -60,12 +65,7 @@ class Bomberman(commands.Cog):
         self._bomb_damage.clear()
         self._other_damage.clear()
 
-        if ctx.message.author != self.bot.user:
-            await ctx.send(embed=embed)
-        else:
-            embeds = ctx.message.embeds
-            embeds.append(embed)
-            await ctx.message.edit(embeds=embeds)
+        return embed
 
     def calculate_damage(self, entries: Dict) -> Dict:
         damage = {}

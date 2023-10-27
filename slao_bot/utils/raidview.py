@@ -1,5 +1,10 @@
+from typing import Optional
+
 import discord
 from discord import Embed
+from cogs.bomberman import Bomberman
+from cogs.gear import Gear
+from cogs.potions import Potions
 from slaobot import SlaoBot
 
 
@@ -29,6 +34,7 @@ class RaidView(discord.ui.View):
 
             ctx = await self.bot.get_context(interaction.message)
             await interaction.message.delete()
+            # noinspection PyUnresolvedReferences
             await cog.process_report(ctx, report_id, author_icon)
 
     @discord.ui.button(label='Potions', style=discord.ButtonStyle.gray, custom_id='raid_view:potions', emoji='🧪')
@@ -38,23 +44,25 @@ class RaidView(discord.ui.View):
 
         report_id = interaction.message.embeds[0].author.url.split('/')[-1]
 
-        cog = self.bot.get_cog('Potions')
+        cog: Optional[Potions] = self.bot.get_cog('Potions')
         if not cog:
             return
 
+        # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
         # Remove potions embed if exists
-        current_embeds = interaction.message.embeds
-        for item in current_embeds:
+        embeds = interaction.message.embeds
+        for item in embeds:
             if item.title == 'Потная катка':
-                current_embeds.remove(item)
-                await interaction.message.edit(embeds=current_embeds)
+                embeds.remove(item)
+                await interaction.message.edit(embeds=embeds)
                 return
 
         # Add potion embeds if not exists
-        ctx = await self.bot.get_context(interaction.message)
-        await cog.process_pots(ctx, report_id)
+        embed = await cog.process_pots(report_id)
+        embeds.append(embed)
+        await interaction.message.edit(embeds=embeds)
 
     @discord.ui.button(label='Gear', style=discord.ButtonStyle.gray, custom_id='raid_view:gear', emoji='🛂')
     async def gear(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -63,10 +71,11 @@ class RaidView(discord.ui.View):
 
         report_id = interaction.message.embeds[0].author.url.split('/')[-1]
 
-        cog = self.bot.get_cog('Gear')
+        cog: Optional[Gear] = self.bot.get_cog('Gear')
         if not cog:
             return
 
+        # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
         # Remove gear embed if exists
@@ -88,23 +97,25 @@ class RaidView(discord.ui.View):
 
         report_id = interaction.message.embeds[0].author.url.split('/')[-1]
 
-        cog = self.bot.get_cog('Bomberman')
+        cog: Optional[Bomberman] = self.bot.get_cog('Bomberman')
         if not cog:
             return
 
+        # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
         # Remove gear embed if exists
-        current_embeds = interaction.message.embeds
-        for item in current_embeds:
+        embeds = interaction.message.embeds
+        for item in embeds:
             if item.title == 'Бомбим!':
-                current_embeds.remove(item)
-                await interaction.message.edit(embeds=current_embeds)
+                embeds.remove(item)
+                await interaction.message.edit(embeds=embeds)
                 return
 
-        # Add gear embeds if not exists
-        ctx = await self.bot.get_context(interaction.message)
-        await cog.process_bombs(ctx, report_id)
+        # Add gear embed if not exists
+        embed = await cog.process_bombs(report_id)
+        embeds.append(embed)
+        await interaction.message.edit(embeds=embeds)
 
     def _validate_interaction(self, interaction: discord.Interaction) -> bool:
         if interaction.message is None:
