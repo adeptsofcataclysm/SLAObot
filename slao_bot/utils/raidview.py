@@ -1,10 +1,10 @@
 from typing import Optional
 
 import discord
-from discord import Embed
 from cogs.bomberman import Bomberman
 from cogs.gear import Gear
 from cogs.potions import Potions
+from discord import Embed
 from slaobot import SlaoBot
 
 
