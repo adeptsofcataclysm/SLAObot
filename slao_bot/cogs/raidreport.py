@@ -6,7 +6,7 @@ import tenacity
 from cogs.bomberman import Bomberman
 from cogs.gear import Gear
 from cogs.potions import Potions
-from discord import Embed, Message, Colour, app_commands
+from discord import Colour, Embed, Message, app_commands
 from discord.ext import commands
 from slaobot import SlaoBot
 from utils.constants import ZONE_IMAGES, Role
