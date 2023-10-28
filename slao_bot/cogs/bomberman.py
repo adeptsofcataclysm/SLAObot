@@ -14,12 +14,8 @@ class Bomberman(commands.Cog):
     _bomb_damage: Dict[str, int]
     _other_damage: Dict[str, int]
 
-    def __init__(self, bot):
-        """Cog to check potions used during a raid.
-
-        :param bot:
-        """
-        self.bot = bot
+    def __init__(self):
+        """Cog to check potions used during a raid."""
         self._engineers = defaultdict()
         self._bomb_damage = defaultdict()
         self._other_damage = defaultdict()
@@ -141,4 +137,4 @@ class Bomberman(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Bomberman(bot))
+    await bot.add_cog(Bomberman())

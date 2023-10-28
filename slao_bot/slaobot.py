@@ -3,6 +3,7 @@ import logging
 import discord
 from discord import Message
 from discord.ext import commands
+from discord.ext.commands import ExtensionFailed
 from utils.config import settings
 
 extensions = (
@@ -22,10 +23,8 @@ class SlaoBot(commands.Bot):
         intents = discord.Intents(
             guilds=True,
             members=True,
-            emojis=True,
             messages=True,
             message_content=True,
-            reactions=True,
         )
         logging.basicConfig(level=logging.WARN)
 
@@ -39,7 +38,7 @@ class SlaoBot(commands.Bot):
         for extension in extensions:
             try:
                 await self.load_extension(extension)
-            except Exception:
+            except ExtensionFailed:
                 logging.exception(f'Failed to load extension {extension}.')
 
         synced = await self.tree.sync()

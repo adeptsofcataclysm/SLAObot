@@ -3,10 +3,11 @@ from dataclasses import dataclass, field
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set
 
+import discord
 import tenacity
-from discord import Colour, Embed
+from discord import Colour, Embed, app_commands
 from discord.ext import commands
-from discord.ext.commands import Context
+from slaobot import SlaoBot
 from utils import enchants
 from utils.constants import SLOT_NAMES, Role
 from utils.models import Raider
@@ -74,19 +75,18 @@ class RaidWeakEquipment:
 
 
 class Gear(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        """Cog to check gems and enchants.
 
-        :param bot: Bot instance
-        """
-        self.bot = bot
+    @app_commands.command(description='Камни и энчанты')
+    @app_commands.describe(report_id='WCL report ID')
+    async def gear(self, interaction: discord.Interaction, report_id: str) -> None:
+        """Get data about missing or low-level gems and enchants."""
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
 
-    @commands.command(name='gear')
-    async def gear_command(self, ctx: Context, report_id: str) -> None:
-        """Get data about potions used. Format: <prefix>gear SOME_REPORT_ID."""
-        await self.process_gear(ctx, report_id)
+        embed = await self.process_gear(report_id)
+        await interaction.edit_original_response(embed=embed)
 
-    async def process_gear(self, ctx: Context, report_id: str) -> None:
+    async def process_gear(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_table_summary(report_id)
@@ -128,12 +128,7 @@ class Gear(commands.Cog):
             inline=False,
         )
 
-        if ctx.message.author != self.bot.user:
-            await ctx.send(embed=embed)
-        else:
-            embeds = ctx.message.embeds
-            embeds.append(embed)
-            await ctx.message.edit(embeds=embeds)
+        return embed
 
     @staticmethod
     def _print_raiders(gear_issues: Dict[str, Set]) -> Optional[str]:
@@ -171,5 +166,5 @@ class Gear(commands.Cog):
         return raiders_by_role
 
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(Gear(bot))
+async def setup(bot: SlaoBot) -> None:
+    await bot.add_cog(Gear())

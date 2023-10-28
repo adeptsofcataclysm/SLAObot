@@ -6,6 +6,7 @@ import discord
 import tenacity
 from discord import Colour, Embed, app_commands
 from discord.ext import commands
+from slaobot import SlaoBot
 from utils.constants import POT_IMAGES
 from utils.wcl_client import WCLClient
 
@@ -73,12 +74,6 @@ class RaidConsumables:
 
 
 class Potions(commands.Cog):
-    def __init__(self, bot):
-        """Cog to check potions used during a raid.
-
-        :param bot:
-        """
-        self.bot = bot
 
     @app_commands.command(description='Использование зелий и иже с ними')
     @app_commands.describe(report_id='WCL report ID')
@@ -164,5 +159,5 @@ class Potions(commands.Cog):
         return result if len(result) > 0 else 'Вагонимся'
 
 
-async def setup(bot):
-    await bot.add_cog(Potions(bot))
+async def setup(bot: SlaoBot):
+    await bot.add_cog(Potions())
