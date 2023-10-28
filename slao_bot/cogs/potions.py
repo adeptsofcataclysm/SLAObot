@@ -1,11 +1,12 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
+import discord
 import tenacity
-from discord import Colour, Embed
+from discord import Colour, Embed, app_commands
 from discord.ext import commands
-from discord.ext.commands import Context
+from slaobot import SlaoBot
 from utils.constants import POT_IMAGES
 from utils.wcl_client import WCLClient
 
@@ -73,29 +74,18 @@ class RaidConsumables:
 
 
 class Potions(commands.Cog):
-    def __init__(self, bot):
-        """Cog to check potions used during a raid.
 
-        :param bot:
-        """
-        self.bot = bot
+    @app_commands.command(description='Использование зелий и иже с ними')
+    @app_commands.describe(report_id='WCL report ID')
+    async def potions(self, interaction: discord.Interaction, report_id: str) -> None:
+        """Get data about potions used. """
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
 
-    @staticmethod
-    def raiders_by_id(rs: Dict[str, Any]) -> Dict[int, str]:
-        raiders = rs['reportData']['report']['table']['data']['composition']
-        result = defaultdict()
+        embed = await self.process_pots(report_id)
+        await interaction.edit_original_response(embed=embed)
 
-        for raider in raiders:
-            result[raider['id']] = raider['name']
-
-        return result
-
-    @commands.command(name='pot')
-    async def pot_command(self, ctx: Context, report_id: str) -> None:
-        """Get data about potions used. Format: <prefix>pot SOME_REPORT_ID."""
-        await self.process_pots(ctx, report_id)
-
-    async def process_pots(self, ctx: Context, report_id: str) -> None:
+    async def process_pots(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_pots(report_id)
@@ -104,7 +94,7 @@ class Potions(commands.Cog):
             except tenacity.RetryError:
                 return
 
-        raiders_by_id = self.raiders_by_id(table_summary)
+        raiders_by_id = self._raiders_by_id(table_summary)
 
         consumables = RaidConsumables()
         consumables.clear_data()
@@ -132,12 +122,17 @@ class Potions(commands.Cog):
                         value=self._print_pot_total(consumables.combat_total),
                         inline=False)
 
-        if ctx.message.author != self.bot.user:
-            await ctx.send(embed=embed)
-        else:
-            embeds = ctx.message.embeds
-            embeds.append(embed)
-            await ctx.message.edit(embeds=embeds)
+        return embed
+
+    @staticmethod
+    def _raiders_by_id(rs: Dict[str, Any]) -> Dict[int, str]:
+        raiders = rs['reportData']['report']['table']['data']['composition']
+        result = defaultdict()
+
+        for raider in raiders:
+            result[raider['id']] = raider['name']
+
+        return result
 
     @staticmethod
     def _print_pot_usage(entries: Dict[str, int]) -> str:
@@ -164,5 +159,5 @@ class Potions(commands.Cog):
         return result if len(result) > 0 else 'Вагонимся'
 
 
-async def setup(bot):
-    await bot.add_cog(Potions(bot))
+async def setup(bot: SlaoBot):
+    await bot.add_cog(Potions())

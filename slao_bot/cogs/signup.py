@@ -64,12 +64,14 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
                 signup_embed.set_thumbnail(url=interaction.user.avatar.url)
             await signup_channel.send(embed=signup_embed)
 
+        # noinspection PyUnresolvedReferences
         await interaction.response.send_message(
             f'Спасибо, {self.name.value}! Офицеры в скором времени выдадут права в Discord',
             ephemeral=True,
         )
 
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+        # noinspection PyUnresolvedReferences
         await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
 
 
@@ -107,6 +109,7 @@ class SignUp(commands.Cog):
 
     @app_commands.command(description='Немного о себе')
     async def signup(self, interaction: discord.Interaction):
+        # noinspection PyUnresolvedReferences
         await interaction.response.send_modal(SignUpModal())
 
 
