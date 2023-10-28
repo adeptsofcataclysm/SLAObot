@@ -94,7 +94,7 @@ class RaidView(discord.ui.View):
         # Add gear embeds if not exists
         embed = await cog.process_gear(report_id)
         embeds.append(embed)
-        await interaction.message.edit(embeds=embeds)
+        await interaction.edit_original_response(embeds=embeds)
 
     # noinspection PyUnusedLocal
     @discord.ui.button(label='Bombs', style=discord.ButtonStyle.gray, custom_id='raid_view:bombs', emoji='💣')
@@ -122,7 +122,7 @@ class RaidView(discord.ui.View):
         # Add gear embed if not exists
         embed = await cog.process_bombs(report_id)
         embeds.append(embed)
-        await interaction.message.edit(embeds=embeds)
+        await interaction.edit_original_response(embeds=embeds)
 
     @staticmethod
     def _validate_interaction(interaction: discord.Interaction) -> Optional[str]:
