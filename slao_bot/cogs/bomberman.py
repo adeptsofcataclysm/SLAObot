@@ -19,6 +19,7 @@ class Bomberman(commands.Cog):
         self._engineers = defaultdict()
         self._bomb_damage = defaultdict()
         self._other_damage = defaultdict()
+        self.embed_title: str = 'Бомбим!'
 
     @app_commands.command(description='Использование гранат и схожих расходников')
     @app_commands.describe(report_id='WCL report ID')
@@ -27,10 +28,10 @@ class Bomberman(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await self.process_bombs(report_id)
+        embed = await self.process_interaction(report_id)
         await interaction.edit_original_response(embed=embed)
 
-    async def process_bombs(self, report_id: str) -> Optional[discord.Embed]:
+    async def process_interaction(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_bombs(report_id)
@@ -44,7 +45,7 @@ class Bomberman(commands.Cog):
         self._other_damage = dict(sorted(self._other_damage.items(), key=lambda item: item[1], reverse=True))
 
         embed = Embed(
-            title='Бомбим!',
+            title=self.embed_title,
             description='Использование гранат и схожих расходников. Много гранат - быстрее пройден рейд.',
             colour=Colour.teal(),
         )

@@ -74,6 +74,9 @@ class RaidConsumables:
 
 
 class Potions(commands.Cog):
+    def __init__(self):
+        """Cog to provide basic statistics about raid."""
+        self.embed_title: str = 'Потная катка'
 
     @app_commands.command(description='Использование зелий и иже с ними')
     @app_commands.describe(report_id='WCL report ID')
@@ -82,10 +85,10 @@ class Potions(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await self.process_pots(report_id)
+        embed = await self.process_interaction(report_id)
         await interaction.edit_original_response(embed=embed)
 
-    async def process_pots(self, report_id: str) -> Optional[discord.Embed]:
+    async def process_interaction(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_pots(report_id)
@@ -104,7 +107,7 @@ class Potions(commands.Cog):
         consumables.process_prepotions(raiders_by_id, events_info['reportData']['report']['events']['data'])
         consumables.calculate_total()
 
-        embed = Embed(title='Потная катка', description='Пьём по КД, крутим логи.', colour=Colour.teal())
+        embed = Embed(title=self.embed_title, description='Пьём по КД, крутим логи.', colour=Colour.teal())
         embed.set_author(
             name='Синяя яма',
             url='',
