@@ -21,24 +21,28 @@ class RaidViewButton(discord.ui.Button['RaidView']):
         if not cog:
             return
 
+        # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await cog.process_interaction(interaction)
         embeds = interaction.message.embeds
 
-        if self.cog_name == 'raidreport':
-            await interaction.edit_original_response(embed=embed)
-        else:
-            # Remove secondary embed if exists
+        # Remove secondary embed if exists
+        if self.cog_name != 'RaidReport':
             for item in embeds:
                 if item.title == cog.embed_title:
                     embeds.remove(item)
                     await interaction.message.edit(embeds=embeds)
                     return
 
-        # Add secondary embed if not exists
-        embeds.append(embed)
-        await interaction.edit_original_response(embeds=embeds)
+        embed = await cog.process_interaction(report_id)
+
+        if self.cog_name == 'RaidReport':
+            # Refresh main embed
+            await interaction.edit_original_response(embed=embed)
+        else:
+            # Add secondary embed
+            embeds.append(embed)
+            await interaction.edit_original_response(embeds=embeds)
 
 
 class RaidView(discord.ui.View):
@@ -46,28 +50,28 @@ class RaidView(discord.ui.View):
         super().__init__(timeout=None)
         _button_init = [
             RaidViewButton(
-                cog_name='raidreport',
+                cog_name='RaidReport',
                 label='Refresh',
                 custom_id='raid_view:refresh',
                 style=discord.ButtonStyle.gray,
                 emoji='🔄',
             ),
             RaidViewButton(
-                cog_name='potions',
+                cog_name='Potions',
                 label='Potions',
                 custom_id='raid_view:potions',
                 style=discord.ButtonStyle.gray,
                 emoji='🧪',
             ),
             RaidViewButton(
-                cog_name='gear',
+                cog_name='Gear',
                 label='Gear',
                 custom_id='raid_view:gear',
                 style=discord.ButtonStyle.gray,
                 emoji='🛂',
             ),
             RaidViewButton(
-                cog_name='bomberman',
+                cog_name='Bomberman',
                 label='Bombs',
                 custom_id='raid_view:bombs',
                 style=discord.ButtonStyle.gray,

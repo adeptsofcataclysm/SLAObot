@@ -187,13 +187,13 @@ class RaidReport(commands.Cog):
 
         # Send interstitial embed to store report_id
         embed = self._make_waiting_embed(report_id, author_icon)
-        waiting_embed = await ctx.send(embed=embed)
+        waiting_message = await ctx.send(embed=embed)
 
-        embed = self.process_interaction(report_id, author_icon=author_icon)
+        embed = await self.process_interaction(report_id, author_icon=author_icon)
         if embed is None:
-            await waiting_embed.edit(view=RaidView())
+            await waiting_message.edit(view=RaidView())
 
-        await waiting_embed.edit(embed=embed, view=RaidView())
+        await waiting_message.edit(embed=embed, view=RaidView())
 
     async def process_interaction(self, report_id: str, **kwargs: Any) -> Optional[discord.Embed]:
         """Process a single report
