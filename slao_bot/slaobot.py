@@ -25,6 +25,7 @@ class SlaoBot(commands.Bot):
             members=True,
             messages=True,
             message_content=True,
+            emojis=True,
         )
         logging.basicConfig(level=logging.WARN)
 

@@ -76,6 +76,10 @@ class RaidWeakEquipment:
 
 class Gear(commands.Cog):
 
+    def __init__(self):
+        """Cog to check gems and enchants."""
+        self.embed_title: str = 'Камни и зачаровывание'
+
     @app_commands.command(description='Камни и энчанты')
     @app_commands.describe(report_id='WCL report ID')
     async def gear(self, interaction: discord.Interaction, report_id: str) -> None:
@@ -83,17 +87,17 @@ class Gear(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await self.process_gear(report_id)
+        embed = await self.process_interaction(report_id)
         await interaction.edit_original_response(embed=embed)
 
-    async def process_gear(self, report_id: str) -> Optional[discord.Embed]:
+    async def process_interaction(self, report_id: str) -> Optional[discord.Embed]:
         async with WCLClient() as client:
             try:
                 rs = await client.get_table_summary(report_id)
             except tenacity.RetryError:
                 return
 
-        embed = Embed(title='Камни и зачаровывание', description='Щас будет душно!', colour=Colour.teal())
+        embed = Embed(title=self.embed_title, description='Щас будет душно!', colour=Colour.teal())
         embed.set_author(
             name='Лавка зачарованных самоцветов',
             url='',

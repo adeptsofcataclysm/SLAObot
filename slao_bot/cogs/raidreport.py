@@ -3,151 +3,14 @@ from typing import Any, Dict, Optional
 
 import discord
 import tenacity
-from cogs.bomberman import Bomberman
-from cogs.gear import Gear
-from cogs.potions import Potions
 from discord import Colour, Embed, Message, app_commands
 from discord.ext import commands
 from slaobot import SlaoBot
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
+from utils.raidview import RaidView
 from utils.report import Report
 from utils.wcl_client import WCLClient
-
-
-class RaidView(discord.ui.View):
-    def __init__(self, bot: SlaoBot):
-        super().__init__(timeout=None)
-        self.bot: SlaoBot = bot
-
-    # noinspection PyUnusedLocal
-    @discord.ui.button(label='Refresh', style=discord.ButtonStyle.gray, custom_id='raid_view:refresh', emoji='🔄')
-    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
-        report_id = self._validate_interaction(interaction)
-        if report_id is None:
-            await self._reply_with_error(interaction)
-            return
-
-        author_icon = interaction.message.embeds[0].thumbnail.url
-
-        cog: Optional[RaidReport] = self.bot.get_cog('RaidReport')
-        if not cog:
-            return
-
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        embed = await cog.process_report(report_id, author_icon)
-        await interaction.edit_original_response(embed=embed)
-
-    # noinspection PyUnusedLocal
-    @discord.ui.button(label='Potions', style=discord.ButtonStyle.gray, custom_id='raid_view:potions', emoji='🧪')
-    async def potions(self, interaction: discord.Interaction, button: discord.ui.Button):
-        report_id = self._validate_interaction(interaction)
-        if report_id is None:
-            await self._reply_with_error(interaction)
-            return
-
-        cog: Optional[Potions] = self.bot.get_cog('Potions')
-        if not cog:
-            return
-
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        # Remove potions embed if exists
-        embeds = interaction.message.embeds
-        for item in embeds:
-            if item.title == 'Потная катка':
-                embeds.remove(item)
-                await interaction.message.edit(embeds=embeds)
-                return
-
-        # Add potion embeds if not exists
-        embed = await cog.process_pots(report_id)
-        embeds.append(embed)
-        await interaction.edit_original_response(embeds=embeds)
-
-    # noinspection PyUnusedLocal
-    @discord.ui.button(label='Gear', style=discord.ButtonStyle.gray, custom_id='raid_view:gear', emoji='🛂')
-    async def gear(self, interaction: discord.Interaction, button: discord.ui.Button):
-        report_id = self._validate_interaction(interaction)
-        if report_id is None:
-            await self._reply_with_error(interaction)
-            return
-
-        cog: Optional[Gear] = self.bot.get_cog('Gear')
-        if not cog:
-            return
-
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        # Remove gear embed if exists
-        embeds = interaction.message.embeds
-        for item in embeds:
-            if item.title == 'Камни и зачаровывание':
-                embeds.remove(item)
-                await interaction.message.edit(embeds=embeds)
-                return
-
-        # Add gear embeds if not exists
-        embed = await cog.process_gear(report_id)
-        embeds.append(embed)
-        await interaction.edit_original_response(embeds=embeds)
-
-    # noinspection PyUnusedLocal
-    @discord.ui.button(label='Bombs', style=discord.ButtonStyle.gray, custom_id='raid_view:bombs', emoji='💣')
-    async def bombs(self, interaction: discord.Interaction, button: discord.ui.Button):
-        report_id = self._validate_interaction(interaction)
-        if report_id is None:
-            await self._reply_with_error(interaction)
-            return
-
-        cog: Optional[Bomberman] = self.bot.get_cog('Bomberman')
-        if not cog:
-            return
-
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        # Remove gear embed if exists
-        embeds = interaction.message.embeds
-        for item in embeds:
-            if item.title == 'Бомбим!':
-                embeds.remove(item)
-                await interaction.message.edit(embeds=embeds)
-                return
-
-        # Add gear embed if not exists
-        embed = await cog.process_bombs(report_id)
-        embeds.append(embed)
-        await interaction.edit_original_response(embeds=embeds)
-
-    @staticmethod
-    def _validate_interaction(interaction: discord.Interaction) -> Optional[str]:
-        if interaction.message is None:
-            return None
-
-        # There should be an embed. Either waiting or report
-        embed: Embed = interaction.message.embeds[0]
-        if not embed:
-            return None
-
-        # Embed should have URL. I hope it is a WCL URL with report ID
-        report_id = embed.url.split('/')[-1]
-        if not report_id:
-            return None
-
-        return report_id
-
-    @staticmethod
-    async def _reply_with_error(interaction: discord.Interaction) -> None:
-        # noinspection PyUnresolvedReferences
-        await interaction.response.send_message(
-            'Embed or URL is missing. Something went wrong. Better call Doc!',
-            ephemeral=True,
-        )
 
 
 class RaidReport(commands.Cog):
@@ -157,7 +20,7 @@ class RaidReport(commands.Cog):
         :param bot: Bot instance
         """
         self.bot: SlaoBot = bot
-        self.bot.add_view(RaidView(self.bot))
+        self.bot.add_view(RaidView())
 
     @app_commands.command(description='Отчёт по логу на WCL')
     @app_commands.describe(report_id='WCL report ID')
@@ -166,10 +29,8 @@ class RaidReport(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        author_icon = 'https://cdn.discordapp.com/icons/620682853709250560/6c53810d8a4e2b75069208a472465694.png'
-
-        embed = await self.process_report(report_id, author_icon)
-        await interaction.edit_original_response(embed=embed, view=RaidView(self.bot))
+        embed = await self.process_interaction(report_id)
+        await interaction.edit_original_response(embed=embed, view=RaidView())
 
     @commands.Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -191,22 +52,19 @@ class RaidReport(commands.Cog):
 
         # Send interstitial embed to store report_id
         embed = self._make_waiting_embed(report_id, author_icon)
-        waiting_embed = await ctx.send(embed=embed)
+        waiting_message = await ctx.send(embed=embed)
 
-        embed = self.process_report(report_id, author_icon)
+        embed = await self.process_interaction(report_id, author_icon=author_icon)
         if embed is None:
-            await waiting_embed.edit(view=RaidView(self.bot))
+            await waiting_message.edit(view=RaidView())
 
-        await waiting_embed.edit(embed=embed, view=RaidView(self.bot))
+        await waiting_message.edit(embed=embed, view=RaidView())
 
-    async def process_report(self, report_id: str, author_icon: str) -> Optional[discord.Embed]:
+    async def process_interaction(self, report_id: str, **kwargs: Any) -> Optional[discord.Embed]:
         """Process a single report
 
         :param report_id: WarcraftLogs report ID
-        :param author_icon:
         """
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
-
         async with WCLClient() as client:
             try:
                 rs = await client.get_rankings(report_id)
@@ -221,7 +79,10 @@ class RaidReport(commands.Cog):
         else:
             report_tag = 'No tag'
 
+        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
         report_description = Report.make_report_description(rs)
+        author_icon = kwargs.get('author_icon', self.bot.user.avatar.url)
+
         embed = Embed(title=f'{report_title} - {report_tag}',
                       url=report_url,
                       description=report_description,
