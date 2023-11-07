@@ -57,6 +57,7 @@ class RaidReport(commands.Cog):
         embed = await self.process_interaction(report_id, author_icon=author_icon)
         if embed is None:
             await waiting_message.edit(view=RaidView())
+            return
 
         await waiting_message.edit(embed=embed, view=RaidView())
 
