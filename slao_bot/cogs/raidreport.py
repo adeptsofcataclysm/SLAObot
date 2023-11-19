@@ -56,7 +56,9 @@ class RaidReport(commands.Cog):
 
         embed = await self.process_interaction(report_id, author_icon=author_icon)
         if embed is None:
-            await waiting_message.edit(view=RaidView())
+            embed = self._make_error_embed(report_id, author_icon)
+            await waiting_message.edit(embed=embed, view=RaidView())
+            return
 
         await waiting_message.edit(embed=embed, view=RaidView())
 
@@ -172,6 +174,18 @@ class RaidReport(commands.Cog):
             url=report_url)
         embed.set_thumbnail(url=author_icon)
         embed.set_footer(text='Иногда WCL тормозит, пичалька.')
+
+        return embed
+
+    @staticmethod
+    def _make_error_embed(report_id: str, author_icon: str) -> discord.Embed:
+        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        embed = Embed(
+            title='Новый лог подъехал',
+            description='Но что-то в нём не так',
+            colour=Colour.orange(),
+            url=report_url)
+        embed.set_thumbnail(url=author_icon)
 
         return embed
 
