@@ -51,7 +51,7 @@ SPECS = {
 }
 
 ZONE_IMAGES = {
-    0: 'https://cdn.discordapp.com/attachments/762790105026920468/843540093422796810/RH-TBC-DarkPortal1-1200x300.png',
+    0: 'https://cdn.discordapp.com/attachments/762790105026920468/841635457941897216/raids.png',
     # Molten Core
     1000: 'https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg',
     # Onyxia
@@ -95,6 +95,8 @@ ZONE_IMAGES = {
     1019: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
     # ICC
     1020: 'https://cdn.discordapp.com/attachments/762790105026920468/1151338038736195684/icc_draft1.jpg',
+    # RS
+    1021: 'https://cdn.discordapp.com/attachments/873895928480817253/1198959475525173339/RubySanctum.png',
 
 }
 
@@ -135,6 +137,8 @@ ZONE_NAMES = {
     1018: ':regional_indicator_t: :regional_indicator_o: :regional_indicator_c:',
     1019: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
     1020: ':regional_indicator_i: :regional_indicator_c: :regional_indicator_c:',
+    1021: ':regional_indicator_r: :regional_indicator_s:',
+
 
 
 }
