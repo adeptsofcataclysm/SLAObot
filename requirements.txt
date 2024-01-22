@@ -1,6 +1,6 @@
-aiohttp==3.8.5
+aiohttp==3.9.0
 discord==2.3.1
-gql[all]==3.4.1
+gql[all]==3.5.0
 pydantic-settings==2.0.2
 tenacity==8.2.2
 diskcache==5.6.1
