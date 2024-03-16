@@ -51,44 +51,43 @@ SPECS = {
 }
 
 ZONE_IMAGES = {
-    0: 'https://cdn.discordapp.com/attachments/762790105026920468/841635457941897216/raids.png',
+    0: 'https://raid-helper.dev/uploads/banners/gw2/raids.png',
     # Molten Core
-    1000: 'https://cdn.discordapp.com/attachments/762790105026920468/762790308844273714/image0.jpg',
+    1000: 'https://raid-helper.dev/uploads/banners/classic/image0.jpg',
     # Onyxia
-    1001: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
+    1001: 'https://raid-helper.dev/uploads/banners/classic/image1.jpg',
     # BWL
-    1002: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309376688128/image2.jpg',
+    1002: 'https://raid-helper.dev/uploads/banners/classic/image2.jpg',
     # ZG
-    1003: 'https://cdn.discordapp.com/attachments/762790105026920468/763170902271197204/RH-ZG2.png',
+    1003: 'https://raid-helper.dev/uploads/banners/classic/RH-ZG2.png',
     # AQ20
-    1004: 'https://cdn.discordapp.com/attachments/762790105026920468/763170907035533362/RH-AQ20-1.png',
+    1004: 'https://raid-helper.dev/uploads/banners/classic/RH-AQ20.png',
     # AQ40
-    1005: 'https://cdn.discordapp.com/attachments/762790105026920468/763170914220900392/RH-AQ40-1.png',
+    1005: 'https://raid-helper.dev/uploads/banners/classic/RH-AQ40-1.png',
     # Naxramas
-    1006: 'https://media.discordapp.net/attachments/762790105026920468/773622157456572486/RH-Naxx-2.png',
+    1006: 'https://raid-helper.dev/uploads/banners/classic/RH-Naxx-3.png',
     # Karazhan
-    1007: 'https://cdn.discordapp.com/attachments/762790105026920468/843540146379948042/RH-TBC-Karazhan1-1200x300.png',
+    1007: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-Karazhan1-1200x300.png',
     # Gruul + Magtheridon
-    1008: 'https://cdn.discordapp.com/attachments/762790105026920468/'
-          '876774093943349258/RH-TBC-GruulMaggie_1200x300.png',
+    1008: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-GruulMaggie_1200x300.png',
     # Heroics
-    1009: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
+    1009: 'https://raid-helper.dev/uploads/banners/retail/RH-MYTHICS-1.png',
     # SSK + TK
-    1010: 'https://cdn.discordapp.com/attachments/762790105026920468/887556750134374420/EyeAndSSCpng.png',
+    1010: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-SSCTK_1200x300.png',
     # BT
-    1011: 'https://cdn.discordapp.com/attachments/762790105026920468/935942801642905600/RH-TBC-MTBT2_1200x300.png',
+    1011: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-MTBT2_1200x300.png',
     # ZA
-    1012: 'https://cdn.discordapp.com/attachments/762790105026920468/951451058985652264/RH-TBC-ZA1_1200x300.png',
+    1012: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-ZA1_1200x300.png',
     # SWP
-    1013: 'https://cdn.discordapp.com/attachments/762790105026920468/773981418052386866/8._TBC_SWP.png',
+    1013: 'https://raid-helper.dev/uploads/banners/tbc/RH-TBC-SWP1_1200x300.png',
     # WotLK Heroics
-    1014: 'https://cdn.discordapp.com/attachments/762790105026920468/841635106954149898/dungeons.png',
+    1014: 'https://raid-helper.dev/uploads/banners/retail/RH-MYTHICS-1.png',
     # Naxx, Sart, Maly
-    1015: 'https://cdn.discordapp.com/attachments/776184190743216128/1029314252177166346/naxx1.png',
+    1015: 'https://raid-helper.dev/uploads/banners/wotlk/RH-Wrath-P1Raids_1200x300.png',
     # Archavon
-    1016: 'https://cdn.discordapp.com/attachments/776184190743216128/1030423276092149801/vault.png',
+    1016: 'https://raid-helper.dev/uploads/banners/wotlk/RH-Wrath-VoA1_1200x300.png',
     # Ulduar
-    1017: 'https://cdn.discordapp.com/attachments/762790105026920468/1064611612188754090/ulduar_3.png',
+    1017: 'https://raid-helper.dev/uploads/banners/wotlk/ulduar_3.png',
     # ToC
     1018: 'https://cdn.discordapp.com/attachments/762790105026920468/1121486358117109912/ToC_Banner.png',
     # Ony-80
