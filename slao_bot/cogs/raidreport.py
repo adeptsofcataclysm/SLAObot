@@ -94,9 +94,6 @@ class RaidReport(commands.Cog):
         embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
         embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
 
-        if rs['reportData']['report']['zone']['frozen']:
-            return
-
         # Add bosses, speed and execution
         self._make_fights(rs, embed)
         # Add raiders
