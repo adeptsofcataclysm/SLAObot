@@ -23,6 +23,7 @@ BOMB_SPELLS = {
     '54359',  # Explosive Decoy
     '30526',  # Gnomish Flame Turret
     '4100',   # Goblin Land Mine
+    '89637',  # Big Daddy
 }
 
 OTHER_SPELLS = {
