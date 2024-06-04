@@ -30,6 +30,15 @@ BAD_ENCHANTS = {
         3096,  # Arcanum of the Outcast
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3817,  # Arcanum of Torment
+        3818,  # Arcanum of the Stalwart Protector
+        3819,  # Arcanum of Blissful Mending
+        3820,  # Arcanum of Burning Mysteries
+        3842,  # Arcanum of the Savage Gladiator
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+
+
     ],
     2: [
         2604,  # Shoulder - ZG
@@ -56,10 +65,18 @@ BAD_ENCHANTS = {
         2998,  # Inscription of Endurance
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3793,  # Inscription of Triumph
+        3794,  # Inscription of Dominance
         3806,  # Lesser of the Storm
         3807,  # Lesser of the Crag
+        3808,  # Greater of the Axe
+        3809,  # Greater of the Crag
+        3810,  # Greater of the Storm
+        3811,  # Greater of the Pinnacle
+        3852,  # Greater Inscription of the Gladiator
         3875,  # Lesser of Axe
         3876,  # Lesser of the Pinnacle
+        4120,  # Savage Armor Kit
     ],
     4: [
         15,  # 8 Armor
