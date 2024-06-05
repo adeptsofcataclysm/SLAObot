@@ -101,8 +101,10 @@ BAD_ENCHANTS = {
         1843,  # 40 Armor
         1891,  # Chest - 4 Stats
         1893,  # Chest - 100 Mana
+        1953,  # Chest - 22 Dodge
         1960,  # Chest - 15 Def
         1951,  # Chest - 16 Def
+        2381,  # Chest - 20 SPI
         2503,  # 3 Def
         2659,  # Chest - 150 HP
         2661,  # Chest - 6 Stats
@@ -111,9 +113,17 @@ BAD_ENCHANTS = {
         2933,  # Chest - 15 Resilience
         3233,  # Chest - 250 Mana
         3236,  # Chest - 200 HP
-        # fine for phase 1        3252,  # Chest - 8 Stats
+        3245,  # Chest - 20 resilence
+        3252,  # Chest - 8 Stats
+        3297,  # Chest - 275hp
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3832,  # Chest - 10 Stats
+        4063,  # Chest - 15 Stats
+        4070,  # Chest - 55 STA
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+
     ],
     6: [
         15,    # 8 Armor
@@ -138,15 +148,27 @@ BAD_ENCHANTS = {
         2792,  # Knothide Kit
         2841,  # Heavy Knothide Kit
         3010,  # Legs - 40AP/10Crit
+        3011,  # Legs - 30Sta|10Agi
         3012,  # Legs - 50AP/12Crit
         3013,  # Legs - 40Sta/12Agi
         3325,  # Legs - 45Sta/15Agi
         3326,  # Legs - 55AP/15Crit
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3332,  # Legs - 100AP|36Crit
         3718,  # Legs - Shining Thread
+        3719,  # Legs - Brilliant Thread
         3720,  # Legs - Azure Thread
-
+        3721,  # Legs - Sapphire Thread
+        3822,  # Legs - 55Sta|22Agi
+        3823,  # Legs - 75AP|22Crit
+        3853,  # Legs - 28Sta|40Resi
+        4109,  # Legs - Ghostly Thread
+        4111,  # Legs - Enchanted Thread
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+        4122,  # Legs - 110AP|45Crit
+        4124,  # Legs - 85Sta|45Agi
     ],
     7: [
         15,   # 8 Armor
