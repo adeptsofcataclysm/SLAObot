@@ -1,5 +1,5 @@
 # Optimal gems should be at least of a Rare quality
-MIN_GEM_ILEVEL = 80
+MIN_GEM_ILEVEL = 85
 
 # Number of sockets in a particular item.
 SOCKETS = {
