@@ -185,6 +185,10 @@ BAD_ENCHANTS = {
         904,  # Boots - 5 Agi
         911,  # Boots - Minor Speed
         929,  # Boots - 7 Sta
+        983,  # Boots - 16 Agi
+        1075,  # Boots - 22 Sta
+        1147,  # Boots - 18Spi
+        1597,  # Boots - 32AP
         1843,  # 40 Armor
         1887,  # Boots - 7 Agi
         2503,  # 3 Def
@@ -196,10 +200,14 @@ BAD_ENCHANTS = {
         2841,  # Heavy Knothide Kit
         2939,  # Cat's Swiftness
         2940,  # Boar's SPeed
+        3232,  # Tuskarr Vitality
+        3244,  # Boots - 14 STA|SPI
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
         3824,  # Boots - 24 AP
+        3826,  # Boots - 12 Crit|Hit
         3858,  # Boots - 5 hit
+        4120,  # Savage Armor Kit
     ],
     8: [
         41,   # Bracers - 5 HP
@@ -230,6 +238,8 @@ BAD_ENCHANTS = {
         2649,  # Bracers - 12 Sta
         2650,  # Bracers - 20 SP
         2679,  # Bracers - 6 mp5
+        4065,  # Bracers - 50 Haste
+        4071,  # Bracers - 50 Crit
     ],
     9: [
         15,    # 8 Armor
@@ -263,11 +273,19 @@ BAD_ENCHANTS = {
         2934,  # Gloves - Blasting
         2935,  # Gloves - 15 Hit
         2937,  # Gloves - 20 SP
+        3231,  # Gloves - 15 Exp
         3238,  # Gloves - Gatherer
+        3246,  # Gloves - 28 SP
         3249,  # Gloves - 16 Crit
+        3253,  # Gloves - 10 Parry + threat
+        3260,  # Gloves Reinforcements
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
         3829,  # Gloves - 35 AP
+        4061,  # Glovers - 50 Mastery
+        4075,  # Gloves - 35 Str
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
     ],
     14: [
         65,  # Cloak - 1 Res
@@ -280,6 +298,7 @@ BAD_ENCHANTS = {
         884,  # Cloak - 50 Armor
         903,  # Cloak - 3 Res
         910,  # Cloak - Stealth
+        983,  # Cloak - 16 Agi
         1257,  # Cloak - 15 Res
         1441,  # Cloak - 15 Res
         1889,  # Cloak - 70 Armor
@@ -292,8 +311,8 @@ BAD_ENCHANTS = {
         2664,  # Cloak - 7 Res
         2938,  # Cloak - Spell Pen
         3825,  # Cloak - 15 Haste
-        4747,  # Cloak - 16 Agi
-
+        4072,  # Cloak - 30 Int
+        4087,  # Cloak - 50 Crit
     ],
     15: [
         241,  # Weapon - 2 Dmg
@@ -326,11 +345,19 @@ BAD_ENCHANTS = {
         2674,  # Weapon - Spellsurge
         2675,  # Weapon - Battlemaster
         3222,  # Weapon - 20 Agi
+        3223,  # Weapon - Chain
         3225,  # Weapon - Executioner
+        3251,  # Weapon - Giant Slayer
         3273,  # Weapon - Deathfrost
+        3731,  # Weapon - Chain
+        3790,  # Weapon - Black Magic
         3828,  # Weapon - 85 AP
         3846,  # Weapon - 40 SP
+        3828,  # Weapon - Greater Savagery
         3830,  # Weapon - 50 SP
+        3834,  # Weapon - 63 SP
+        4067,  # Weapon - Avalanche
+        4217,  # Weapon- Chain
     ],
 }
 
