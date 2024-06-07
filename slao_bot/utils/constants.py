@@ -89,14 +89,19 @@ ZONE_IMAGES = {
     # Ulduar
     1017: 'https://raid-helper.dev/uploads/banners/wotlk/ulduar_3.png',
     # ToC
-    1018: 'https://cdn.discordapp.com/attachments/762790105026920468/1121486358117109912/ToC_Banner.png',
+    1018: 'https://www.wowhcb.ru/slaobot/ToC_Banner.png',
     # Ony-80
-    1019: 'https://cdn.discordapp.com/attachments/762790105026920468/762790309100388382/image1.jpg',
+    1019: 'https://raid-helper.dev/uploads/banners/classic/image1.jpg',
     # ICC
-    1020: 'https://cdn.discordapp.com/attachments/762790105026920468/1151338038736195684/icc_draft1.jpg',
+    1020: 'https://www.wowhcb.ru/slaobot/icc_draft1.jpg',
     # RS
-    1021: 'https://cdn.discordapp.com/attachments/873895928480817253/1198959475525173339/RubySanctum.png',
-
+    1021: 'https://www.wowhcb.ru/slaobot/RubySanctum.png',
+    # Cata Heroics
+    1022: 'https://raid-helper.dev/uploads/banners/retail/RH-MYTHICS-1.png',
+    # T11: TotFW, BWD, BoT
+    1023: 'https://www.wowhcb.ru/slaobot/t11.png',
+    # Baradin Hold
+    1024: 'https://www.wowhcb.ru/slaobot/BH.png',
 }
 
 ZONE_NAMES = {
@@ -137,9 +142,10 @@ ZONE_NAMES = {
     1019: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
     1020: ':regional_indicator_i: :regional_indicator_c: :regional_indicator_c:',
     1021: ':regional_indicator_r: :regional_indicator_s:',
-
-
-
+    1022: ':regional_indicator_h: :regional_indicator_e: :regional_indicator_r: :regional_indicator_o: '
+          ':regional_indicator_i: :regional_indicator_k: :regional_indicator_s:',
+    1023: ':regional_indicator_t: :regional_indicator_i: :regional_indicator_e: :regional_indicator_r: '
+          ':one:'':one:',
 }
 EXEC_VALUES = {
     0: 'Слабо',
@@ -149,59 +155,21 @@ EXEC_VALUES = {
 }
 
 # Combat consumables with short cooldown
-# TBC consumables
-#   10052: "Mana Jade"
-#   10058: "Mana Ruby"
-#   16666: "Demonic Rune"
-#   17531: "Major Mana Pot"
-#   17534: "Major Healing Pot"
-#   27103: "Mana Emerald"
-#   27235: "Master Healthstone"
-#   27236: "Master Healthstone"
-#   27237: "Master Healthstone"
-#   27869: "Dark Rune"
-#   28495: "Super Healing Pot"
-#   28499: "Super Mana Pot"
-#   28507: "Haste Pot"
-#   28508: "Destruction Pot"
-#   28513: "Nature Protection"
-#   28515: "2.5k armor"
-#   28527: "Fel Blossom"
-#   28714: "Flame Cap"
-#   28726: "Nightmare Seed"
-#   35476: "Drums of Battle"
-#   35478: "Drums of Restoration"
-#   41617: "Cenarion Mana"
-#   41618: "Bottled Nethergon Energy"
-#   45051: "Mad Alchemist's Potion"
-#   351355: "Greater Drums of Battle"
-#   351360: "Greater Drums of War"
-#   351358: "Greater Drums of Restoration"
-
-# WotLK consumables
+# Cata consumables
 HP_MANA_POTS = {
-    '43186',  # Runic mana pot
-    '67490',  # Runic mana injector
-    '43185',  # Runic healing pot
-    '67489',  # Runic healing injector
-    '53750',  # Crazy Alchemist's pot
-    '53761',  # Powerful Rejuvenation pot
+    '78989',  # Mythical hp pot
+    '78990',  # Mythical mana pot
 }
 
 HP_MANA_STONES = {
-    '42987',  # Mana Sapphire
-    '47872',  # Master Healthstone
-    '47873',  # Master Healthstone
-    '47874',  # Master Healthstone
-    '47875',  # Master Healthstone
-    '47876',  # Master Healthstone
-    '47877',  # Master Healthstone
+    '5405',  # Mana Gem
 }
 
 COMBAT_POTS = {
-    '53762',  # 3.5k armor
-    '53908',  # Potion of Speed
-    '53909',  # Wild Magic pot
+    '79475',  # 4.8k armor
+    '79476',  # 1.2k INT
+    '79633',  # 1.2k AGI
+    '79634',  # 1.2k STR
 }
 
 POT_IMAGES = {

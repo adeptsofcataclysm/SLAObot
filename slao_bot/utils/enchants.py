@@ -30,6 +30,15 @@ BAD_ENCHANTS = {
         3096,  # Arcanum of the Outcast
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3817,  # Arcanum of Torment
+        3818,  # Arcanum of the Stalwart Protector
+        3819,  # Arcanum of Blissful Mending
+        3820,  # Arcanum of Burning Mysteries
+        3842,  # Arcanum of the Savage Gladiator
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+
+
     ],
     2: [
         2604,  # Shoulder - ZG
@@ -56,10 +65,18 @@ BAD_ENCHANTS = {
         2998,  # Inscription of Endurance
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3793,  # Inscription of Triumph
+        3794,  # Inscription of Dominance
         3806,  # Lesser of the Storm
         3807,  # Lesser of the Crag
+        3808,  # Greater of the Axe
+        3809,  # Greater of the Crag
+        3810,  # Greater of the Storm
+        3811,  # Greater of the Pinnacle
+        3852,  # Greater Inscription of the Gladiator
         3875,  # Lesser of Axe
         3876,  # Lesser of the Pinnacle
+        4120,  # Savage Armor Kit
     ],
     4: [
         15,  # 8 Armor
@@ -84,8 +101,10 @@ BAD_ENCHANTS = {
         1843,  # 40 Armor
         1891,  # Chest - 4 Stats
         1893,  # Chest - 100 Mana
+        1953,  # Chest - 22 Dodge
         1960,  # Chest - 15 Def
         1951,  # Chest - 16 Def
+        2381,  # Chest - 20 SPI
         2503,  # 3 Def
         2659,  # Chest - 150 HP
         2661,  # Chest - 6 Stats
@@ -94,9 +113,17 @@ BAD_ENCHANTS = {
         2933,  # Chest - 15 Resilience
         3233,  # Chest - 250 Mana
         3236,  # Chest - 200 HP
-        # fine for phase 1        3252,  # Chest - 8 Stats
+        3245,  # Chest - 20 resilence
+        3252,  # Chest - 8 Stats
+        3297,  # Chest - 275hp
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3832,  # Chest - 10 Stats
+        4063,  # Chest - 15 Stats
+        4070,  # Chest - 55 STA
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+
     ],
     6: [
         15,    # 8 Armor
@@ -121,15 +148,27 @@ BAD_ENCHANTS = {
         2792,  # Knothide Kit
         2841,  # Heavy Knothide Kit
         3010,  # Legs - 40AP/10Crit
+        3011,  # Legs - 30Sta|10Agi
         3012,  # Legs - 50AP/12Crit
         3013,  # Legs - 40Sta/12Agi
         3325,  # Legs - 45Sta/15Agi
         3326,  # Legs - 55AP/15Crit
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
+        3332,  # Legs - 100AP|36Crit
         3718,  # Legs - Shining Thread
+        3719,  # Legs - Brilliant Thread
         3720,  # Legs - Azure Thread
-
+        3721,  # Legs - Sapphire Thread
+        3822,  # Legs - 55Sta|22Agi
+        3823,  # Legs - 75AP|22Crit
+        3853,  # Legs - 28Sta|40Resi
+        4109,  # Legs - Ghostly Thread
+        4111,  # Legs - Enchanted Thread
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
+        4122,  # Legs - 110AP|45Crit
+        4124,  # Legs - 85Sta|45Agi
     ],
     7: [
         15,   # 8 Armor
@@ -146,6 +185,10 @@ BAD_ENCHANTS = {
         904,  # Boots - 5 Agi
         911,  # Boots - Minor Speed
         929,  # Boots - 7 Sta
+        983,  # Boots - 16 Agi
+        1075,  # Boots - 22 Sta
+        1147,  # Boots - 18Spi
+        1597,  # Boots - 32AP
         1843,  # 40 Armor
         1887,  # Boots - 7 Agi
         2503,  # 3 Def
@@ -157,10 +200,14 @@ BAD_ENCHANTS = {
         2841,  # Heavy Knothide Kit
         2939,  # Cat's Swiftness
         2940,  # Boar's SPeed
+        3232,  # Tuskarr Vitality
+        3244,  # Boots - 14 STA|SPI
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
         3824,  # Boots - 24 AP
+        3826,  # Boots - 12 Crit|Hit
         3858,  # Boots - 5 hit
+        4120,  # Savage Armor Kit
     ],
     8: [
         41,   # Bracers - 5 HP
@@ -191,6 +238,8 @@ BAD_ENCHANTS = {
         2649,  # Bracers - 12 Sta
         2650,  # Bracers - 20 SP
         2679,  # Bracers - 6 mp5
+        4065,  # Bracers - 50 Haste
+        4071,  # Bracers - 50 Crit
     ],
     9: [
         15,    # 8 Armor
@@ -224,11 +273,19 @@ BAD_ENCHANTS = {
         2934,  # Gloves - Blasting
         2935,  # Gloves - 15 Hit
         2937,  # Gloves - 20 SP
+        3231,  # Gloves - 15 Exp
         3238,  # Gloves - Gatherer
+        3246,  # Gloves - 28 SP
         3249,  # Gloves - 16 Crit
+        3253,  # Gloves - 10 Parry + threat
+        3260,  # Gloves Reinforcements
         3329,  # Borean Kit
         3330,  # Heavy Borean Kit
         3829,  # Gloves - 35 AP
+        4061,  # Glovers - 50 Mastery
+        4075,  # Gloves - 35 Str
+        4120,  # Savage Armor Kit
+        4121,  # Heavy Savage Armor Kit
     ],
     14: [
         65,  # Cloak - 1 Res
@@ -241,6 +298,7 @@ BAD_ENCHANTS = {
         884,  # Cloak - 50 Armor
         903,  # Cloak - 3 Res
         910,  # Cloak - Stealth
+        983,  # Cloak - 16 Agi
         1257,  # Cloak - 15 Res
         1441,  # Cloak - 15 Res
         1889,  # Cloak - 70 Armor
@@ -253,8 +311,8 @@ BAD_ENCHANTS = {
         2664,  # Cloak - 7 Res
         2938,  # Cloak - Spell Pen
         3825,  # Cloak - 15 Haste
-        4747,  # Cloak - 16 Agi
-
+        4072,  # Cloak - 30 Int
+        4087,  # Cloak - 50 Crit
     ],
     15: [
         241,  # Weapon - 2 Dmg
@@ -287,11 +345,19 @@ BAD_ENCHANTS = {
         2674,  # Weapon - Spellsurge
         2675,  # Weapon - Battlemaster
         3222,  # Weapon - 20 Agi
+        3223,  # Weapon - Chain
         3225,  # Weapon - Executioner
+        3251,  # Weapon - Giant Slayer
         3273,  # Weapon - Deathfrost
+        3731,  # Weapon - Chain
+        3790,  # Weapon - Black Magic
         3828,  # Weapon - 85 AP
         3846,  # Weapon - 40 SP
+        3828,  # Weapon - Greater Savagery
         3830,  # Weapon - 50 SP
+        3834,  # Weapon - 63 SP
+        4067,  # Weapon - Avalanche
+        4217,  # Weapon- Chain
     ],
 }
 
