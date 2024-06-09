@@ -44,13 +44,6 @@ class RaidWeakEquipment:
         :param raider_name: Raider name
         :param item: Equipped item dictionary
         """
-        # Let's check for gems quality every time. Until we will be able to check sockets count
-        if 'gems' not in item:
-            return
-
-        for gem in item['gems']:
-            if gem['itemLevel'] < MIN_GEM_ILEVEL:
-                self.low_quality_gems[raider_name].add(SLOT_NAMES.get(item['slot']))
 
         sockets_num = SOCKETS.get(item['id'])
         if sockets_num is None:
@@ -60,6 +53,10 @@ class RaidWeakEquipment:
             # No gems in sockets
             self.empty_sockets[raider_name].add(SLOT_NAMES.get(item['slot']))
             # All sockets are gemmed. Let's check gems level
+        else:
+            for gem in item['gems']:
+                if gem['itemLevel'] < MIN_GEM_ILEVEL:
+                    self.low_quality_gems[raider_name].add(SLOT_NAMES.get(item['slot']))
 
     def _check_enchants(self, raider_name: str, item: Dict) -> None:
         """Checks item for missing or low quality enchant
@@ -117,8 +114,7 @@ class Gear(commands.Cog):
 
         embed.add_field(
             name='Нет камней',
-            # value=self._print_raiders(equipment.empty_sockets) or 'Камни вставлены у всех!',
-            value='Блесс, где список сокетов?',
+            value=self._print_raiders(equipment.empty_sockets) or 'Камни вставлены у всех!',
             inline=False,
         )
         embed.add_field(
