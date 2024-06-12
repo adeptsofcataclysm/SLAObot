@@ -51,7 +51,8 @@ class RaidConsumables:
             if entry['type'] != 'combatantinfo':
                 continue
             for aura in entry['auras']:
-                if aura['ability'] == 53762 or aura['ability'] == 53908 or aura['ability'] == 53909:
+                if (aura['ability'] == 79475 or aura['ability'] == 79476
+                        or aura['ability'] == 79633 or aura['ability'] == 79634):
                     self.combat_prepotions[raiders[entry['sourceID']]] = self.combat_prepotions.get(
                         raiders[entry['sourceID']], 0) + 1
 
