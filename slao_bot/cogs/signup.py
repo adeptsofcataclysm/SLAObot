@@ -2,8 +2,9 @@ import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import SlaoBot
 from utils.config import settings
+
+from slaobot import SlaoBot
 
 
 class SignUpModal(discord.ui.Modal, title='Информация о себе'):

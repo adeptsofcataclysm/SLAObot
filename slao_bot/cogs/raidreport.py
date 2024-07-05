@@ -5,12 +5,13 @@ import discord
 import tenacity
 from discord import Colour, Embed, Message, app_commands
 from discord.ext import commands
-from slaobot import SlaoBot
 from utils.constants import ZONE_IMAGES, Role
 from utils.format import bold, make_execution
 from utils.raidview import RaidView
 from utils.report import Report
 from utils.wcl_client import WCLClient
+
+from slaobot import SlaoBot
 
 
 class RaidReport(commands.Cog):
