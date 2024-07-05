@@ -7,13 +7,14 @@ import discord
 import tenacity
 from discord import Colour, Embed, app_commands
 from discord.ext import commands
-from slaobot import SlaoBot
 from utils import enchants
 from utils.constants import SLOT_NAMES, Role
 from utils.models import Raider
 from utils.report import Report
 from utils.sockets import MIN_GEM_ILEVEL, SOCKETS
 from utils.wcl_client import WCLClient
+
+from slaobot import SlaoBot
 
 
 @dataclass
