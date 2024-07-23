@@ -1,6 +1,8 @@
 import logging
 import time
 
+import time
+
 import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
@@ -111,13 +113,14 @@ class SignUpRequest(discord.ui.View):
 
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
+
         # There should be an embed with questionnaire answers
         embed: Embed = interaction.message.embeds[0]
         if not embed:
             return None
 
         try:
-            mention = interaction.message.embeds[0].fields[5].value
+            mention = embed.fields[5].value
             mention = mention.replace('<', '')
             mention = mention.replace('>', '')
             mention = mention.replace('@', '')
@@ -129,14 +132,16 @@ class SignUpRequest(discord.ui.View):
             return None
 
         role = discord.utils.get(interaction.guild.roles, name='Служитель')
-
         try:
             await candidate.add_roles(role)
         except discord.Forbidden:
             await interaction.followup.send('Нет прав.', ephemeral=True)
             return None
 
-        await interaction.followup.send('Сделал Служителем!', ephemeral=True)
+        # Role set. Let's update embed and stop the view
+        embed.set_footer(text=f'{interaction.user} сделал Служителем | {time.asctime(time.localtime(time.time()))} ')
+        await interaction.message.edit(embed=embed, view=None)
+        self.stop()
 
 
 class SignUpModal(discord.ui.Modal, title='Информация о себе'):
