@@ -6,9 +6,10 @@ import discord
 import tenacity
 from discord import Colour, Embed, app_commands
 from discord.ext import commands
-from slaobot import SlaoBot
 from utils.constants import POT_IMAGES
 from utils.wcl_client import WCLClient
+
+from slaobot import SlaoBot
 
 
 @dataclass

@@ -1,6 +1,6 @@
-aiohttp==3.9.4
-discord==2.3.1
+aiohttp==3.9.5
+discord.py==2.4.0
 gql[all]==3.5.0
-pydantic-settings==2.0.2
-tenacity==8.2.2
-diskcache==5.6.1
+pydantic-settings==2.3.4
+tenacity==8.5.0
+diskcache==5.6.3

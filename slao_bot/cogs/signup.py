@@ -1,12 +1,61 @@
+import time
+
 import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from slaobot import SlaoBot
 from utils.config import settings
+
+from slaobot import SlaoBot
+
+
+class SignUpRequest(discord.ui.View):
+    """View that will give starting role to a newcomer"""
+
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label='Принять', style=discord.ButtonStyle.green, custom_id='sur:accept')
+    async def accept(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.message is None:
+            return None
+
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        # There should be an embed with questionnaire answers
+        embed: Embed = interaction.message.embeds[0]
+        if not embed:
+            return None
+
+        try:
+            mention = embed.fields[5].value
+            mention = mention.replace('<', '')
+            mention = mention.replace('>', '')
+            mention = mention.replace('@', '')
+            mention = mention.replace('!', '')
+
+            candidate = interaction.guild.get_member(int(mention))
+        except discord.NotFound:
+            await interaction.followup.send('Не нашел пользователя.', ephemeral=True)
+            return None
+
+        role = discord.utils.get(interaction.guild.roles, name='Служитель')
+        try:
+            await candidate.add_roles(role)
+        except discord.Forbidden:
+            await interaction.followup.send('Нет прав.', ephemeral=True)
+            return None
+
+        # Role set. Let's update embed and stop the view
+        embed.set_footer(text=f'{interaction.user} сделал Служителем | {time.asctime(time.localtime(time.time()))} ')
+        await interaction.message.edit(embed=embed, view=None)
+        self.stop()
 
 
 class SignUpModal(discord.ui.Modal, title='Информация о себе'):
+    """Modal dialog window with basic questions about newcomer."""
+
     name = discord.ui.TextInput(
         label='Твой имя',
         placeholder='Как тебя зовут',
@@ -62,7 +111,7 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
             signup_embed.add_field(name='Пользователь', value=format(interaction.user.mention))
             if interaction.user.avatar:
                 signup_embed.set_thumbnail(url=interaction.user.avatar.url)
-            await signup_channel.send(embed=signup_embed)
+            await signup_channel.send(embed=signup_embed, view=SignUpRequest())
 
         # noinspection PyUnresolvedReferences
         await interaction.response.send_message(
@@ -76,13 +125,15 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
 
 
 class SignUp(commands.Cog):
-    def __init__(self, bot: SlaoBot):
-        """
-        Cog to greet newcomers and give them some basic questionnaire.
+    """Cog to greet newcomers and give them some basic questionnaire.
 
-        :param bot: Bot instance
-        """
+    :param bot: Bot instance
+    """
+
+    def __init__(self, bot: SlaoBot):
         self.bot: SlaoBot = bot
+        # Register the persistent view for listening here.
+        self.bot.add_view(SignUpRequest())
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member) -> None:
@@ -95,7 +146,7 @@ class SignUp(commands.Cog):
         dm_channel = await member.create_dm()
         intro_message = (f'Привет, {format(member.mention)}! \r\n'
                          'Приветствуем тебя на Discord сервере гильдии <Адепты Катаклизма>! \r\n'
-                         'Мы играем в Wrath of the Lich King Classic за Альянс на Пламегоре. \r\n'
+                         'Мы играем в Cataclysm Classic за Альянс на Пламегоре. \r\n'
                          'Если хочешь вступить к нам в гильдию, то напиши /signup в любом  \r\n'
                          'канале Discord сервера Адептов. \r\n'
                          'Удачного времяпрепровождения!')
