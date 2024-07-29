@@ -159,7 +159,7 @@ class SignUp(commands.Cog):
         self.bot.dispatch('member_join', ctx.author)
 
     @app_commands.command(description='Немного о себе')
-    async def signup(self, interaction: discord.Interaction):
+    async def signup(self, interaction: discord.Interaction) -> None:
         # noinspection PyUnresolvedReferences
         await interaction.response.send_modal(SignUpModal())
 

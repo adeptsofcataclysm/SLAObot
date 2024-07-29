@@ -13,6 +13,7 @@ extensions = (
     'cogs.gear',
     'cogs.bomberman',
     'cogs.damage',
+    'cogs.epgp',
 )
 
 TEST_GUILD = discord.Object(873894278110265404)
