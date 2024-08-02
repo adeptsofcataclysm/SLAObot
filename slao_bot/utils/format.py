@@ -1,7 +1,7 @@
 # Part of the code Copyright 2020-2023 Lantis
 # https://github.com/lantisnt/DKPBot
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import discord
 from utils.constants import EXEC_VALUES
@@ -73,16 +73,22 @@ def build_wowhead_item_link(item_name: str, item_id: int) -> str:
     return '[{1}](https://{0}/item={2})'.format('wowhead.com/cata/ru', item_name, item_id)
 
 
-def build_loot_entries(entries: list) -> str:
+def build_loot_entries(entries: list, show_target: bool = False) -> str:
     result = ''
     for entry in entries:
-        _, player, _, _, _, _, gpb, gpa, item_id, item_name, timestamp, _, _ = entry
-        result += build_loot_entry(timestamp, gpa - gpb, item_name, item_id)
+        _, target, _, _, _, _, gpb, gpa, item_id, item_name, timestamp, _, _ = entry
+        gpb = gpb if gpb else 0
+        gpa = gpa if gpa else 0
+        if show_target:
+            target = target if target else 'На шарды!'
+            result += build_loot_entry(timestamp, gpa - gpb, item_name, item_id, target)
+        else:
+            result += build_loot_entry(timestamp, gpa - gpb, item_name, item_id)
 
     return result
 
 
-def build_loot_entry(timestamp: int, gp: int, item_name: str, item_id: int) -> str:
+def build_loot_entry(timestamp: int, gp: int, item_name: str, item_id: int, target: Optional[str] = '') -> str:
     if not item_id:
         return '- No data available -'
 
@@ -90,20 +96,30 @@ def build_loot_entry(timestamp: int, gp: int, item_name: str, item_id: int) -> s
     row += '`{0:16}` - '.format(make_time(timestamp))
     row += '`{0:.0f} GP`'.format(gp)
     row += ' - ' + build_wowhead_item_link(item_name, item_id)
+    if target:
+        row += ' - '
+        row += '{0}'.format(target)
     row += '\n'
     return row
 
 
-def build_point_entries(entries: list) -> str:
+def build_point_entries(entries: list, show_target: bool = False) -> str:
     result = ''
     for entry in entries:
-        _, _, source, descr, epb, epa, gpb, gpa, _, _, timestamp, _, _ = entry
-        result += build_point_entry(timestamp, epa - epb, gpa - gpb, descr, source)
+        _, target, source, descr, epb, epa, gpb, gpa, _, _, timestamp, _, _ = entry
+        gpb = gpb if gpb else 0
+        gpa = gpa if gpa else 0
+        epb = epb if epb else 0
+        epa = epa if epa else 0
+        if show_target:
+            result += build_point_entry(timestamp, epa - epb, gpa - gpb, descr, source, target)
+        else:
+            result += build_point_entry(timestamp, epa - epb, gpa - gpb, descr, source)
 
     return result
 
 
-def build_point_entry(timestamp: int, ep: int, gp: int, descr: str, source: str) -> str:
+def build_point_entry(timestamp: int, ep: int, gp: int, descr: str, source: str, target: Optional[str] = '') -> str:
     if not source:
         return '- No data available -'
 
@@ -111,5 +127,8 @@ def build_point_entry(timestamp: int, ep: int, gp: int, descr: str, source: str)
     row += '`{0:16}` - '.format(make_time(timestamp))
     row += '`{0:.0f}EP {1:.0f}GP`'.format(ep, gp)
     row += ' - {0} _by {1}_'.format(descr, source)
+    if target:
+        row += ' - '
+    row += '{0}'.format(target)
     row += '\n'
     return row

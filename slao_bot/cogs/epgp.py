@@ -47,7 +47,7 @@ class Epgp(commands.Cog):
         await self.send_response(message.channel, response.data)
 
     @app_commands.command(description='Показать EPGP персонажа')
-    @app_commands.describe(target='Имя персонажа или all')
+    @app_commands.describe(target='Имя персонажа')
     async def epgp(self, interaction: discord.Interaction, target: Optional[str] = None) -> None:
         """Get epgp data. """
         # noinspection PyUnresolvedReferences
@@ -59,6 +59,30 @@ class Epgp(commands.Cog):
         embed = await self.process_epgp(target)
         if embed is None:
             embed = Embed.from_dict(build_error_embed('Нет информации по персонажу {0}'.format(target)))
+
+        await interaction.edit_original_response(embed=embed)
+
+    @app_commands.command(description='Показать последний лут рейда')
+    async def raidloot(self, interaction: discord.Interaction) -> None:
+        """Get raidloot data. """
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        embed = await self.process_raidloot()
+        if embed is None:
+            embed = Embed.from_dict(build_error_embed('Нет информации по луту'))
+
+        await interaction.edit_original_response(embed=embed)
+
+    @app_commands.command(description='Показать последние начисления')
+    async def points(self, interaction: discord.Interaction) -> None:
+        """Get points data. """
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        embed = await self.process_points()
+        if embed is None:
+            embed = Embed.from_dict(build_error_embed('Нет информации по начислениям'))
 
         await interaction.edit_original_response(embed=embed)
 
@@ -100,6 +124,57 @@ class Epgp(commands.Cog):
         _, user, timestamp = cursor.fetchone()
         embed.set_footer(text='Последнее обновление - {0} | {1}'.
                          format(user, '{0:16}'.format(make_time(timestamp))))
+
+        cursor.close()
+        connection.close()
+        return embed
+
+    async def process_raidloot(self) -> Optional[discord.Embed]:
+        connection: Connection = sqlite3.connect('./data/epgp.db')
+        cursor: Cursor = connection.cursor()
+
+        embed = Embed(title='Последние 30 предметов', description='', colour=10204605)
+
+        # Latest loot
+        cursor.execute('''SELECT * FROM Traffic WHERE item_id IS NOT NULL ORDER BY TIMESTAMP DESC''')
+        for _i in range(5):
+            loot_entries = cursor.fetchmany(5)
+            embed.add_field(name='\u200b',
+                            value=build_loot_entries(loot_entries, show_target=True),
+                            inline=False)
+
+        # Footer
+        cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
+        _, user, timestamp = cursor.fetchone()
+        embed.set_footer(text='Последнее обновление - {0} | {1}'.
+                         format(user, '{0:16}'.format(make_time(timestamp))))
+
+        cursor.close()
+        connection.close()
+        return embed
+
+    async def process_points(self) -> Optional[discord.Embed]:
+        connection: Connection = sqlite3.connect('./data/epgp.db')
+        cursor: Cursor = connection.cursor()
+
+        embed = Embed(title='Последние начисления', description='', colour=10204605)
+
+        # Latest EP or GP
+        cursor.execute('''SELECT * FROM Traffic WHERE item_id IS NULL ORDER BY TIMESTAMP DESC''')
+        for _i in range(5):
+            latest_points = cursor.fetchmany(5)
+            embed.add_field(name='\u200b',
+                            value=build_point_entries(latest_points, show_target=True),
+                            inline=False)
+
+        # Footer
+        cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
+        _, user, timestamp = cursor.fetchone()
+        embed.set_footer(text='Последнее обновление - {0} | {1}'.
+                         format(user, '{0:16}'.format(make_time(timestamp))))
+
+        cursor.close()
+        connection.close()
         return embed
 
     async def send_response(self, channel, responses) -> None:
