@@ -54,50 +54,6 @@ class SignUpRequest(discord.ui.View):
         self.stop()
 
 
-class SignUpRequest(discord.ui.View):
-    """View that will give starting role to a newcomer"""
-
-    def __init__(self):
-        super().__init__(timeout=None)
-
-    @discord.ui.button(label='Принять', style=discord.ButtonStyle.green, custom_id='sur:accept')
-    async def accept(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.message is None:
-            return None
-
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        # There should be an embed with questionnaire answers
-        embed: Embed = interaction.message.embeds[0]
-        if not embed:
-            return None
-
-        try:
-            mention = embed.fields[5].value
-            mention = mention.replace('<', '')
-            mention = mention.replace('>', '')
-            mention = mention.replace('@', '')
-            mention = mention.replace('!', '')
-
-            candidate = interaction.guild.get_member(int(mention))
-        except discord.NotFound:
-            await interaction.followup.send('Не нашел пользователя.', ephemeral=True)
-            return None
-
-        role = discord.utils.get(interaction.guild.roles, name='Служитель')
-        try:
-            await candidate.add_roles(role)
-        except discord.Forbidden:
-            await interaction.followup.send('Нет прав.', ephemeral=True)
-            return None
-
-        # Role set. Let's update embed and stop the view
-        embed.set_footer(text=f'{interaction.user} сделал Служителем | {time.asctime(time.localtime(time.time()))} ')
-        await interaction.message.edit(embed=embed, view=None)
-        self.stop()
-
-
 class SignUpModal(discord.ui.Modal, title='Информация о себе'):
     """Modal dialog window with basic questions about newcomer."""
 
