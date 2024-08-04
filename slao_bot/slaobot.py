@@ -77,6 +77,7 @@ if __name__ == '__main__':
     @slao.command(name='sync')
     async def sync_command(ctx: Context) -> None:
         """Sync slash commands for a particular guild."""
+        slao.tree.clear_commands(guild=ctx.guild)
         slao.tree.copy_global_to(guild=ctx.guild)
         await slao.tree.sync(guild=ctx.guild)
         await ctx.send('Synced', ephemeral=True)
