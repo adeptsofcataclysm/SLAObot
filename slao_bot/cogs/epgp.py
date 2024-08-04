@@ -15,7 +15,7 @@ from discord import Embed, Message, app_commands
 from discord.ext import commands
 from utils.config import guild_config
 from utils.format import (
-    build_epgp_footer, build_error_embed, build_loot_entries,
+    build_epgp_footer, build_epgp_list, build_error_embed, build_loot_entries,
     build_point_entries, build_success_embed, normalize_user,
 )
 from utils.response import Response, ResponseStatus
@@ -106,6 +106,21 @@ class Epgp(commands.Cog):
 
         await interaction.edit_original_response(embed=embed)
 
+    @app_commands.command(description='Показать EPGP гильдии')
+    async def standing(self, interaction: discord.Interaction) -> None:
+        """Get guild EPGP standing. """
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        guild_id = str(interaction.guild.id)
+        if not self._check_settings(guild_id):
+            return
+        embed = await self.process_standing(guild_id)
+        if embed is None:
+            embed = Embed.from_dict(build_error_embed('Нет информации по EPGP'))
+
+        await interaction.edit_original_response(embed=embed)
+
     async def process_epgp(self, target: str, guild_id: str) -> Optional[discord.Embed]:
         db_name = f'./data/{guild_id}.db'
         connection: Connection = sqlite3.connect(db_name)
@@ -182,6 +197,28 @@ class Epgp(commands.Cog):
             latest_points = cursor.fetchmany(5)
             embed.add_field(name='\u200b',
                             value=build_point_entries(latest_points, show_target=True),
+                            inline=False)
+
+        # Footer
+        embed.set_footer(text=build_epgp_footer(guild_id))
+
+        cursor.close()
+        connection.close()
+        return embed
+
+    async def process_standing(self, guild_id: str) -> Optional[discord.Embed]:
+        db_name = f'./data/{guild_id}.db'
+        connection: Connection = sqlite3.connect(db_name)
+        cursor: Cursor = connection.cursor()
+
+        embed = Embed(title='EPGP гильдии', description='', colour=10204605)
+
+        # Standing data
+        cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing ORDER BY pr DESC''')
+        for i in range(9):
+            standing_data = cursor.fetchmany(15)
+            embed.add_field(name=f'{(i * 15) + 1} - {15 * (i + 1)}',
+                            value=build_epgp_list(standing_data),
                             inline=False)
 
         # Footer

@@ -70,11 +70,15 @@ class SlaoBot(commands.Bot):
 
         return
 
-    @commands.command(name='sync')
-    async def sync_command(self, ctx: Context) -> None:
-        """Sync slash commands for a particular guild."""
-        await self.tree.sync(guild=ctx.guild)
-
 
 if __name__ == '__main__':
-    SlaoBot().run(base_config['BASE']['DISCORD_TOKEN'])
+    slao = SlaoBot()
+
+    @slao.command(name='sync')
+    async def sync_command(ctx: Context) -> None:
+        """Sync slash commands for a particular guild."""
+        slao.tree.copy_global_to(guild=ctx.guild)
+        await slao.tree.sync(guild=ctx.guild)
+        await ctx.send('Synced', ephemeral=True)
+
+    slao.run(base_config['BASE']['DISCORD_TOKEN'])
