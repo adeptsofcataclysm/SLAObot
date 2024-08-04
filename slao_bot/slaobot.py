@@ -3,8 +3,8 @@ import logging
 import discord
 from discord import Message
 from discord.ext import commands
-from discord.ext.commands import ExtensionFailed, Context
-from utils.config import base_config, guild_config, default_config
+from discord.ext.commands import Context, ExtensionFailed
+from utils.config import base_config, default_config, guild_config
 
 extensions = (
     'cogs.raidreport',
