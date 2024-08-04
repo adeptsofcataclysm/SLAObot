@@ -1,19 +1,14 @@
-from pydantic_settings import BaseSettings
+import configparser
 
+base_config = configparser.ConfigParser()
+base_config.read('config/base.cfg')
 
-class Settings(BaseSettings):
+guild_config = configparser.ConfigParser()
+guild_config.read('config/guild.cfg')
 
-    class Config:
-        env_file = '.env'
-
-    wcl_client_id: str
-    wcl_client_secret: str
-
-    discord_token: str
-
-    command_prefix: str = 'slao'
-
-    signup_channel_id: int
-
-
-settings = Settings()
+default_config = {'SIGNUP_ENABLED': False,
+                  'SIGNUP_CHANNEL': 0,
+                  'WELCOME_MESSAGE': 'Welcome to guild server. Use /signup command if you want to join our guild!',
+                  'EPGP_ENABLED': False,
+                  'EPGP_UPLOAD_CHANNEL': 0,
+                  }

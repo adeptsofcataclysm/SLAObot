@@ -1,12 +1,57 @@
+import logging
 import time
 
 import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils.config import settings
+from utils.config import guild_config
 
 from slaobot import SlaoBot
+
+
+class SignUpRequest(discord.ui.View):
+    """View that will give starting role to a newcomer"""
+
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label='Принять', style=discord.ButtonStyle.green, custom_id='sur:accept')
+    async def accept(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.message is None:
+            return None
+
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        # There should be an embed with questionnaire answers
+        embed: Embed = interaction.message.embeds[0]
+        if not embed:
+            return None
+
+        try:
+            mention = embed.fields[5].value
+            mention = mention.replace('<', '')
+            mention = mention.replace('>', '')
+            mention = mention.replace('@', '')
+            mention = mention.replace('!', '')
+
+            candidate = interaction.guild.get_member(int(mention))
+        except discord.NotFound:
+            await interaction.followup.send('Не нашел пользователя.', ephemeral=True)
+            return None
+
+        role = discord.utils.get(interaction.guild.roles, name='Служитель')
+        try:
+            await candidate.add_roles(role)
+        except discord.Forbidden:
+            await interaction.followup.send('Нет прав.', ephemeral=True)
+            return None
+
+        # Role set. Let's update embed and stop the view
+        embed.set_footer(text=f'{interaction.user} сделал Служителем | {time.asctime(time.localtime(time.time()))} ')
+        await interaction.message.edit(embed=embed, view=None)
+        self.stop()
 
 
 class SignUpRequest(discord.ui.View):
@@ -97,7 +142,7 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
 
     async def on_submit(self, interaction: discord.Interaction):
 
-        signup_channel = interaction.client.get_channel(settings.signup_channel_id)
+        signup_channel = interaction.client.get_channel(guild_config[interaction.guild]['SIGNUP_CHANNEL'])
 
         if signup_channel:
             signup_embed = Embed(title='Новая заявка',
@@ -140,16 +185,22 @@ class SignUp(commands.Cog):
         if member.bot:
             return
 
-        if not member.guild.get_channel(settings.signup_channel_id):
+        guild_id = str(member.guild.id)
+
+        if not guild_config.has_section(guild_id):
+            logging.info(f'Guild config not found for guild id {member.guild.id} and name {member.guild.name}')
+            return
+
+        if not guild_config[guild_id].getboolean('signup_enabled'):
+            return
+
+        if not member.guild.get_channel(guild_config[guild_id].getint('signup_channel')):
+            logging.info(f'Channel not found for guild id {member.guild.id} and name {member.guild.name}')
             return
 
         dm_channel = await member.create_dm()
-        intro_message = (f'Привет, {format(member.mention)}! \r\n'
-                         'Приветствуем тебя на Discord сервере гильдии <Адепты Катаклизма>! \r\n'
-                         'Мы играем в Cataclysm Classic за Альянс на Пламегоре. \r\n'
-                         'Если хочешь вступить к нам в гильдию, то напиши /signup в любом  \r\n'
-                         'канале Discord сервера Адептов. \r\n'
-                         'Удачного времяпрепровождения!')
+        welcome_message = guild_config.get(guild_id, 'welcome_message')
+        intro_message = welcome_message.format(member.mention)
 
         await dm_channel.send(content=intro_message)
 
@@ -159,7 +210,7 @@ class SignUp(commands.Cog):
         self.bot.dispatch('member_join', ctx.author)
 
     @app_commands.command(description='Немного о себе')
-    async def signup(self, interaction: discord.Interaction):
+    async def signup(self, interaction: discord.Interaction) -> None:
         # noinspection PyUnresolvedReferences
         await interaction.response.send_modal(SignUpModal())
 
