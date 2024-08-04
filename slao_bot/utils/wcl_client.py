@@ -9,7 +9,7 @@ from gql import Client
 from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
-from utils.config import settings
+from utils.config import base_config
 
 
 class WCLClient:
@@ -21,7 +21,8 @@ class WCLClient:
     async def __aenter__(self) -> 'WCLClient':
         async with aiohttp.ClientSession() as cs:
             data = {'grant_type': 'client_credentials'}
-            auth_header = aiohttp.BasicAuth(settings.wcl_client_id, settings.wcl_client_secret)
+            auth_header = aiohttp.BasicAuth(base_config['BASE']['WCL_CLIENT_ID'],
+                                            base_config['BASE']['WCL_CLIENT_SECRET'])
             async with cs.post('https://www.warcraftlogs.com/oauth/token', data=data, auth=auth_header) as auth:
                 res = await auth.json()
                 wcl_token = res['access_token']

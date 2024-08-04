@@ -1,10 +1,11 @@
+import logging
 import time
 
 import discord
 from discord import Colour, Embed, Member, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils.config import settings
+from utils.config import guild_config
 
 from slaobot import SlaoBot
 
@@ -97,7 +98,7 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
 
     async def on_submit(self, interaction: discord.Interaction):
 
-        signup_channel = interaction.client.get_channel(settings.signup_channel_id)
+        signup_channel = interaction.client.get_channel(guild_config[interaction.guild]['SIGNUP_CHANNEL'])
 
         if signup_channel:
             signup_embed = Embed(title='Новая заявка',
@@ -140,16 +141,22 @@ class SignUp(commands.Cog):
         if member.bot:
             return
 
-        if not member.guild.get_channel(settings.signup_channel_id):
+        guild_id = str(member.guild.id)
+
+        if not guild_config.has_section(guild_id):
+            logging.info(f'Guild config not found for guild id {member.guild.id} and name {member.guild.name}')
+            return
+
+        if not guild_config[guild_id].getboolean('signup_enabled'):
+            return
+
+        if not member.guild.get_channel(guild_config[guild_id].getint('signup_channel')):
+            logging.info(f'Channel not found for guild id {member.guild.id} and name {member.guild.name}')
             return
 
         dm_channel = await member.create_dm()
-        intro_message = (f'Привет, {format(member.mention)}! \r\n'
-                         'Приветствуем тебя на Discord сервере гильдии <Адепты Катаклизма>! \r\n'
-                         'Мы играем в Cataclysm Classic за Альянс на Пламегоре. \r\n'
-                         'Если хочешь вступить к нам в гильдию, то напиши /signup в любом  \r\n'
-                         'канале Discord сервера Адептов. \r\n'
-                         'Удачного времяпрепровождения!')
+        welcome_message = guild_config.get(guild_id, 'welcome_message')
+        intro_message = welcome_message.format(member.mention)
 
         await dm_channel.send(content=intro_message)
 

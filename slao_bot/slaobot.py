@@ -3,8 +3,8 @@ import logging
 import discord
 from discord import Message
 from discord.ext import commands
-from discord.ext.commands import ExtensionFailed
-from utils.config import settings
+from discord.ext.commands import ExtensionFailed, Context
+from utils.config import base_config, guild_config, default_config
 
 extensions = (
     'cogs.raidreport',
@@ -16,8 +16,6 @@ extensions = (
     'cogs.epgp',
 )
 
-TEST_GUILD = discord.Object(873894278110265404)
-
 
 class SlaoBot(commands.Bot):
     def __init__(self):
@@ -28,12 +26,13 @@ class SlaoBot(commands.Bot):
             message_content=True,
             emojis=True,
         )
-        logging.basicConfig(level=logging.WARN)
+        logging.basicConfig(level=base_config['BASE']['LOG_LEVEL'])
 
         super().__init__(
-            command_prefix=f'{settings.command_prefix}',
+            command_prefix=f"{base_config['BASE']['COMMAND_PREFIX']}",
             intents=intents,
-            activity=discord.Activity(type=discord.ActivityType.listening, name=f'{settings.command_prefix}'),
+            activity=discord.Activity(type=discord.ActivityType.listening,
+                                      name=f"{base_config['BASE']['COMMAND_PREFIX']}"),
         )
 
     async def setup_hook(self) -> None:
@@ -42,9 +41,6 @@ class SlaoBot(commands.Bot):
                 await self.load_extension(extension)
             except ExtensionFailed:
                 logging.exception(f'Failed to load extension {extension}.')
-
-        synced = await self.tree.sync()
-        logging.info(synced)
 
     async def on_ready(self) -> None:
         logging.info(f'We have logged in as {self.user}')
@@ -61,6 +57,24 @@ class SlaoBot(commands.Bot):
         if before.content != after.content:
             await self.on_message(after)
 
+    async def on_guild_join(self, guild):
+        guild_id = f'{guild.id}'
+        if guild_config.has_section(guild_id):
+            return
+
+        guild_config.add_section(guild_id)
+        guild_config[guild_id] = default_config
+        guild_config[guild_id]['GUILD_NAME'] = guild.name
+        with open('./config/guild.cfg', 'w') as configfile:
+            guild_config.write(configfile)
+
+        return
+
+    @commands.command(name='sync')
+    async def sync_command(self, ctx: Context) -> None:
+        """Sync slash commands for a particular guild."""
+        await self.tree.sync(guild=ctx.guild)
+
 
 if __name__ == '__main__':
-    SlaoBot().run(settings.discord_token)
+    SlaoBot().run(base_config['BASE']['DISCORD_TOKEN'])

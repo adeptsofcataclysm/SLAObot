@@ -1,5 +1,6 @@
 # Part of the code Copyright 2020-2023 Lantis
 # https://github.com/lantisnt/DKPBot
+
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
