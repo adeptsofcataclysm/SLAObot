@@ -146,3 +146,14 @@ def build_epgp_footer(guild_id: str) -> str:
     cursor.close()
     db.close()
     return 'Последнее обновление - {0} | {1}'.format(user, '{0:16}'.format(make_time(timestamp)))
+
+
+def build_epgp_list(entries: list) -> str:
+    result = ''
+    for entry in entries:
+        player, ep, gp, pr = entry
+        result += '`{0:.0f}EP {1:.0f}GP {2:.0f}PR`'.format(ep, gp, pr)
+        result += '- {0}'.format(player)
+        result += '\n'
+
+    return result
