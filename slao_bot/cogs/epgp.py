@@ -3,6 +3,7 @@
 
 import asyncio
 import concurrent.futures
+import logging
 import re
 import sqlite3
 import time
@@ -12,9 +13,10 @@ from typing import Optional
 import discord
 from discord import Embed, Message, app_commands
 from discord.ext import commands
+from utils.config import guild_config
 from utils.format import (
-    build_error_embed, build_loot_entries, build_point_entries,
-    build_success_embed, make_time, normalize_user,
+    build_epgp_footer, build_error_embed, build_loot_entries,
+    build_point_entries, build_success_embed, normalize_user,
 )
 from utils.response import Response, ResponseStatus
 from utils.savedvariables_parser import SavedVariablesParser
@@ -29,7 +31,6 @@ class Epgp(commands.Cog):
     def __init__(self, bot: SlaoBot):
         """Cog to handle EPGP."""
         self.bot: SlaoBot = bot
-        self._check_db()
 
     @commands.Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -37,11 +38,18 @@ class Epgp(commands.Cog):
         if isinstance(message.channel, discord.DMChannel):
             return
 
+        guild_id = str(message.guild.id)
+        if not self._check_settings(guild_id):
+            return
+
+        if message.channel.id != guild_config[guild_id].getint('epgp_upload_channel'):
+            return
+
         # Process only message with attachments
         if len(message.attachments) == 0:
             return
 
-        response = await self._process_attachment(message)
+        response = await self._process_attachment(message, guild_id)
 
         # Provide response
         await self.send_response(message.channel, response.data)
@@ -53,10 +61,14 @@ class Epgp(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
+        guild_id = str(interaction.guild.id)
+        if not self._check_settings(guild_id):
+            return
+
         if target is None:
             target = normalize_user(interaction.user)
 
-        embed = await self.process_epgp(target)
+        embed = await self.process_epgp(target, guild_id)
         if embed is None:
             embed = Embed.from_dict(build_error_embed('Нет информации по персонажу {0}'.format(target)))
 
@@ -68,7 +80,11 @@ class Epgp(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await self.process_raidloot()
+        guild_id = str(interaction.guild.id)
+        if not self._check_settings(guild_id):
+            return
+
+        embed = await self.process_raidloot(guild_id)
         if embed is None:
             embed = Embed.from_dict(build_error_embed('Нет информации по луту'))
 
@@ -80,14 +96,19 @@ class Epgp(commands.Cog):
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
 
-        embed = await self.process_points()
+        guild_id = str(interaction.guild.id)
+        if not self._check_settings(guild_id):
+            return
+
+        embed = await self.process_points(guild_id)
         if embed is None:
             embed = Embed.from_dict(build_error_embed('Нет информации по начислениям'))
 
         await interaction.edit_original_response(embed=embed)
 
-    async def process_epgp(self, target: str) -> Optional[discord.Embed]:
-        connection: Connection = sqlite3.connect('./data/epgp.db')
+    async def process_epgp(self, target: str, guild_id: str) -> Optional[discord.Embed]:
+        db_name = f'./data/{guild_id}.db'
+        connection: Connection = sqlite3.connect(db_name)
         cursor: Cursor = connection.cursor()
 
         cursor.execute('''SELECT * FROM Standing WHERE player=?''', (target,))
@@ -120,17 +141,15 @@ class Epgp(commands.Cog):
                         inline=False)
 
         # Footer
-        cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
-        _, user, timestamp = cursor.fetchone()
-        embed.set_footer(text='Последнее обновление - {0} | {1}'.
-                         format(user, '{0:16}'.format(make_time(timestamp))))
+        embed.set_footer(text=build_epgp_footer(guild_id))
 
         cursor.close()
         connection.close()
         return embed
 
-    async def process_raidloot(self) -> Optional[discord.Embed]:
-        connection: Connection = sqlite3.connect('./data/epgp.db')
+    async def process_raidloot(self, guild_id: str) -> Optional[discord.Embed]:
+        db_name = f'./data/{guild_id}.db'
+        connection: Connection = sqlite3.connect(db_name)
         cursor: Cursor = connection.cursor()
 
         embed = Embed(title='Последние 30 предметов', description='', colour=10204605)
@@ -144,17 +163,15 @@ class Epgp(commands.Cog):
                             inline=False)
 
         # Footer
-        cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
-        _, user, timestamp = cursor.fetchone()
-        embed.set_footer(text='Последнее обновление - {0} | {1}'.
-                         format(user, '{0:16}'.format(make_time(timestamp))))
+        embed.set_footer(text=build_epgp_footer(guild_id))
 
         cursor.close()
         connection.close()
         return embed
 
-    async def process_points(self) -> Optional[discord.Embed]:
-        connection: Connection = sqlite3.connect('./data/epgp.db')
+    async def process_points(self, guild_id: str) -> Optional[discord.Embed]:
+        db_name = f'./data/{guild_id}.db'
+        connection: Connection = sqlite3.connect(db_name)
         cursor: Cursor = connection.cursor()
 
         embed = Embed(title='Последние начисления', description='', colour=10204605)
@@ -168,10 +185,7 @@ class Epgp(commands.Cog):
                             inline=False)
 
         # Footer
-        cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
-        _, user, timestamp = cursor.fetchone()
-        embed.set_footer(text='Последнее обновление - {0} | {1}'.
-                         format(user, '{0:16}'.format(make_time(timestamp))))
+        embed.set_footer(text=build_epgp_footer(guild_id))
 
         cursor.close()
         connection.close()
@@ -194,10 +208,11 @@ class Epgp(commands.Cog):
                 # Respond with embed
                 await channel.send(embed=Embed.from_dict(response))
 
-    def _check_db(self):
-        self.connection: Connection = sqlite3.connect('./data/epgp.db')
-        self.cursor: Cursor = self.connection.cursor()
-        self.cursor.execute('''
+    def _check_db(self, guild_id: str) -> None:
+        db_name = f'./data/{guild_id}.db'
+        connection: Connection = sqlite3.connect(db_name)
+        cursor: Cursor = connection.cursor()
+        cursor.execute('''
         CREATE TABLE IF NOT EXISTS Traffic (
             id INTEGER PRIMARY KEY,
             target TEXT,
@@ -214,14 +229,14 @@ class Epgp(commands.Cog):
             unit_guid TEXT
         )
         ''')
-        self.cursor.execute('''
+        cursor.execute('''
         CREATE TABLE IF NOT EXISTS History (
             id INTEGER PRIMARY KEY,
             user TEXT NOT NULL,
             timestamp INTEGER NOT NULL
         )
         ''')
-        self.cursor.execute('''
+        cursor.execute('''
         CREATE TABLE IF NOT EXISTS Standing (
             id INTEGER PRIMARY KEY,
             player TEXT NOT NULL,
@@ -229,11 +244,26 @@ class Epgp(commands.Cog):
             gp INTEGER NOT NULL
         )
         ''')
-        self.connection.commit()
-        self.cursor.close()
-        self.connection.close()
+        connection.commit()
+        cursor.close()
+        connection.close()
 
-    async def _process_attachment(self, message: Message) -> Response:
+    def _check_settings(self, guild_id: str) -> bool:
+        if not guild_config.has_section(guild_id):
+            logging.error(f'Guild config not found for guild id {guild_id}')
+            return False
+
+        if not guild_config[guild_id].getboolean('epgp_enabled'):
+            return False
+
+        if not guild_config[guild_id].getint('epgp_upload_channel'):
+            return False
+
+        self._check_db(guild_id)
+
+        return True
+
+    async def _process_attachment(self, message: Message, guild_id: str) -> Response:
         for attachment in message.attachments:
 
             # Process only specific file name
@@ -255,11 +285,13 @@ class Epgp(commands.Cog):
                     pool,
                     self._process_sv,
                     attachment_bytes.decode('utf-8', errors='replace'),
-                    message.author)
+                    message.author,
+                    guild_id,
+                )
 
         return response
 
-    def _process_sv(self, data: str, author) -> Response:
+    def _process_sv(self, data: str, author, guild_id: str) -> Response:
 
         addon_data = self._check_upload(data)
         if addon_data is None:
@@ -283,7 +315,8 @@ class Epgp(commands.Cog):
                             ('Standing data not found in .lua file. '
                              'Check if you have provided proper savedvariable file.'))
 
-        self.connection: Connection = sqlite3.connect('./data/epgp.db')
+        db_name = f'./data/{guild_id}.db'
+        self.connection: Connection = sqlite3.connect(db_name)
         self.cursor: Cursor = self.connection.cursor()
 
         # Process Traffic

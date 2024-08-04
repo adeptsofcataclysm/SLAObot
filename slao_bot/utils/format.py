@@ -1,7 +1,8 @@
 # Part of the code Copyright 2020-2023 Lantis
 # https://github.com/lantisnt/DKPBot
-
+import sqlite3
 from datetime import datetime, timezone
+from sqlite3 import Connection, Cursor
 from typing import Any, Dict, Optional
 
 import discord
@@ -133,3 +134,15 @@ def build_point_entry(timestamp: int, ep: int, gp: int, descr: str, source: str,
     row += '{0}'.format(target)
     row += '\n'
     return row
+
+
+def build_epgp_footer(guild_id: str) -> str:
+    db_name = f'./data/{guild_id}.db'
+    db: Connection = sqlite3.connect(db_name)
+    cursor: Cursor = db.cursor()
+
+    cursor.execute('''SELECT * FROM History ORDER BY TIMESTAMP DESC''')
+    _, user, timestamp = cursor.fetchone()
+    cursor.close()
+    db.close()
+    return 'Последнее обновление - {0} | {1}'.format(user, '{0:16}'.format(make_time(timestamp)))

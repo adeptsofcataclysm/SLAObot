@@ -144,14 +144,14 @@ class SignUp(commands.Cog):
         guild_id = str(member.guild.id)
 
         if not guild_config.has_section(guild_id):
-            logging.info(f'Guild config not found for guild id {member.guild.id} and name {member.guild.name}')
+            logging.error(f'Guild config not found for guild id {member.guild.id} and name {member.guild.name}')
             return
 
         if not guild_config[guild_id].getboolean('signup_enabled'):
             return
 
         if not member.guild.get_channel(guild_config[guild_id].getint('signup_channel')):
-            logging.info(f'Channel not found for guild id {member.guild.id} and name {member.guild.name}')
+            logging.error(f'Channel not found for guild id {member.guild.id} and name {member.guild.name}')
             return
 
         dm_channel = await member.create_dm()
