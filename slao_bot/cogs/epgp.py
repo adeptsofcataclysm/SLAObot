@@ -337,7 +337,7 @@ class Epgp(commands.Cog):
                             ('Error Parsing .lua file. Check if you have provided proper savedvariable file.'))
 
         # Validate Traffic
-        traffic_list = self._check_traffic(addon_data)
+        traffic_list = self._get_traffic(addon_data)
         if traffic_list is None:
             return Response(ResponseStatus.ERROR,
                             build_error_embed
@@ -345,7 +345,7 @@ class Epgp(commands.Cog):
                              'Check if you have provided proper savedvariable file.'))
 
         # Validate Standing
-        backup = self._check_standing(addon_data)
+        backup = self._get_standing(addon_data)
         if backup is None:
             return Response(ResponseStatus.ERROR,
                             build_error_embed
@@ -393,14 +393,14 @@ class Epgp(commands.Cog):
 
         return addon_data
 
-    def _check_traffic(self, data: dict):
+    def _get_traffic(self, data: dict):
         traffic_list = data.get('Traffic')
         if traffic_list is None or not traffic_list or not isinstance(traffic_list, list):
             return None
 
         return traffic_list
 
-    def _check_standing(self, data: dict):
+    def _get_standing(self, data: dict):
         backups_list = data.get('Backups')
         if backups_list is None or not backups_list or not isinstance(backups_list, dict):
             return None
@@ -417,13 +417,34 @@ class Epgp(commands.Cog):
     def _parse_traffic_entry(self, traffic_entry: list) -> None:
 
         # Unpack CEPGP Traffic entry
-        (target, source, descr, epb, epa,
-         gpb, gpa, item_link, timestamp,
-         cepgp_id, unit_guid) = (traffic_entry
-                                 or (None, None, None, None, None, None, None, None, None, None, None))
+        target = traffic_entry[0]
+        source = traffic_entry[1]
+        descr = traffic_entry[2]
+        epb = traffic_entry[3]
+        epa = traffic_entry[4]
+        gpb = traffic_entry[5]
+        gpa = traffic_entry[6]
+        item_link = ''
+        timestamp = ''
+        cepgp_id = ''
+        unit_guid = 'Player-4754-UNKNOWN'
 
-        if cepgp_id is None:
-            return
+        if len(traffic_entry) == 8:
+            # Old format for points change
+            item_link = ''
+            timestamp = traffic_entry[9]
+            cepgp_id = timestamp
+        elif len(traffic_entry) == 9:
+            # Old format for loot entry
+            item_link = traffic_entry[7]
+            timestamp = traffic_entry[8]
+            cepgp_id = timestamp
+        elif len(traffic_entry) == 11:
+            # New format
+            item_link = traffic_entry[7]
+            timestamp = traffic_entry[8]
+            cepgp_id = traffic_entry[9]
+            unit_guid = traffic_entry[10]
 
         # Check entry for existence in DB
         self.cursor.execute('SELECT id FROM Traffic WHERE cepgp_id=?', (cepgp_id,))
