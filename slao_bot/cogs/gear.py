@@ -167,7 +167,7 @@ class Gear(commands.Cog):
             embed.add_field(
                 name='Оффспек лут в рейде',
                 value=self._print_raiders(equipment.offspec_raid) or 'Все молодцы!',
-                inline=False
+                inline=False,
             )
 
         return embed
