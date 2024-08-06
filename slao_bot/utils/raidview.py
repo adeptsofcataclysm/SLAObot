@@ -34,7 +34,10 @@ class RaidViewButton(discord.ui.Button['RaidView']):
                     await interaction.message.edit(embeds=embeds)
                     return
 
-        embed = await cog.process_interaction(report_id)
+        if self.cog_name == 'Gear':
+            embed = await cog.process_interaction(report_id, str(interaction.guild.id))
+        else:
+            embed = await cog.process_interaction(report_id)
 
         if self.cog_name == 'RaidReport':
             # Refresh main embed
