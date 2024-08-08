@@ -127,7 +127,7 @@ def build_point_entry(timestamp: int, ep: int, gp: int, descr: str, source: str,
 
     row = ''
     row += '`{0:16}` - '.format(make_time(timestamp))
-    row += '`{0:.0f}EP {1:.0f}GP`'.format(ep, gp)
+    row += '`{0:.0f} EP {1:.0f} GP`'.format(ep, gp)
     row += ' - {0} _by {1}_'.format(descr, source)
     if target:
         row += ' - '
@@ -152,7 +152,7 @@ def build_epgp_list(entries: list) -> str:
     result = ''
     for entry in entries:
         player, ep, gp, pr = entry
-        result += '`{0:.0f}EP {1:.0f}GP {2:.0f}PR`'.format(ep, gp, pr)
+        result += '`{0:.0f} EP {1:.0f} GP {2:.0f} PR`'.format(ep, gp, pr)
         result += '- {0}'.format(player)
         result += '\n'
 
