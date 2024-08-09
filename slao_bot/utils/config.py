@@ -12,4 +12,5 @@ default_config = {
     'WELCOME_MESSAGE': 'Welcome to guild server. Use /signup command if you want to join our guild!',
     'EPGP_ENABLED': False,
     'EPGP_UPLOAD_CHANNEL': 0,
+    'GUILD_TIMEZONE': 'Europe/Paris',
 }

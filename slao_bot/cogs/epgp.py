@@ -107,7 +107,8 @@ class Epgp(commands.Cog):
         await interaction.edit_original_response(embed=embed)
 
     @app_commands.command(description='Показать EPGP гильдии')
-    async def standing(self, interaction: discord.Interaction) -> None:
+    @app_commands.describe(standing_filter='Фильтрация списка: all, non-zero(по умолчанию), cap')
+    async def standing(self, interaction: discord.Interaction, standing_filter: Optional[str] = 'non-zero') -> None:
         """Get guild EPGP standing. """
         # noinspection PyUnresolvedReferences
         await interaction.response.defer()
@@ -115,7 +116,7 @@ class Epgp(commands.Cog):
         guild_id = str(interaction.guild.id)
         if not self._check_settings(guild_id):
             return
-        embed = await self.process_standing(guild_id)
+        embed = await self.process_standing(guild_id, standing_filter)
         if embed is None:
             embed = Embed.from_dict(build_error_embed('Нет информации по EPGP'))
 
@@ -144,7 +145,7 @@ class Epgp(commands.Cog):
                        (target,))
         latest_points = cursor.fetchmany(3)
         embed.add_field(name='Последние начисления',
-                        value=build_point_entries(latest_points),
+                        value=build_point_entries(latest_points, tz_name=guild_config[guild_id].get('guild_timezone')),
                         inline=False)
 
         # Latest loot
@@ -152,7 +153,7 @@ class Epgp(commands.Cog):
                        (target,))
         loot_entries = cursor.fetchmany(3)
         embed.add_field(name='Последняя добыча',
-                        value=build_loot_entries(loot_entries),
+                        value=build_loot_entries(loot_entries, tz_name=guild_config[guild_id].get('guild_timezone')),
                         inline=False)
 
         # Footer
@@ -174,7 +175,11 @@ class Epgp(commands.Cog):
         for _i in range(5):
             loot_entries = cursor.fetchmany(5)
             embed.add_field(name='\u200b',
-                            value=build_loot_entries(loot_entries, show_target=True),
+                            value=build_loot_entries(
+                                loot_entries,
+                                tz_name=guild_config[guild_id].get('guild_timezone'),
+                                show_target=True,
+                            ),
                             inline=False)
 
         # Footer
@@ -196,7 +201,11 @@ class Epgp(commands.Cog):
         for _i in range(5):
             latest_points = cursor.fetchmany(5)
             embed.add_field(name='\u200b',
-                            value=build_point_entries(latest_points, show_target=True),
+                            value=build_point_entries(
+                                latest_points,
+                                tz_name=guild_config[guild_id].get('guild_timezone'),
+                                show_target=True,
+                            ),
                             inline=False)
 
         # Footer
@@ -206,7 +215,7 @@ class Epgp(commands.Cog):
         connection.close()
         return embed
 
-    async def process_standing(self, guild_id: str) -> Optional[discord.Embed]:
+    async def process_standing(self, guild_id: str, standing_filter: str) -> Optional[discord.Embed]:
         db_name = f'./data/{guild_id}.db'
         connection: Connection = sqlite3.connect(db_name)
         cursor: Cursor = connection.cursor()
@@ -214,9 +223,21 @@ class Epgp(commands.Cog):
         embed = Embed(title='EPGP гильдии', description='', colour=10204605)
 
         # Standing data
-        cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing ORDER BY pr DESC''')
+        match standing_filter:
+            case 'all':
+                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing ORDER BY pr DESC''')
+            case 'cap':
+                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing
+                WHERE ep >= 12000 ORDER BY pr DESC''')
+            case _:
+                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing
+                WHERE ep <> 0 OR gp > 1 ORDER BY pr DESC''')
+
         for i in range(9):
             standing_data = cursor.fetchmany(15)
+            if len(standing_data) == 0:
+                break
+
             embed.add_field(name=f'{(i * 15) + 1} - {15 * (i + 1)}',
                             value=build_epgp_list(standing_data),
                             inline=False)
