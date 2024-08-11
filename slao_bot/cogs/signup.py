@@ -78,18 +78,18 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
         min_length=2,
     )
 
-    trade_skill = discord.ui.TextInput(
-        label='Профессии',
-        placeholder='Профессии и специализация в профессии, если есть',
+    first_rt = discord.ui.TextInput(
+        label='РТ: Среда + Воскресенье, 20:00 - 24:00',
+        placeholder='Хочу сюда',
         style=discord.TextStyle.long,
         required=False,
         max_length=100,
         min_length=2,
     )
 
-    twinks = discord.ui.TextInput(
-        label='Твинки',
-        placeholder='Имена твинков и их класс',
+    second_rt = discord.ui.TextInput(
+        label='РТ: Четверг + Понедельник, 20:45 - 24:00',
+        placeholder='Хочу сюда',
         style=discord.TextStyle.long,
         required=False,
         max_length=100,
@@ -98,7 +98,8 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
 
     async def on_submit(self, interaction: discord.Interaction):
 
-        signup_channel = interaction.client.get_channel(guild_config[interaction.guild]['SIGNUP_CHANNEL'])
+        signup_channel = interaction.client.get_channel(
+            guild_config[str(interaction.guild.id)].getint('signup_channel'))
 
         if signup_channel:
             signup_embed = Embed(title='Новая заявка',
@@ -107,8 +108,8 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
             signup_embed.add_field(name='Имя', value=self.name.value)
             signup_embed.add_field(name='Персонаж', value=self.character.value)
             signup_embed.add_field(name='Класс', value=self.class_spec.value)
-            signup_embed.add_field(name='Профы', value=self.trade_skill.value)
-            signup_embed.add_field(name='Твинки', value=self.twinks.value)
+            signup_embed.add_field(name='Второй Статик', value=self.first_rt.value)
+            signup_embed.add_field(name='Третий Статик', value=self.second_rt.value)
             signup_embed.add_field(name='Пользователь', value=format(interaction.user.mention))
             if interaction.user.avatar:
                 signup_embed.set_thumbnail(url=interaction.user.avatar.url)
