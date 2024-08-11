@@ -158,7 +158,7 @@ def build_epgp_list(entries: list) -> str:
     result = ''
     for entry in entries:
         player, ep, gp, pr = entry
-        result += '`{0: >6.0f} EP` `{1: >4.0f} GP` `{2: >5.0f} PR`'.format(ep, gp, pr)
+        result += '`{0: >6.0f} EP` `{1: >4.0f} GP` `{2: >5.2f} PR`'.format(ep, gp, pr)
         result += '- {0}'.format(player)
         result += '\n'
 
