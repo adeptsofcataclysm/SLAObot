@@ -225,12 +225,12 @@ class Epgp(commands.Cog):
         # Standing data
         match standing_filter:
             case 'all':
-                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing ORDER BY pr DESC''')
+                cursor.execute('''SELECT player, ep, gp, (1.0 * ep / gp) as PR FROM Standing ORDER BY pr DESC''')
             case 'cap':
-                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing
+                cursor.execute('''SELECT player, ep, gp, (1.0 * ep / gp) as PR FROM Standing
                 WHERE ep >= 12000 ORDER BY pr DESC''')
             case _:
-                cursor.execute('''SELECT player, ep, gp, (ep / gp) as PR FROM Standing
+                cursor.execute('''SELECT player, ep, gp, (1.0 * ep / gp) as PR FROM Standing
                 WHERE ep <> 0 OR gp > 1 ORDER BY pr DESC''')
 
         for i in range(9):
