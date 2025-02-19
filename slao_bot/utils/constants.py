@@ -104,6 +104,8 @@ ZONE_IMAGES = {
     1024: 'https://www.wowhcb.ru/slaobot/BH.png',
     # Firelands
     1027: 'https://www.wowhcb.ru/slaobot/Firelands.png',
+    # Dragon Soul
+    1033: 'https://www.wowhcb.ru/slaobot/ds.jpg',
 }
 
 ZONE_NAMES = {
@@ -151,6 +153,7 @@ ZONE_NAMES = {
     1027: ':regional_indicator_f: :regional_indicator_i: :regional_indicator_r: :regional_indicator_e: '
           ':regional_indicator_l: :regional_indicator_a: :regional_indicator_n: :regional_indicator_d: '
           ':regional_indicator_s:',
+    1033: ':regional_indicator_d: :regional_indicator_s:',
 }
 EXEC_VALUES = {
     0: 'Слабо',
