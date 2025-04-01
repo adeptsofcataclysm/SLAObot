@@ -382,6 +382,7 @@ class Epgp(commands.Cog):
             self._parse_traffic_entry(traffic)
 
         # Process Standing
+        self.cursor.execute('''DELETE FROM Standing''')
         for player_slug, data in backup.items():
             self._parse_standing(player_slug, data)
 
