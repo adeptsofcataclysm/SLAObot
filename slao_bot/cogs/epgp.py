@@ -519,6 +519,7 @@ class Epgp(commands.Cog):
             self.cursor.execute('''INSERT INTO Standing (player, ep, gp) VALUES (?, ?, ?)''',
                                 (player, ep, gp))
 
+
     def _get_item_id_name(self, loot):
         # [0] -> id [1] -> name
         return list(filter(None, type(self).__item_id_name_find.findall(loot)))
