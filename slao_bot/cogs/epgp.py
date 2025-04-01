@@ -382,6 +382,7 @@ class Epgp(commands.Cog):
             self._parse_traffic_entry(traffic)
 
         # Process Standing
+        self.cursor.execute('''DELETE FROM Standing''')
         for player_slug, data in backup.items():
             self._parse_standing(player_slug, data)
 
@@ -517,6 +518,7 @@ class Epgp(commands.Cog):
         else:
             self.cursor.execute('''INSERT INTO Standing (player, ep, gp) VALUES (?, ?, ?)''',
                                 (player, ep, gp))
+
 
     def _get_item_id_name(self, loot):
         # [0] -> id [1] -> name
