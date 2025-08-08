@@ -106,6 +106,10 @@ ZONE_IMAGES = {
     1027: 'https://www.wowhcb.ru/slaobot/Firelands.png',
     # Dragon Soul
     1033: 'https://www.wowhcb.ru/slaobot/ds.jpg',
+    # MSV
+    1038: 'https://www.wowhcb.ru/slaobot/MSV_Banner.png',
+    # HoF + ToES
+    1040: 'https://www.wowhcb.ru/slaobot/HOF-TOES_Banner.png',
 }
 
 ZONE_NAMES = {
@@ -154,6 +158,9 @@ ZONE_NAMES = {
           ':regional_indicator_l: :regional_indicator_a: :regional_indicator_n: :regional_indicator_d: '
           ':regional_indicator_s:',
     1033: ':regional_indicator_d: :regional_indicator_s:',
+    1038: ':regional_indicator_m: :regional_indicator_s: :regional_indicator_v: ',
+    1040: ':regional_indicator_h: :regional_indicator_o: :regional_indicator_f: :left_right_arrow: '
+          ':regional_indicator_t: :regional_indicator_o: :regional_indicator_e: :regional_indicator_s:',
 }
 EXEC_VALUES = {
     0: 'Слабо',

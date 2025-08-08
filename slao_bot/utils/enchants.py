@@ -1,5 +1,4 @@
 ENCHANTABLE_SLOT = {
-    0,  # Head
     2,  # Shoulders
     4,  # Chest
     6,  # Leggings
@@ -10,354 +9,63 @@ ENCHANTABLE_SLOT = {
     15,  # Main hand
 }
 
-BAD_ENCHANTS = {
-    0: [
-        2584,  # Head/Legs - ZG
-        2585,  # Head/Legs - ZG
-        2586,  # Head/Legs - ZG
-        2587,  # Head/Legs - ZG
-        2588,  # Head/Legs - ZG
-        2589,  # Head/Legs - ZG
-        2590,  # Head/Legs - ZG
-        2591,  # Head/Legs - ZG
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        2999,  # Arcanum of the Defender
-        3001,  # Arcanum of Renewal
-        3002,  # Arcanum of Power
-        3003,  # Arcanum of Ferocity
-        3004,  # Arcanum of the Gladiator
-        3096,  # Arcanum of the Outcast
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3817,  # Arcanum of Torment
-        3818,  # Arcanum of the Stalwart Protector
-        3819,  # Arcanum of Blissful Mending
-        3820,  # Arcanum of Burning Mysteries
-        3842,  # Arcanum of the Savage Gladiator
-        4120,  # Savage Armor Kit
-        4121,  # Heavy Savage Armor Kit
-
-
-    ],
+GOOD_ENCHANTS = {
     2: [
-        2604,  # Shoulder - ZG
-        2605,  # Shoulder - ZG
-        2606,  # Shoulder - ZG
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        2977,  # Shoulder - Aldor Hon
-        2978,  # Greater of Warding
-        2979,  # Shoulder - Aldor Hon
-        2980,  # Greater of Faith
-        2981,  # Shoulder - Aldor Hon
-        2982,  # Greater of Discipline
-        2983,  # Shoulder - Aldor Hon
-        2986,  # Greater of Vengeance
-        2990,  # Shoulder - Scryer Hon
-        2991,  # Greater of the Knight
-        2992,  # Shoulder - Scryer Hon
-        2993,  # Greater of the Oracle
-        2994,  # Shoulder - Scryer Hon
-        2995,  # Greater of the Orb
-        2996,  # Shoulder - Scryer Hon
-        2997,  # Greater of the Blade
-        2998,  # Inscription of Endurance
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3793,  # Inscription of Triumph
-        3794,  # Inscription of Dominance
-        3806,  # Lesser of the Storm
-        3807,  # Lesser of the Crag
-        3808,  # Greater of the Axe
-        3809,  # Greater of the Crag
-        3810,  # Greater of the Storm
-        3811,  # Greater of the Pinnacle
-        3852,  # Greater Inscription of the Gladiator
-        3875,  # Lesser of Axe
-        3876,  # Lesser of the Pinnacle
-        4120,  # Savage Armor Kit
+        4803,  # Greater Tiger Fang
+        4804,  # Greater Tiger Claw
+        4805,  # Greater Ox Horn
+        4806,  # Greater Crane Wing
+        4912,  # Secret Ox Horn Inscription
+        4913,  # Secret Tiger Fang Inscription
+        4914,  # Secret Tiger Claw Inscription
+        4915,  # Secret Crane Wing Inscription
     ],
     4: [
-        15,  # 8 Armor
-        16,  # 16 Armor
-        17,  # 24 Armor
-        18,  # 32 Armor
-        24,  # Chest - 5 Mana
-        41,  # Chest - 5 HP
-        44,  # Chest - 10 Absorb
-        63,  # Chest - 25 Absorb
-        242,  # Chest - 15 HP
-        246,  # Chest - 20 Mana
-        254,  # Chest - 25 HP
-        843,  # Chest - 30 Mana
-        847,  # Chest - 1 Stats
-        850,  # Chest - 35 HP
-        857,  # Chest - 50 Mana
-        866,  # Chest - 2 Stats
-        908,  # Chest - 50 HP
-        913,  # Chest - 65 Mana
-        928,  # Chest - 3 Stats
-        1843,  # 40 Armor
-        1891,  # Chest - 4 Stats
-        1893,  # Chest - 100 Mana
-        1953,  # Chest - 22 Dodge
-        1960,  # Chest - 15 Def
-        1951,  # Chest - 16 Def
-        2381,  # Chest - 20 SPI
-        2503,  # 3 Def
-        2659,  # Chest - 150 HP
-        2661,  # Chest - 6 Stats
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        2933,  # Chest - 15 Resilience
-        3233,  # Chest - 250 Mana
-        3236,  # Chest - 200 HP
-        3245,  # Chest - 20 resilence
-        3252,  # Chest - 8 Stats
-        3297,  # Chest - 275hp
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3832,  # Chest - 10 Stats
-        4063,  # Chest - 15 Stats
-        4070,  # Chest - 55 STA
-        4120,  # Savage Armor Kit
-        4121,  # Heavy Savage Armor Kit
-
+        4419,  # Chest - 80 Stats
+        4420,  # Chest - 300 STA
     ],
     6: [
-        15,    # 8 Armor
-        16,    # 16 Armor
-        17,    # 24 Armor
-        18,    # 32 Armor
-        1843,  # 40 Armor
-        2503,  # 3 Def
-        2583,  # Warrior Legs - ZG
-        2584,  # Head/Legs - ZG
-        2585,  # Head/Legs - ZG
-        2586,  # Head/Legs - ZG
-        2587,  # Head/Legs - ZG
-        2588,  # Head/Legs - ZG
-        2589,  # Head/Legs - ZG
-        2590,  # Head/Legs - ZG
-        2591,  # Head/Legs - ZG
-        2745,  # Legs - Silver Thread
-        2746,  # Legs - Golden Thread
-        2747,  # Legs - Mystic Thread
-        2748,  # Legs - Runic Thread
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        3010,  # Legs - 40AP/10Crit
-        3011,  # Legs - 30Sta|10Agi
-        3012,  # Legs - 50AP/12Crit
-        3013,  # Legs - 40Sta/12Agi
-        3325,  # Legs - 45Sta/15Agi
-        3326,  # Legs - 55AP/15Crit
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3332,  # Legs - 100AP|36Crit
-        3718,  # Legs - Shining Thread
-        3719,  # Legs - Brilliant Thread
-        3720,  # Legs - Azure Thread
-        3721,  # Legs - Sapphire Thread
-        3822,  # Legs - 55Sta|22Agi
-        3823,  # Legs - 75AP|22Crit
-        3853,  # Legs - 28Sta|40Resi
-        4109,  # Legs - Ghostly Thread
-        4111,  # Legs - Enchanted Thread
-        4120,  # Savage Armor Kit
-        4121,  # Heavy Savage Armor Kit
-        4122,  # Legs - 110AP|45Crit
-        4124,  # Legs - 85Sta|45Agi
+        4822,  # Shadowleather Leg Armor
+        4823,  # Angerhide Leg Armor
+        4824,  # Ironscale Leg Armor
+        4825,  # Greater Cerulean Spellthread
+        4826,  # Greater Pearlescent Spellthread
+        4880,  # Primal Leg Reinforcements
+        4881,  # Draconic Leg Reinforcements
+        4882,  # Heavy Leg Reinforcements
+        4895,  # Master's Spellthread
+        4896,  # Sanctified Spellthread
     ],
     7: [
-        15,   # 8 Armor
-        16,   # 16 Armor
-        17,   # 24 Armor
-        18,   # 32 Armor
-        66,   # Boots - 1 Sta
-        247,  # Boots - 1 Agi
-        255,  # Boots - 3 Spi
-        464,  # Boots - Mount Speed
-        724,  # Boots - 3 Sta
-        849,  # Boots - 3 Agi
-        852,  # Boots - 5 Sta
-        904,  # Boots - 5 Agi
-        911,  # Boots - Minor Speed
-        929,  # Boots - 7 Sta
-        983,  # Boots - 16 Agi
-        1075,  # Boots - 22 Sta
-        1147,  # Boots - 18Spi
-        1597,  # Boots - 32AP
-        1843,  # 40 Armor
-        1887,  # Boots - 7 Agi
-        2503,  # 3 Def
-        2649,  # Boots - 12 Sta
-        2656,  # Boots - Vitality
-        2657,  # Boots - 12 Agi
-        2658,  # Boots - Surefooted
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        2939,  # Cat's Swiftness
-        2940,  # Boar's SPeed
-        3232,  # Tuskarr Vitality
-        3244,  # Boots - 14 STA|SPI
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3824,  # Boots - 24 AP
-        3826,  # Boots - 12 Crit|Hit
-        3858,  # Boots - 5 hit
-        4120,  # Savage Armor Kit
+        4428,  # Blurred Speed
+        4429,  # Pandaren's Step
     ],
     8: [
-        41,   # Bracers - 5 HP
-        66,   # Bracers - 1 Sta
-        248,  # Bracers - 1 Str
-        255,  # Bracers - 3 Spi
-        369,  # Bracers - 12 Int
-        723,  # Bracers - 3 Int
-        724,  # Bracers - 3 Sta
-        823,  # Bracers - 3 Str
-        851,  # Bracers - 5 Spi
-        852,  # Bracers - 5 Sta
-        856,  # Bracers - 5 Str
-        905,  # Bracers - 5 Int
-        907,  # Bracers - 7 Spi
-        923,  # Bracers - 3 Def
-        924,  # Bracers - 1 Def
-        925,  # Bracers - 2 Def
-        927,  # Bracers - 7 Str
-        929,  # Bracers - 7 Sta
-        1600,  # Bracers - 38 AP
-        1885,  # Bracers - 9 Str
-        1886,  # Bracers - 9 Sta
-        1891,  # Bracers - 4 stats
-        2326,  # Bracers - 23 SP
-        2647,  # Bracers - 12 Str
-        2648,  # Bracers - 12 def
-        2649,  # Bracers - 12 Sta
-        2650,  # Bracers - 20 SP
-        2679,  # Bracers - 6 mp5
-        4065,  # Bracers - 50 Haste
-        4071,  # Bracers - 50 Crit
+        4414,  # Bracer - Super Intellect
+        4415,  # Bracer - Exceptional Strength
+        4416,  # Bracer - Greater Agility
     ],
     9: [
-        15,    # 8 Armor
-        16,    # 16 Armor
-        17,    # 24 Armor
-        18,    # 32 Armor
-        684,   # Gloves - 15 Str
-        844,   # Gloves - 3 Mining
-        845,   # Gloves - 3 Herb
-        846,   # Gloves - 2 Fishing
-        856,   # Gloves - 5 Str
-        865,   # Gloves - 5 Skinn
-        904,   # Gloves - 5 Agi
-        906,   # Gloves - 5 Mining
-        909,   # Gloves - 5 Herb
-        927,   # Gloves - 7 Str
-        930,   # Gloves - Mount Speed
-        1594,  # Gloves - 26 AP
-        1843,  # 40 Armor
-        1887,  # Gloves - 7 Agi
-        2322,  # Gloves - 19 SP
-        2503,  # 3 Def
-        2564,  # Gloves - 15 Agi
-        2613,  # Gloves - Threat
-        2614,  # Gloves - 20 SP
-        2615,  # Gloves - 20 SP
-        2616,  # Gloves - 20 SP
-        2617,  # Gloves - 20 SP
-        2792,  # Knothide Kit
-        2841,  # Heavy Knothide Kit
-        2934,  # Gloves - Blasting
-        2935,  # Gloves - 15 Hit
-        2937,  # Gloves - 20 SP
-        3231,  # Gloves - 15 Exp
-        3238,  # Gloves - Gatherer
-        3246,  # Gloves - 28 SP
-        3249,  # Gloves - 16 Crit
-        3253,  # Gloves - 10 Parry + threat
-        3260,  # Gloves Reinforcements
-        3329,  # Borean Kit
-        3330,  # Heavy Borean Kit
-        3829,  # Gloves - 35 AP
-        4061,  # Glovers - 50 Mastery
-        4075,  # Gloves - 35 Str
-        4120,  # Savage Armor Kit
-        4121,  # Heavy Savage Armor Kit
+        4430,  # Gloves - Greater Haste
+        4431,  # Gloves - Superior Expertise
+        4432,  # Gloves - Super Strength
+        4433,  # Gloves - Superior Mastery  
     ],
     14: [
-        65,  # Cloak - 1 Res
-        247,  # Cloak - 1 Agi
-        256,  # Cloak - 5 FR
-        368,  # Cloak - 12 Agi
-        744,  # Cloak - 20 Armor
-        783,  # Cloak - 10 Armor
-        848,  # Cloak - 30 Armor
-        884,  # Cloak - 50 Armor
-        903,  # Cloak - 3 Res
-        910,  # Cloak - Stealth
-        983,  # Cloak - 16 Agi
-        1257,  # Cloak - 15 Res
-        1441,  # Cloak - 15 Res
-        1889,  # Cloak - 70 Armor
-        2463,  # Cloak - 7 FR
-        2619,  # Cloak - 15 Res
-        2620,  # Cloak - 15 Res
-        2622,  # Cloak - 12 Dodge
-        2648,  # Cloak - 12 Def
-        2662,  # Cloak - 120 Armor
-        2664,  # Cloak - 7 Res
-        2938,  # Cloak - Spell Pen
-        3825,  # Cloak - 15 Haste
-        4072,  # Cloak - 30 Int
-        4087,  # Cloak - 50 Crit
+        4421,  # Cloak - Accuracy
+        4423,  # Cloak - Superior Intellect
+        4424,  # Cloak - Superior Critical Strike
+        4892,  # Lightweave Embroidery
+        4893,  # Darkglow Embroidery
+        4894,  # Swordguard Embroidery
     ],
     15: [
-        241,  # Weapon - 2 Dmg
-        255,  # Weapon - 3 Spi
-        723,  # Weapon - 3 Int
-        803,  # Weapon - Fiery
-        805,  # Weapon - 4 Dmg
-        854,  # Weapon - Elemental
-        943,  # Weapon - 3 Dmg
-        963,  # Weapon - 7 Dmg
-        1606,  # Weapon - 50 AP
-        1896,  # Weapon - 9 Dmg
-        1898,  # Weapon - Lifesteal
-        1899,  # Weapon - Unholy
-        1900,  # Weapon - Crusader
-        1903,  # Weapon - 9 Spi
-        1904,  # Weapon - 9 Int
-        2443,  # Weapon - 7 Frost
-        2564,  # Weapon - 15 Agi
-        2567,  # Weapon - 20 Spi
-        2568,  # Weapon - 22 Int
-        2646,  # Weapon - 25 Agi
-        2667,  # Weapon - 70 AP
-        2668,  # Weapon - 20 Str
-        2669,  # Weapon - 40 SP
-        2670,  # Weapon - 35 Agi
-        2671,  # Weapon - 50 SP
-        2672,  # Weapon - 54 SP
-        2673,  # Weapon - Mongoose
-        2674,  # Weapon - Spellsurge
-        2675,  # Weapon - Battlemaster
-        3222,  # Weapon - 20 Agi
-        3223,  # Weapon - Chain
-        3225,  # Weapon - Executioner
-        3251,  # Weapon - Giant Slayer
-        3273,  # Weapon - Deathfrost
-        3731,  # Weapon - Chain
-        3790,  # Weapon - Black Magic
-        3828,  # Weapon - 85 AP
-        3846,  # Weapon - 40 SP
-        3828,  # Weapon - Greater Savagery
-        3830,  # Weapon - 50 SP
-        3834,  # Weapon - 63 SP
-        4067,  # Weapon - Avalanche
-        4217,  # Weapon- Chain
+        3368,  # Rune of the Fallen Crusader
+        3370,  # Rune of Razorice
+        4441,  # Weapon - Windsong
+        4442,  # Weapon - Jade Spirit
+        4444,  # Weapon - Dancing Steel
+        4699,  # Lord Blastington's Scope of Doom
     ],
 }
 
