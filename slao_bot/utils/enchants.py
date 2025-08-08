@@ -49,7 +49,7 @@ GOOD_ENCHANTS = {
         4430,  # Gloves - Greater Haste
         4431,  # Gloves - Superior Expertise
         4432,  # Gloves - Super Strength
-        4433,  # Gloves - Superior Mastery  
+        4433,  # Gloves - Superior Mastery
     ],
     14: [
         4421,  # Cloak - Accuracy
