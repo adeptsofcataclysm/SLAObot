@@ -79,7 +79,7 @@ class RaidWeakEquipment:
             return
         if 'permanentEnchant' not in item:
             self.no_enchants[raider_name].add(SLOT_NAMES.get(item['slot']))
-        elif item['permanentEnchant'] in enchants.BAD_ENCHANTS[item['slot']]:
+        elif item['permanentEnchant'] not in enchants.GOOD_ENCHANTS[item['slot']]:
             self.low_enchants[raider_name].add(SLOT_NAMES.get(item['slot']))
 
     def _check_offspec(self, raider_name: str, item: Dict, guild_id: str, raid_time: int) -> None:
