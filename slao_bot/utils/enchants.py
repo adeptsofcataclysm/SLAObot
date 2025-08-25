@@ -37,10 +37,14 @@ GOOD_ENCHANTS = {
         4896,  # Sanctified Spellthread
     ],
     7: [
+        4426,  # Boots - Greater Haste
+        4427,  # Boots - Greater Precision
         4428,  # Blurred Speed
         4429,  # Pandaren's Step
     ],
     8: [
+        4411,  # Bracer - Mastery
+        4412,  # Bracer - Major Dodge
         4414,  # Bracer - Super Intellect
         4415,  # Bracer - Exceptional Strength
         4416,  # Bracer - Greater Agility
