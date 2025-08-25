@@ -28,7 +28,7 @@ SPECS = {
     'Mage_Frost': '<:Mage_Frost:881623228177596437>',
     'Monk_Brewmaster': '<:Monk_Brewmaster:1409483449370411138>',
     'Monk_Mistweaver': '<:Monk_Mistweaver:1409484164457304134>',
-    'Monk_Windwalker': '<:Monk_Windwalker:1409484472579133511>',    
+    'Monk_Windwalker': '<:Monk_Windwalker:1409484472579133511>',
     'Paladin_Holy': '<:Paladin_Holy:880089741847060550>',
     'Paladin_Justicar': '<:Paladin_Justicar:967337482020585553>',
     'Paladin_Protection': '<:Paladin_Protection:880076303615787009>',
