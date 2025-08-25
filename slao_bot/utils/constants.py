@@ -26,6 +26,9 @@ SPECS = {
     'Mage_Arcane': '<:Mage_Arcane:880098759936196669>',
     'Mage_Fire': '<:Mage_Fire:880083302306947113>',
     'Mage_Frost': '<:Mage_Frost:881623228177596437>',
+    'Monk_Brewmaster': '<:Monk_Brewmaster:1409483449370411138>',
+    'Monk_Mistweaver': '<:Monk_Mistweaver:1409484164457304134>',
+    'Monk_Windwalker': '<:Monk_Windwalker:1409484472579133511>',
     'Paladin_Holy': '<:Paladin_Holy:880089741847060550>',
     'Paladin_Justicar': '<:Paladin_Justicar:967337482020585553>',
     'Paladin_Protection': '<:Paladin_Protection:880076303615787009>',
@@ -170,10 +173,10 @@ EXEC_VALUES = {
 }
 
 # Combat consumables with short cooldown
-# Cata consumables
+# MoP consumables
 HP_MANA_POTS = {
-    '78989',  # Mythical hp pot
-    '78990',  # Mythical mana pot
+    '105708',  # Master Healing Potion
+    '105709',  # Master Mana Potion
 }
 
 HP_MANA_STONES = {
@@ -181,10 +184,10 @@ HP_MANA_STONES = {
 }
 
 COMBAT_POTS = {
-    '79475',  # 4.8k armor
-    '79476',  # 1.2k INT
-    '79633',  # 1.2k AGI
-    '79634',  # 1.2k STR
+    '105698',  # 12k armor
+    '105702',  # 4k INT
+    '105697',  # 4k AGI
+    '105706',  # 4k STR
 }
 
 POT_IMAGES = {
