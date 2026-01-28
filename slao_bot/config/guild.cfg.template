@@ -1,0 +1,8 @@
+[GUILD-ID-HERE]
+signup_enabled = False
+signup_channel = 0
+welcome_message = Welcome to guild server. Use /signup command if you want to join our guild!
+epgp_enabled = False
+epgp_upload_channel = 0
+guild_timezone = Europe/Moscow
+guild_name = Some String
