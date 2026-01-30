@@ -12,7 +12,6 @@ extensions = (
     'cogs.signup',
     'cogs.gear',
     'cogs.bomberman',
-    'cogs.damage',
     'cogs.epgp',
 )
 
