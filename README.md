@@ -7,7 +7,7 @@ either for full clear or for up to 4 fights.
 
 ## Dev setup
 1. Clone the repo
-2. Setup venv. This is optional but more convenient then system wide installation of our dependencies
+2. Setup venv. This is optional but more convenient than system wide installation of our dependencies
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -18,10 +18,13 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 4. Fill in config/base.cfg and config/guild.cfg. There are template files for these configs.
-5. Run the bot
+5. Create data folder to store EPGP data if you want to use that cog
 ```powershell
-cd slao_bot
-python -m slaobot
+mkdir data
+```
+6. Run the bot
+```powershell
+python .\slao_bot\slaobot.py
 ```
 
 ## Commands
