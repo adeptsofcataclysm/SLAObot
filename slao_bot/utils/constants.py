@@ -115,6 +115,8 @@ ZONE_IMAGES = {
     1040: 'https://www.wowhcb.ru/slaobot/HOF-TOES_Banner.png',
     # Throne of Thunder
     1046: 'https://www.wowhcb.ru/slaobot/TOT_Banner.png',
+    # Siege of Ogrimmar
+    1054: 'https://www.wowhcb.ru/slaobot/SO_Banner.png',
 }
 
 ZONE_NAMES = {
@@ -166,6 +168,7 @@ ZONE_NAMES = {
     1038: ':regional_indicator_m: :regional_indicator_s: :regional_indicator_v: ',
     1040: ':regional_indicator_h: :regional_indicator_o: :regional_indicator_f: :left_right_arrow: '
           ':regional_indicator_t: :regional_indicator_o: :regional_indicator_e: :regional_indicator_s:',
+    1054: ':regional_indicator_s: :regional_indicator_o: :regional_indicator_o: ',
 }
 EXEC_VALUES = {
     0: 'Слабо',
