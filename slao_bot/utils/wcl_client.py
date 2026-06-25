@@ -1,7 +1,7 @@
+import logging
 from typing import Any, Dict, Optional
 
 import aiohttp
-import logging
 import tenacity
 import utils.constants
 import utils.engineer
