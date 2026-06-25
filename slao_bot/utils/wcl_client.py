@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 import aiohttp
+import logging
 import tenacity
 import utils.constants
 import utils.engineer
@@ -10,6 +11,8 @@ from gql.client import AsyncClientSession
 from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from utils.config import base_config
+
+logging.basicConfig(level=logging.WARNING)
 
 
 class WCLClient:
