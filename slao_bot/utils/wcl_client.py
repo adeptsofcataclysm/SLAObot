@@ -12,7 +12,8 @@ from gql.dsl import DSLQuery, DSLSchema, dsl_gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from utils.config import base_config
 
-logging.basicConfig(level=logging.WARNING)
+logging.getLogger('gql.dsl').setLevel(logging.WARNING)
+logging.getLogger('gql.transport.aiohttp').setLevel(logging.WARNING)
 
 
 class WCLClient:
@@ -33,6 +34,7 @@ class WCLClient:
         transport = AIOHTTPTransport(
             url='https://www.warcraftlogs.com/api/v2/client',
             headers={'Authorization': f'Bearer {wcl_token}'},
+            ssl=False,
         )
         self._client = Client(transport=transport, fetch_schema_from_transport=True)
         self._session = await self._client.__aenter__()
