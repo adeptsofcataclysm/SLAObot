@@ -41,7 +41,7 @@ class RaidWeakEquipment:
                     continue
                 self._check_sockets(raider.name, item)
                 self._check_enchants(raider.name, item)
-                if guild_config.has_section(guild_id) and guild_config[guild_id].getboolean('epgp_enabled'):
+                if guild_config.has_section(guild_id) and guild_config[guild_id].getboolean('clm_enabled'):
                     self._check_offspec(raider.name, item, guild_id, raid_time)
 
         return self
@@ -94,11 +94,17 @@ class RaidWeakEquipment:
         connection: Connection = sqlite3.connect(db_name)
         cursor: Cursor = connection.cursor()
 
-        cursor.execute('''SELECT * FROM Traffic WHERE
-        item_id=? AND target=? AND (gpa - gpb)=0 AND timestamp BETWEEN ? and ? ''',
-                       (item['id'], raider_name, raid_time - 2592000, raid_time),
+        cursor.execute('''SELECT user_guid FROM Profile WHERE name=?''', (raider_name,))
+        user_guid = cursor.fetchone()
+        if user_guid is None:
+            return
+
+        cursor.execute('''SELECT SUM(gp_value) FROM Loot WHERE user_guid=? AND
+        item_id=? AND timestamp BETWEEN ? and ? ''',
+                       (user_guid[0], item['id'], raid_time - 2592000, raid_time),
                        )
-        if not cursor.fetchone() is None:
+        loot_value = cursor.fetchone()
+        if loot_value and loot_value[0] == 0:
             self.offspec_raid[raider_name].add(SLOT_NAMES.get(item['slot']))
 
         cursor.close()
@@ -163,7 +169,7 @@ class Gear(commands.Cog):
             value=self._print_raiders(equipment.low_enchants) or 'С пивком потянет!',
             inline=False,
         )
-        if guild_config.has_section(guild_id) and guild_config[guild_id].getboolean('epgp_enabled'):
+        if guild_config.has_section(guild_id) and guild_config[guild_id].getboolean('clm_enabled'):
             embed.add_field(
                 name='Оффспек лут в рейде',
                 value=self._print_raiders(equipment.offspec_raid) or 'Все молодцы!',
