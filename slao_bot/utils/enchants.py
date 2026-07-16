@@ -57,6 +57,7 @@ GOOD_ENCHANTS = {
     ],
     14: [
         4421,  # Cloak - Accuracy
+        4422,  # Cloak - Greater Protection
         4423,  # Cloak - Superior Intellect
         4424,  # Cloak - Superior Critical Strike
         4892,  # Lightweave Embroidery
