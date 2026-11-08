@@ -108,8 +108,6 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
             signup_embed.add_field(name='Имя', value=self.name.value)
             signup_embed.add_field(name='Персонаж', value=self.character.value)
             signup_embed.add_field(name='Класс', value=self.class_spec.value)
-            signup_embed.add_field(name='Второй Статик', value=self.first_rt.value)
-            signup_embed.add_field(name='Третий Статик', value=self.second_rt.value)
             signup_embed.add_field(name='Пользователь', value=format(interaction.user.mention))
             if interaction.user.avatar:
                 signup_embed.set_thumbnail(url=interaction.user.avatar.url)
