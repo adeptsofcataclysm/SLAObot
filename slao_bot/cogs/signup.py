@@ -78,24 +78,6 @@ class SignUpModal(discord.ui.Modal, title='Информация о себе'):
         min_length=2,
     )
 
-    first_rt = discord.ui.TextInput(
-        label='РТ: Среда + Воскресенье, 20:00 - 24:00',
-        placeholder='Хочу сюда',
-        style=discord.TextStyle.long,
-        required=False,
-        max_length=100,
-        min_length=2,
-    )
-
-    second_rt = discord.ui.TextInput(
-        label='РТ: Четверг + Понедельник, 20:45 - 24:00',
-        placeholder='Хочу сюда',
-        style=discord.TextStyle.long,
-        required=False,
-        max_length=100,
-        min_length=2,
-    )
-
     async def on_submit(self, interaction: discord.Interaction):
 
         signup_channel = interaction.client.get_channel(
