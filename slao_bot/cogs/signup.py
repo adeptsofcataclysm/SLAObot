@@ -30,7 +30,7 @@ class SignUpRequest(discord.ui.View):
             return None
 
         try:
-            mention = embed.fields[5].value
+            mention = embed.fields[3].value
             mention = mention.replace('<', '')
             mention = mention.replace('>', '')
             mention = mention.replace('@', '')
