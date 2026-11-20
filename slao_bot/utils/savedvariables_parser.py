@@ -23,7 +23,7 @@ class WowLuaParser(SLPP):
         if not text or not isinstance(text, six.string_types):
             return
         # Remove only wow saved variable comments
-        reg = re.compile('-{2,}\s+\[\d*\].*$', re.M)
+        reg = re.compile(r'-{2,}\s+\[\d*\].*$', re.M)
         text = reg.sub('', text)
         self.text = text
         self.at, self.ch, self.depth = 0, '', 0
@@ -44,7 +44,7 @@ class SavedVariablesParser:
             logging.error('Something not ok with split')
             return None
 
-        pattern = re.compile('^\s*([a-zA-Z0-9-_]*)\s*=\s*')
+        pattern = re.compile(r'^\s*([a-zA-Z0-9-_]*)\s*=\s*')
         saved_variables = {}
         for string in strings:
             if len(string) == 0:

@@ -117,6 +117,41 @@ class Gear(commands.Cog):
         """Cog to check gems and enchants."""
         self.embed_title: str = 'Камни и зачаровывание'
 
+    @staticmethod
+    def _print_raiders(gear_issues: Dict[str, Set]) -> Optional[str]:
+        if len(gear_issues) == 0:
+            return None
+        value = ''
+
+        for index, raider in enumerate(gear_issues):
+            if len(value) > 940:
+                return value + 'И исчо немного вагонов.'
+            if index > 0:
+                value += ', '
+            value += raider
+            value += '('
+            value += ', '.join(gear_issues[raider])
+            value += ')'
+
+        return value
+
+    @staticmethod
+    def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
+        """Makes dictionary with raiders and adds gear to each raider
+
+        :param rs: Response from WCL API query
+        :return: Dictionary with raiders
+        """
+        raiders_by_role = Report.get_raiders_by_role(rs)
+
+        for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
+            for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
+                for raider in raiders_by_role[role]:
+                    if raider.name == char['name'] and char['combatantInfo']:
+                        raider.gear = char['combatantInfo']['gear']
+                        continue
+        return raiders_by_role
+
     @app_commands.command(description='Камни и энчанты')
     @app_commands.describe(report_id='WCL report ID')
     async def gear(self, interaction: discord.Interaction, report_id: str) -> None:
@@ -177,41 +212,6 @@ class Gear(commands.Cog):
             )
 
         return embed
-
-    @staticmethod
-    def _print_raiders(gear_issues: Dict[str, Set]) -> Optional[str]:
-        if len(gear_issues) == 0:
-            return None
-        value = ''
-
-        for index, raider in enumerate(gear_issues):
-            if len(value) > 940:
-                return value + 'И исчо немного вагонов.'
-            if index > 0:
-                value += ', '
-            value += raider
-            value += '('
-            value += ', '.join(gear_issues[raider])
-            value += ')'
-
-        return value
-
-    @staticmethod
-    def _make_raiders(rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
-        """Makes dictionary with raiders and adds gear to each raider
-
-        :param rs: Response from WCL API query
-        :return: Dictionary with raiders
-        """
-        raiders_by_role = Report.get_raiders_by_role(rs)
-
-        for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
-            for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
-                for raider in raiders_by_role[role]:
-                    if raider.name == char['name'] and char['combatantInfo']:
-                        raider.gear = char['combatantInfo']['gear']
-                        continue
-        return raiders_by_role
 
 
 async def setup(bot: SlaoBot) -> None:

@@ -21,6 +21,17 @@ class Bomberman(commands.Cog):
         self._other_damage = defaultdict()
         self.embed_title: str = 'Бомбим!'
 
+    @staticmethod
+    def _add_damage(raider: Dict, result: Dict) -> Dict:
+        if raider['actorType'] == 'TricksOfTheTrade':
+            return result
+        if raider['actorName'] in result:
+            result[raider['actorName']] += raider['total']
+        else:
+            result[raider['actorName']] = raider['total']
+
+        return result
+
     @app_commands.command(description='Использование гранат и схожих расходников')
     @app_commands.describe(report_id='WCL report ID')
     async def engineers(self, interaction: discord.Interaction, report_id: str) -> None:
@@ -124,17 +135,6 @@ class Bomberman(commands.Cog):
             value += f'{raider_name}({raider_damage})'
 
         return value
-
-    @staticmethod
-    def _add_damage(raider: Dict, result: Dict) -> Dict:
-        if raider['actorType'] == 'TricksOfTheTrade':
-            return result
-        if raider['actorName'] in result:
-            result[raider['actorName']] += raider['total']
-        else:
-            result[raider['actorName']] = raider['total']
-
-        return result
 
 
 async def setup(bot):

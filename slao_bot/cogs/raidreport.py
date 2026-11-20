@@ -23,87 +23,6 @@ class RaidReport(commands.Cog):
         self.bot: SlaoBot = bot
         self.bot.add_view(RaidView())
 
-    @app_commands.command(description='Отчёт по логу на WCL')
-    @app_commands.describe(report_id='WCL report ID')
-    async def report(self, interaction: discord.Interaction, report_id: str) -> None:
-        """Get data from WCL report."""
-        # noinspection PyUnresolvedReferences
-        await interaction.response.defer()
-
-        embed = await self.process_interaction(report_id)
-        await interaction.edit_original_response(embed=embed, view=RaidView())
-
-    @commands.Cog.listener()
-    async def on_message(self, message: Message) -> None:
-        """Replace original message from WarcraftLogs with interstitial message and later on with full report."""
-        if message.author.display_name != 'WCL':
-            return
-        if not message.embeds:
-            return
-
-        report_id = message.embeds[0].url.split('/')[-1]
-        if not report_id:
-            return
-        author_icon = message.embeds[0].thumbnail.url
-
-        # We have message from WCL with embed and report_id. Let's rock!
-        # Delete original WCL message
-        ctx = await self.bot.get_context(message)
-        await ctx.message.delete()
-
-        # Send interstitial embed to store report_id
-        embed = self._make_waiting_embed(report_id, author_icon)
-        waiting_message = await ctx.send(embed=embed)
-
-        embed = await self.process_interaction(report_id, author_icon=author_icon)
-        if embed is None:
-            embed = self._make_error_embed(report_id, author_icon)
-            await waiting_message.edit(embed=embed, view=RaidView())
-            return
-
-        await waiting_message.edit(embed=embed, view=RaidView())
-
-    async def process_interaction(self, report_id: str, **kwargs: Any) -> Optional[discord.Embed]:
-        """Process a single report
-
-        :param report_id: WarcraftLogs report ID
-        """
-        async with WCLClient() as client:
-            try:
-                rs = await client.get_rankings(report_id)
-                table_summary = await client.get_table_summary(report_id)
-            except tenacity.RetryError:
-                return None
-
-        report_title = rs['reportData']['report'].get('title', Report.make_report_title(rs))
-
-        if rs['reportData']['report']['guildTag']:
-            report_tag = rs['reportData']['report']['guildTag']['name']
-        else:
-            report_tag = 'No tag'
-
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
-        report_description = Report.make_report_description(rs)
-        author_icon = kwargs.get('author_icon', self.bot.user.avatar.url)
-
-        embed = Embed(title=f'{report_title} - {report_tag}',
-                      url=report_url,
-                      description=report_description,
-                      color=0xb51cd4)
-
-        report_owner = rs['reportData']['report']['owner']['name']
-        embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
-        embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
-
-        # Add bosses, speed and execution
-        self._make_fights(rs, embed)
-        # Add raiders
-        self._make_raiders(embed, table_summary)
-        # Add links
-        self._make_links(embed, report_id)
-
-        return embed
-
     @staticmethod
     def _make_fights(rs: Dict[str, Any], embed: Embed) -> None:
         fights = rs['reportData']['report']['rankings']['data']
@@ -184,6 +103,87 @@ class RaidReport(commands.Cog):
             colour=Colour.orange(),
             url=report_url)
         embed.set_thumbnail(url=author_icon)
+
+        return embed
+
+    @app_commands.command(description='Отчёт по логу на WCL')
+    @app_commands.describe(report_id='WCL report ID')
+    async def report(self, interaction: discord.Interaction, report_id: str) -> None:
+        """Get data from WCL report."""
+        # noinspection PyUnresolvedReferences
+        await interaction.response.defer()
+
+        embed = await self.process_interaction(report_id)
+        await interaction.edit_original_response(embed=embed, view=RaidView())
+
+    @commands.Cog.listener()
+    async def on_message(self, message: Message) -> None:
+        """Replace original message from WarcraftLogs with interstitial message and later on with full report."""
+        if message.author.display_name != 'WCL':
+            return
+        if not message.embeds:
+            return
+
+        report_id = message.embeds[0].url.split('/')[-1]
+        if not report_id:
+            return
+        author_icon = message.embeds[0].thumbnail.url
+
+        # We have message from WCL with embed and report_id. Let's rock!
+        # Delete original WCL message
+        ctx = await self.bot.get_context(message)
+        await ctx.message.delete()
+
+        # Send interstitial embed to store report_id
+        embed = self._make_waiting_embed(report_id, author_icon)
+        waiting_message = await ctx.send(embed=embed)
+
+        embed = await self.process_interaction(report_id, author_icon=author_icon)
+        if embed is None:
+            embed = self._make_error_embed(report_id, author_icon)
+            await waiting_message.edit(embed=embed, view=RaidView())
+            return
+
+        await waiting_message.edit(embed=embed, view=RaidView())
+
+    async def process_interaction(self, report_id: str, **kwargs: Any) -> Optional[discord.Embed]:
+        """Process a single report
+
+        :param report_id: WarcraftLogs report ID
+        """
+        async with WCLClient() as client:
+            try:
+                rs = await client.get_rankings(report_id)
+                table_summary = await client.get_table_summary(report_id)
+            except tenacity.RetryError:
+                return None
+
+        report_title = rs['reportData']['report'].get('title', Report.make_report_title(rs))
+
+        if rs['reportData']['report']['guildTag']:
+            report_tag = rs['reportData']['report']['guildTag']['name']
+        else:
+            report_tag = 'No tag'
+
+        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        report_description = Report.make_report_description(rs)
+        author_icon = kwargs.get('author_icon', self.bot.user.avatar.url)
+
+        embed = Embed(title=f'{report_title} - {report_tag}',
+                      url=report_url,
+                      description=report_description,
+                      color=0xb51cd4)
+
+        report_owner = rs['reportData']['report']['owner']['name']
+        embed.set_author(name=report_owner, url=report_url, icon_url=author_icon)
+        embed.set_image(url=ZONE_IMAGES.get(Report.get_report_zone_id(rs), ZONE_IMAGES.get(0)))
+
+        # Add bosses, speed and execution
+        self._make_fights(rs, embed)
+        # Add raiders
+        self._make_raiders(embed, table_summary)
+        # Add links
+        self._make_links(embed, report_id)
 
         return embed
 

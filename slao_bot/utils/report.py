@@ -54,24 +54,6 @@ class Report:
         value += f"Скорость: {bold(fight['speed']['rankPercent'])}%"
         return value
 
-    @classmethod
-    def get_raiders_by_role(cls, rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
-        raiders_by_role = cls._get_raiders_by_roles(rs)
-
-        for role, was_done in ((Role.DPS, 'damageDone'), (Role.HEALER, 'healingDone')):
-            cls._add_raiders_totals(
-                raiders_by_role[role],
-                rs['reportData']['report']['table']['data'][was_done],
-            )
-
-        return raiders_by_role
-
-    @classmethod
-    def make_report_title(cls, rs: Dict[str, Any]) -> str:
-        report_zone_id = cls.get_report_zone_id(rs)
-
-        return ZONE_NAMES.get(report_zone_id, ZONE_NAMES.get(0))
-
     @staticmethod
     def _add_raiders_totals(raiders: List[Raider], characters: List[Dict[str, Any]]) -> Dict[str, int]:
         result = {}
@@ -103,3 +85,21 @@ class Report:
                 ))
 
         return result
+
+    @classmethod
+    def get_raiders_by_role(cls, rs: Dict[str, Any]) -> Dict[Role, List[Raider]]:
+        raiders_by_role = cls._get_raiders_by_roles(rs)
+
+        for role, was_done in ((Role.DPS, 'damageDone'), (Role.HEALER, 'healingDone')):
+            cls._add_raiders_totals(
+                raiders_by_role[role],
+                rs['reportData']['report']['table']['data'][was_done],
+            )
+
+        return raiders_by_role
+
+    @classmethod
+    def make_report_title(cls, rs: Dict[str, Any]) -> str:
+        report_zone_id = cls.get_report_zone_id(rs)
+
+        return ZONE_NAMES.get(report_zone_id, ZONE_NAMES.get(0))

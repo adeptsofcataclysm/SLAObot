@@ -26,7 +26,7 @@ from slaobot import SlaoBot
 
 class Epgp(commands.Cog):
     __MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024  # 25MB
-    __item_id_name_find = re.compile('^[^:]*:*(\d*).*\[([^\]]*)', re.I)
+    __item_id_name_find = re.compile(r'^[^:]*:*(\d*).*\[([^\]]*)', re.I)
 
     def __init__(self, bot: SlaoBot):
         """Cog to handle EPGP."""

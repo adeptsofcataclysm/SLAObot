@@ -80,6 +80,40 @@ class Potions(commands.Cog):
         """Cog to provide basic statistics about raid."""
         self.embed_title: str = 'Потная катка'
 
+    @staticmethod
+    def _raiders_by_id(rs: Dict[str, Any]) -> Dict[int, str]:
+        raiders = rs['reportData']['report']['table']['data']['composition']
+        result = defaultdict()
+
+        for raider in raiders:
+            result[raider['id']] = raider['name']
+
+        return result
+
+    @staticmethod
+    def _print_pot_usage(entries: Dict[str, int]) -> str:
+        result = ''
+        for key, value in entries.items():
+            if len(result) > 940:
+                return result + 'И исчо немного народа.'
+            if len(result) > 0:
+                result += ', '
+            result += f'{key}({value})'
+
+        return result if len(result) > 0 else 'Вагонимся'
+
+    @staticmethod
+    def _print_pot_total(entries: Dict[str, List]) -> str:
+        result = ''
+        for key, value in entries.items():
+            if len(result) > 940:
+                return result + 'И исчо немного народа.'
+            if len(result) > 0:
+                result += ', '
+            result += f'{key}({value[1]} + {value[0]})'
+
+        return result if len(result) > 0 else 'Вагонимся'
+
     @app_commands.command(description='Использование зелий и иже с ними')
     @app_commands.describe(report_id='WCL report ID')
     async def potions(self, interaction: discord.Interaction, report_id: str) -> None:
@@ -128,40 +162,6 @@ class Potions(commands.Cog):
                         inline=False)
 
         return embed
-
-    @staticmethod
-    def _raiders_by_id(rs: Dict[str, Any]) -> Dict[int, str]:
-        raiders = rs['reportData']['report']['table']['data']['composition']
-        result = defaultdict()
-
-        for raider in raiders:
-            result[raider['id']] = raider['name']
-
-        return result
-
-    @staticmethod
-    def _print_pot_usage(entries: Dict[str, int]) -> str:
-        result = ''
-        for key, value in entries.items():
-            if len(result) > 940:
-                return result + 'И исчо немного народа.'
-            if len(result) > 0:
-                result += ', '
-            result += f'{key}({value})'
-
-        return result if len(result) > 0 else 'Вагонимся'
-
-    @staticmethod
-    def _print_pot_total(entries: Dict[str, List]) -> str:
-        result = ''
-        for key, value in entries.items():
-            if len(result) > 940:
-                return result + 'И исчо немного народа.'
-            if len(result) > 0:
-                result += ', '
-            result += f'{key}({value[1]} + {value[0]})'
-
-        return result if len(result) > 0 else 'Вагонимся'
 
 
 async def setup(bot: SlaoBot):
