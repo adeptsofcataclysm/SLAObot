@@ -117,6 +117,8 @@ ZONE_IMAGES = {
     1046: 'https://www.wowhcb.ru/slaobot/TOT_Banner.png',
     # Siege of Ogrimmar
     1054: 'https://www.wowhcb.ru/slaobot/SO_Banner.png',
+    # Ony - Forever
+    3001: 'https://raid-helper.dev/uploads/banners/classic/image1.jpg'
 }
 
 ZONE_NAMES = {
@@ -169,6 +171,7 @@ ZONE_NAMES = {
     1040: ':regional_indicator_h: :regional_indicator_o: :regional_indicator_f: :left_right_arrow: '
           ':regional_indicator_t: :regional_indicator_o: :regional_indicator_e: :regional_indicator_s:',
     1054: ':regional_indicator_s: :regional_indicator_o: :regional_indicator_o: ',
+    3001: ':regional_indicator_o: :regional_indicator_n: :regional_indicator_y:',
 }
 EXEC_VALUES = {
     0: 'Слабо',

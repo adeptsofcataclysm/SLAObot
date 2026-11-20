@@ -144,10 +144,11 @@ class Gear(commands.Cog):
         """
         raiders_by_role = Report.get_raiders_by_role(rs)
 
+        player_details = rs['reportData']['report']['table']['data'].get('playerDetails') or {}
         for role, report_section in ((Role.HEALER, 'healers'), (Role.TANK, 'tanks'), (Role.DPS, 'dps')):
-            for char in rs['reportData']['report']['table']['data']['playerDetails'][report_section]:
+            for char in player_details.get(report_section, []):
                 for raider in raiders_by_role[role]:
-                    if raider.name == char['name'] and char['combatantInfo']:
+                    if raider.name == char['name'] and char.get('combatantInfo'):
                         raider.gear = char['combatantInfo']['gear']
                         continue
         return raiders_by_role

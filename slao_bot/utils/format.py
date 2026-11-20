@@ -77,7 +77,7 @@ def normalize_user(author):
 
 
 def build_wowhead_item_link(item_name: str, item_id: int) -> str:
-    return '[{1}](https://{0}/item={2})'.format('wowhead.com/cata/ru', item_name, item_id)
+    return '[{1}](https://{0}/item={2})'.format('wowhead.com/forever/ru', item_name, item_id)
 
 
 def build_loot_entries(entries: list, tz_name: str, show_target: bool = False) -> str:

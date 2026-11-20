@@ -83,7 +83,7 @@ class RaidReport(commands.Cog):
 
     @staticmethod
     def _make_waiting_embed(report_id: str, author_icon: str) -> discord.Embed:
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        report_url = f'https://forever.warcraftlogs.com/reports/{report_id}'
         embed = Embed(
             title='Новый лог подъехал',
             description='Получаю данные с WarcraftLogs',
@@ -96,7 +96,7 @@ class RaidReport(commands.Cog):
 
     @staticmethod
     def _make_error_embed(report_id: str, author_icon: str) -> discord.Embed:
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        report_url = f'https://forever.warcraftlogs.com/reports/{report_id}'
         embed = Embed(
             title='Новый лог подъехал',
             description='Но что-то в нём не так',
@@ -165,7 +165,7 @@ class RaidReport(commands.Cog):
         else:
             report_tag = 'No tag'
 
-        report_url = f'https://classic.warcraftlogs.com/reports/{report_id}'
+        report_url = f'https://forever.warcraftlogs.com/reports/{report_id}'
         report_description = Report.make_report_description(rs)
         author_icon = kwargs.get('author_icon', self.bot.user.avatar.url)
 
